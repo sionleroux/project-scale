@@ -1,4 +1,4 @@
-module github.com/sinisterstuf/ebitengine-game-template
+module github.com/sinisterstuf/project-scale
 
 go 1.19
 

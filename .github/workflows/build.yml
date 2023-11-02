@@ -34,10 +34,10 @@ jobs:
     - name: Upload Windows exe
       uses: actions/upload-artifact@v3
       with:
-        name: ebitengine-game-template-win
+        name: project-scale-win
         path: |
           LICENSE
-          ebitengine-game-template.exe
+          project-scale.exe
 
   build-mac:
     name: Build MacOS binary
@@ -54,12 +54,12 @@ jobs:
       run: go build
     - name: Tar it up
       shell: bash
-      run: tar -zcvf ebitengine-game-template-mac.tar.gz ebitengine-game-template LICENSE
+      run: tar -zcvf project-scale-mac.tar.gz project-scale LICENSE
     - name: Upload Mac exe
       uses: actions/upload-artifact@v3
       with:
-        name: ebitengine-game-template-mac
-        path: ebitengine-game-template-mac.tar.gz
+        name: project-scale-mac
+        path: project-scale-mac.tar.gz
 
   build-lin:
     name: Build Linux binary
@@ -79,12 +79,12 @@ jobs:
       run: go build -v
     - name: Tar it up
       shell: bash
-      run: tar -zcvf ebitengine-game-template-lin.tar.gz ebitengine-game-template LICENSE
+      run: tar -zcvf project-scale-lin.tar.gz project-scale LICENSE
     - name: Upload Linux exe
       uses: actions/upload-artifact@v3
       with:
-        name: ebitengine-game-template-lin
-        path: ebitengine-game-template-lin.tar.gz
+        name: project-scale-lin
+        path: project-scale-lin.tar.gz
 
   build-web:
     name: Build Web binary
@@ -98,14 +98,14 @@ jobs:
         go-version: 1.19
     - name: Build Web binary
       shell: bash
-      run: GOOS=js GOARCH=wasm go build -v -ldflags "-w -s" -o dist/web/ebitengine-game-template.wasm
+      run: GOOS=js GOARCH=wasm go build -v -ldflags "-w -s" -o dist/web/project-scale.wasm
     - name: Copy WASM exec script
       shell: bash
       run: cp $(go env GOROOT)/misc/wasm/wasm_exec.js dist/web/.
     - name: Upload Web build
       uses: actions/upload-artifact@v3
       with:
-        name: ebitengine-game-template-web
+        name: project-scale-web
         path: |
           dist/web/
           LICENSE
@@ -119,25 +119,25 @@ jobs:
     - name: Download Windows binary
       uses: actions/download-artifact@v3
       with:
-        name: ebitengine-game-template-win
+        name: project-scale-win
     - name: Download Linux binary
       uses: actions/download-artifact@v3
       with:
-        name: ebitengine-game-template-lin
+        name: project-scale-lin
     - name: Download Mac binary
       uses: actions/download-artifact@v3
       with:
-        name: ebitengine-game-template-mac
+        name: project-scale-mac
     - name: Upload beta testing bundle
       uses: actions/upload-artifact@v3
       with:
-        name: ebitengine-game-template-bundle
+        name: project-scale-bundle
         path: |
           README.md
           LICENSE
-          ebitengine-game-template-lin.tar.gz
-          ebitengine-game-template-mac.tar.gz
-          ebitengine-game-template.exe
+          project-scale-lin.tar.gz
+          project-scale-mac.tar.gz
+          project-scale.exe
 
   deploy-win:
     name: Deploy Windows build to itch.io
@@ -147,14 +147,14 @@ jobs:
     steps:
     - uses: actions/download-artifact@v3
       with:
-        name: ebitengine-game-template-win
+        name: project-scale-win
     - uses: josephbmanley/butler-publish-itchio-action@master
       env:
         BUTLER_CREDENTIALS: ${{ secrets.BUTLER_CREDENTIALS }}
         CHANNEL: windows
-        ITCH_GAME: ebitengine-game-template
+        ITCH_GAME: project-scale
         ITCH_USER: sinisterstuf
-        PACKAGE: ebitengine-game-template.exe
+        PACKAGE: project-scale.exe
         VERSION: ${{github.ref_name}}
 
   deploy-mac:
@@ -165,17 +165,17 @@ jobs:
     steps:
     - uses: actions/download-artifact@v3
       with:
-        name: ebitengine-game-template-mac
+        name: project-scale-mac
     - name: Extract tarball
       shell: bash
-      run: tar -zxvf ebitengine-game-template-mac.tar.gz
+      run: tar -zxvf project-scale-mac.tar.gz
     - uses: josephbmanley/butler-publish-itchio-action@master
       env:
         BUTLER_CREDENTIALS: ${{ secrets.BUTLER_CREDENTIALS }}
         CHANNEL: mac
-        ITCH_GAME: ebitengine-game-template
+        ITCH_GAME: project-scale
         ITCH_USER: sinisterstuf
-        PACKAGE: ebitengine-game-template
+        PACKAGE: project-scale
         VERSION: ${{github.ref_name}}
 
   deploy-lin:
@@ -186,17 +186,17 @@ jobs:
     steps:
     - uses: actions/download-artifact@v3
       with:
-        name: ebitengine-game-template-lin
+        name: project-scale-lin
     - name: Extract tarball
       shell: bash
-      run: tar -zxvf ebitengine-game-template-lin.tar.gz
+      run: tar -zxvf project-scale-lin.tar.gz
     - uses: josephbmanley/butler-publish-itchio-action@master
       env:
         BUTLER_CREDENTIALS: ${{ secrets.BUTLER_CREDENTIALS }}
         CHANNEL: linux
-        ITCH_GAME: ebitengine-game-template
+        ITCH_GAME: project-scale
         ITCH_USER: sinisterstuf
-        PACKAGE: ebitengine-game-template
+        PACKAGE: project-scale
         VERSION: ${{github.ref_name}}
 
   deploy-web:
@@ -207,12 +207,12 @@ jobs:
     steps:
     - uses: actions/download-artifact@v3
       with:
-        name: ebitengine-game-template-web
+        name: project-scale-web
     - uses: josephbmanley/butler-publish-itchio-action@master
       env:
         BUTLER_CREDENTIALS: ${{ secrets.BUTLER_CREDENTIALS }}
         CHANNEL: web
-        ITCH_GAME: ebitengine-game-template
+        ITCH_GAME: project-scale
         ITCH_USER: sinisterstuf
         PACKAGE: dist/web
         VERSION: ${{github.ref_name}}

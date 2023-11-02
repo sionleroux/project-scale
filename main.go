@@ -19,7 +19,7 @@ func main() {
 	gameWidth, gameHeight := 640, 480
 
 	ebiten.SetWindowSize(gameWidth, gameHeight)
-	ebiten.SetWindowTitle("ebitengine-game-template")
+	ebiten.SetWindowTitle("project-scale")
 
 	game := &Game{
 		Width:  gameWidth,

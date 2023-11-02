@@ -1,22 +1,6 @@
-# ebitengine-game-template
+# project-scale
 
-A basic skeleton for a 2D game using the [Ebitengine](https://ebitengine.org/) library.
-
------✂️-----
-
-> ⚠️ After cloning this repository:
-
-> Write your OWN name name in the LICENSE file and find-and-replace `ebitengine-game-template` with your own game's name, for example, by running this command (tested on Linux and Mac):
-
-```bash
-grep -Rl ebitengine-game-template | xargs sed -i '' -e "s/ebitengine-game-template/${PWD##*/}/g"
-```
-
-> it assumes that the game name is the name of the current folder because that is what `go build` will call it.
-
-> Then delete this section from the README, and start editing `main.go` to make your own game!
-
------✂️-----
+WIP: Entry for Github Game Off 2023
 
 ## For game testers
 
@@ -31,7 +15,7 @@ Game controls:
 
 Make sure you have [Go 1.19 or later](https://go.dev/) to contribute to the game
 
-To build the game yourself, run: `go build .` it will produce an ebitengine-game-template file and on Windows ebitengine-game-template.exe.
+To build the game yourself, run: `go build .` it will produce a project-scale file and on Windows project-scale.exe.
 
 To run the tests, run: `go test ./...` but there are no tests yet.
 
