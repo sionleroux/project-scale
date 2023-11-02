@@ -4,12 +4,14 @@ WIP: Entry for Github Game Off 2023
 
 ## For game testers
 
-<!-- TODO: add a link to the latest downloads page -->
+For alpha testing use [⬇️ this link](https://nightly.link/sinisterstuf/project-scale/workflows/build/main/project-scale-bundle.zip) to download the latest development build.
 
 Game controls:
 - F: toggle full-screen
 - Q: quit the game
 - Space: move up
+
+If you find an issue with the game [please open a new ticket here](https://github.com/sinisterstuf/project-scale/issues).
 
 ## For programmers
 
