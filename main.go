@@ -13,6 +13,14 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	input "github.com/quasilyte/ebitengine-input"
+)
+
+const (
+	ActionMoveUp input.Action = iota
+	ActionMoveLeft
+	ActionMoveDown
+	ActionMoveRight
 )
 
 func main() {
@@ -21,22 +29,38 @@ func main() {
 	ebiten.SetWindowSize(gameWidth, gameHeight)
 	ebiten.SetWindowTitle("project-scale")
 
-	game := &Game{
+	g := &Game{
 		Width:  gameWidth,
 		Height: gameHeight,
-		Player: &Player{image.Pt(gameWidth/2, gameHeight/2)},
 	}
 
-	if err := ebiten.RunGame(game); err != nil {
+	// Input setup
+	g.InputSystem.Init(input.SystemConfig{
+		DevicesEnabled: input.AnyDevice,
+	})
+	keymap := input.Keymap{
+		ActionMoveUp:    {input.KeyUp, input.KeyW, input.KeyGamepadUp, input.KeyGamepadLStickUp},
+		ActionMoveLeft:  {input.KeyLeft, input.KeyA, input.KeyGamepadLeft, input.KeyGamepadLStickLeft},
+		ActionMoveDown:  {input.KeyDown, input.KeyS, input.KeyGamepadDown, input.KeyGamepadLStickDown},
+		ActionMoveRight: {input.KeyRight, input.KeyD, input.KeyGamepadRight, input.KeyGamepadLStickRight},
+	}
+
+	g.Player = &Player{
+		Coords: image.Pt(gameWidth/2, gameHeight/2),
+		Input:  g.InputSystem.NewHandler(0, keymap),
+	}
+
+	if err := ebiten.RunGame(g); err != nil {
 		log.Fatal(err)
 	}
 }
 
 // Game represents the main game state
 type Game struct {
-	Width  int
-	Height int
-	Player *Player
+	Width       int
+	Height      int
+	Player      *Player
+	InputSystem input.System
 }
 
 // Layout is hardcoded for now, may be made dynamic in future
@@ -62,11 +86,8 @@ func (g *Game) Update() error {
 	}
 
 	// Movement controls
-	if ebiten.IsKeyPressed(ebiten.KeySpace) {
-		g.Player.Move()
-	}
-
-	// XXX: Write game logic here
+	g.InputSystem.Update()
+	g.Player.Update()
 
 	return nil
 }
@@ -86,9 +107,24 @@ func (g *Game) Draw(screen *ebiten.Image) {
 // Player is the player character in the game
 type Player struct {
 	Coords image.Point
+	Input  *input.Handler
 }
 
-// Move moves the player upwards
-func (p *Player) Move() {
-	p.Coords.Y--
+func (p *Player) Update() {
+	p.updateMovement()
+}
+
+func (p *Player) updateMovement() {
+	if p.Input.ActionIsPressed(ActionMoveUp) {
+		p.Coords.Y--
+	}
+	if p.Input.ActionIsPressed(ActionMoveDown) {
+		p.Coords.Y++
+	}
+	if p.Input.ActionIsPressed(ActionMoveLeft) {
+		p.Coords.X--
+	}
+	if p.Input.ActionIsPressed(ActionMoveRight) {
+		p.Coords.X++
+	}
 }
