@@ -138,7 +138,9 @@ jobs:
   deploy-win:
     name: Deploy Windows build to itch.io
     if: startsWith(github.event.ref, 'refs/tags/v')
-    needs: build-win
+    needs:
+      - build-win
+      - tests
     runs-on: ubuntu-latest
     steps:
     - uses: actions/download-artifact@v3
@@ -156,7 +158,9 @@ jobs:
   deploy-mac:
     name: Deploy MacOs build to itch.io
     if: startsWith(github.event.ref, 'refs/tags/v')
-    needs: build-mac
+    needs:
+      - build-mac
+      - tests
     runs-on: ubuntu-latest
     steps:
     - uses: actions/download-artifact@v3
@@ -177,7 +181,9 @@ jobs:
   deploy-lin:
     name: Deploy Linux build to itch.io
     if: startsWith(github.event.ref, 'refs/tags/v')
-    needs: build-lin
+    needs:
+      - build-lin
+      - tests
     runs-on: ubuntu-latest
     steps:
     - uses: actions/download-artifact@v3
@@ -198,7 +204,9 @@ jobs:
   deploy-web:
     name: Deploy Web build to itch.io
     if: startsWith(github.event.ref, 'refs/tags/v')
-    needs: build-web
+    needs:
+      - build-web
+      - tests
     runs-on: ubuntu-latest
     steps:
     - uses: actions/download-artifact@v3
