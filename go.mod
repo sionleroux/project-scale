@@ -5,11 +5,13 @@ go 1.21
 require (
 	github.com/hajimehoshi/ebiten/v2 v2.6.2
 	github.com/quasilyte/ebitengine-input v0.9.0
+	github.com/solarlune/resolv v0.6.1
 )
 
 require (
 	github.com/ebitengine/purego v0.5.0 // indirect
 	github.com/jezek/xgb v1.1.0 // indirect
+	github.com/quartercastle/vector v0.1.3 // indirect
 	github.com/quasilyte/gmath v0.0.0-20221217210116-fba37a2e15c7 // indirect
 	golang.org/x/exp v0.0.0-20190731235908-ec7cb31e5a56 // indirect
 	golang.org/x/image v0.12.0 // indirect
