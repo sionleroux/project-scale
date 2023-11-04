@@ -105,19 +105,12 @@ func (g *Game) Update() error {
 func (g *Game) Draw(screen *ebiten.Image) {
 	ebitenutil.DrawRect(
 		screen,
-		float64(g.Player.Object.X),
-		float64(g.Player.Object.Y),
-		20,
-		20,
-		color.White,
-	)
-
-	ebitenutil.DrawRect(
-		screen,
 		float64(g.Obstacle.X),
 		float64(g.Obstacle.Y),
 		20,
 		20,
 		color.NRGBA{255, 0, 0, 255},
 	)
+
+	g.Player.Draw(screen)
 }

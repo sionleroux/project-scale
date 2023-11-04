@@ -1,6 +1,10 @@
 package main
 
 import (
+	"image/color"
+
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	input "github.com/quasilyte/ebitengine-input"
 	"github.com/solarlune/resolv"
 )
@@ -72,4 +76,15 @@ func (p *Player) move(dx, dy float64) {
 		}
 	}
 	p.Object.Y += dy
+}
+
+func (p *Player) Draw(screen *ebiten.Image) {
+	ebitenutil.DrawRect(
+		screen,
+		float64(p.Object.X),
+		float64(p.Object.Y),
+		20,
+		20,
+		color.White,
+	)
 }
