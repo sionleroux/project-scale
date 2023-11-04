@@ -18,8 +18,8 @@ const (
 
 // Player is the player character in the game
 type Player struct {
-	Input  *input.Handler
-	Object *resolv.Object
+	Input *input.Handler
+	*resolv.Object
 }
 
 func NewPlayer(position []int) *Player {
@@ -59,30 +59,30 @@ func (p *Player) updateMovement() {
 }
 
 func (p *Player) move(dx, dy float64) {
-	if collision := p.Object.Check(dx, 0); collision != nil {
+	if collision := p.Check(dx, 0); collision != nil {
 		for _, o := range collision.Objects {
-			if p.Object.Shape.Intersection(dx, 0, o.Shape) != nil {
+			if p.Shape.Intersection(dx, 0, o.Shape) != nil {
 				dx = 0
 			}
 		}
 	}
-	p.Object.X += dx
+	p.X += dx
 
-	if collision := p.Object.Check(0, dy); collision != nil {
+	if collision := p.Check(0, dy); collision != nil {
 		for _, o := range collision.Objects {
-			if p.Object.Shape.Intersection(0, dy, o.Shape) != nil {
+			if p.Shape.Intersection(0, dy, o.Shape) != nil {
 				dy = 0
 			}
 		}
 	}
-	p.Object.Y += dy
+	p.Y += dy
 }
 
 func (p *Player) Draw(screen *ebiten.Image) {
 	ebitenutil.DrawRect(
 		screen,
-		float64(p.Object.X),
-		float64(p.Object.Y),
+		float64(p.X),
+		float64(p.Y),
 		20,
 		20,
 		color.White,
