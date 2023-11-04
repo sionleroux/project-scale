@@ -14,12 +14,22 @@ const (
 	ActionMoveLeft
 	ActionMoveDown
 	ActionMoveRight
+	ActionJump
+)
+
+type PlayerState int8
+
+const (
+	StateIdle PlayerState = iota
+	StateMoving
+	StateJumping
 )
 
 // Player is the player character in the game
 type Player struct {
 	Input *input.Handler
 	*resolv.Object
+	State PlayerState
 }
 
 func NewPlayer(position []int) *Player {
@@ -44,17 +54,23 @@ func (p *Player) Update() {
 }
 
 func (p *Player) updateMovement() {
+	speed := 1.0
+	if p.Input.ActionIsJustPressed(ActionJump) {
+		p.State = StateJumping
+		speed = 20.0
+	}
+
 	if p.Input.ActionIsPressed(ActionMoveUp) {
-		p.move(+0, -1)
+		p.move(+0, -speed)
 	}
 	if p.Input.ActionIsPressed(ActionMoveDown) {
-		p.move(+0, +1)
+		p.move(+0, +speed)
 	}
 	if p.Input.ActionIsPressed(ActionMoveLeft) {
-		p.move(-1, +0)
+		p.move(-speed, +0)
 	}
 	if p.Input.ActionIsPressed(ActionMoveRight) {
-		p.move(+1, +0)
+		p.move(+speed, +0)
 	}
 }
 
