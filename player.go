@@ -8,6 +8,8 @@ import (
 	"github.com/solarlune/resolv"
 )
 
+//go:generate ./tools/gen_sprite_tags.sh assets/sprites/Nanobot.json player_anim.go player
+
 const (
 	ActionMoveUp input.Action = iota
 	ActionMoveLeft
