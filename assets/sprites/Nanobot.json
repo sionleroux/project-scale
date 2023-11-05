@@ -566,6 +566,7 @@
   "size": { "w": 992, "h": 16 },
   "scale": "1",
   "frameTags": [
+   { "name": "Idle", "from": 0, "to": 0, "direction": "forward", "color": "#000000ff" },
    { "name": "Climping up/down", "from": 0, "to": 7, "direction": "forward", "color": "#000000ff" },
    { "name": "Climbing left/right", "from": 8, "to": 13, "direction": "forward", "color": "#000000ff" },
    { "name": "Climbing diagonally", "from": 14, "to": 18, "direction": "forward", "color": "#000000ff" },

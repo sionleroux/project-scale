@@ -6,7 +6,8 @@ package main
 type playerAnimationTags uint8
 
 const (
-	playerClimpingupdown playerAnimationTags = iota
+	playerIdle playerAnimationTags = iota
+	playerClimpingupdown
 	playerClimbingleftright
 	playerClimbingdiagonally
 	playerJumpingstart
