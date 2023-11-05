@@ -1,10 +1,9 @@
 package main
 
 import (
-	"image/color"
+	"image"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	input "github.com/quasilyte/ebitengine-input"
 	"github.com/solarlune/resolv"
 )
@@ -27,24 +26,27 @@ const (
 
 // Player is the player character in the game
 type Player struct {
-	Input *input.Handler
 	*resolv.Object
-	State PlayerState
+	Input  *input.Handler
+	State  PlayerState
+	Sprite *SpriteSheet
+	Frame  int
 }
 
 func NewPlayer(position []int) *Player {
 	object := resolv.NewObject(
 		float64(position[0]), float64(position[1]),
-		20, 20,
+		16, 16,
 	)
 	object.SetShape(resolv.NewRectangle(
 		0, 0, // origin
-		20, 20,
+		16, 16,
 	))
 	object.Shape.(*resolv.ConvexPolygon).RecenterPoints()
 
 	return &Player{
 		Object: object,
+		Sprite: loadSprite("Nanobot"),
 	}
 }
 
@@ -57,7 +59,7 @@ func (p *Player) updateMovement() {
 	speed := 1.0
 	if p.Input.ActionIsJustPressed(ActionJump) {
 		p.State = StateJumping
-		speed = 20.0
+		speed = 10.0
 	}
 
 	if p.Input.ActionIsPressed(ActionMoveUp) {
@@ -95,12 +97,17 @@ func (p *Player) move(dx, dy float64) {
 }
 
 func (p *Player) Draw(screen *ebiten.Image) {
-	ebitenutil.DrawRect(
-		screen,
-		float64(p.X),
-		float64(p.Y),
-		20,
-		20,
-		color.White,
-	)
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(p.X, p.Y)
+
+	s := p.Sprite
+	frame := s.Sprite[p.Frame]
+	img := s.Image.SubImage(image.Rect(
+		frame.Position.X,
+		frame.Position.Y,
+		frame.Position.X+frame.Position.W,
+		frame.Position.Y+frame.Position.H,
+	)).(*ebiten.Image)
+
+	screen.DrawImage(img, op)
 }

@@ -25,7 +25,7 @@ func main() {
 	g := &Game{
 		Width:  gameWidth,
 		Height: gameHeight,
-		Space:  resolv.NewSpace(gameWidth, gameHeight, 20, 20),
+		Space:  resolv.NewSpace(gameWidth, gameHeight, 16, 16),
 	}
 
 	// Input setup
@@ -48,11 +48,11 @@ func main() {
 	// Obstacles
 	obstacle := resolv.NewObject(
 		float64(gameWidth/2), float64(gameHeight/2-80),
-		20, 20,
+		16, 16,
 	)
 	obstacle.SetShape(resolv.NewRectangle(
 		0, 0, // origin
-		20, 20,
+		16, 16,
 	))
 	obstacle.Shape.(*resolv.ConvexPolygon).RecenterPoints()
 	g.Space.Add(obstacle)
@@ -108,8 +108,8 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		screen,
 		float64(g.Obstacle.X),
 		float64(g.Obstacle.Y),
-		20,
-		20,
+		16,
+		16,
 		color.NRGBA{255, 0, 0, 255},
 	)
 
