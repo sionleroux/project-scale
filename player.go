@@ -18,21 +18,24 @@ const (
 	ActionJump
 )
 
-type PlayerState int8
+type PlayerAxis int8
 
 const (
-	StateIdle PlayerState = iota
-	StateMoving
-	StateJumping
+	AxisVertical PlayerAxis = iota
+	AxisHorizontal
+	AxisBoth
 )
 
 // Player is the player character in the game
 type Player struct {
 	*resolv.Object
-	Input  *input.Handler
-	State  PlayerState
-	Sprite *SpriteSheet
-	Frame  int
+	Input   *input.Handler
+	State   playerAnimationTags
+	Sprite  *SpriteSheet
+	Frame   int
+	Tick    int
+	Jumping bool
+	Axis    PlayerAxis
 }
 
 func NewPlayer(position []int) *Player {
@@ -53,29 +56,61 @@ func NewPlayer(position []int) *Player {
 }
 
 func (p *Player) Update() {
+	p.Tick++
 	p.updateMovement()
+	p.animate()
 	p.Object.Update()
 }
 
 func (p *Player) updateMovement() {
 	speed := 1.0
-	if p.Input.ActionIsJustPressed(ActionJump) {
-		p.State = StateJumping
-		speed = 10.0
+
+	if p.Input.ActionIsPressed(ActionJump) {
+		speed = 2.0
+		if p.Input.ActionIsJustPressed(ActionJump) {
+			p.Jumping = true
+			p.State = playerJumpingstart
+		}
+		if p.State == playerJumpingmidair {
+			p.move(+0, -speed)
+		}
 	}
 
-	if p.Input.ActionIsPressed(ActionMoveUp) {
-		p.move(+0, -speed)
+	if !p.Jumping { // XXX: I don't like this
+		p.State = playerIdle
+		if p.Input.ActionIsPressed(ActionMoveUp) {
+			p.move(+0, -speed)
+			p.State = playerClimpingupdown
+			p.Axis = AxisVertical
+		}
+		if p.Input.ActionIsPressed(ActionMoveDown) {
+			p.move(+0, +speed)
+			p.State = playerClimpingupdown
+			p.Axis = AxisVertical
+		}
+		if p.Input.ActionIsPressed(ActionMoveLeft) {
+			p.move(-speed, +0)
+			p.State = playerClimbingleftright
+			if p.Axis == AxisVertical {
+				p.Axis = AxisBoth
+			} else {
+				p.Axis = AxisHorizontal
+			}
+		}
+		if p.Input.ActionIsPressed(ActionMoveRight) {
+			p.move(+speed, +0) // TODO: cancel movement when pressing opposite directions
+			p.State = playerClimbingleftright
+			if p.Axis == AxisVertical {
+				p.Axis = AxisBoth
+			} else {
+				p.Axis = AxisHorizontal
+			}
+		}
+		if p.Axis == AxisBoth {
+			p.State = playerClimbingdiagonally
+		}
 	}
-	if p.Input.ActionIsPressed(ActionMoveDown) {
-		p.move(+0, +speed)
-	}
-	if p.Input.ActionIsPressed(ActionMoveLeft) {
-		p.move(-speed, +0)
-	}
-	if p.Input.ActionIsPressed(ActionMoveRight) {
-		p.move(+speed, +0)
-	}
+
 }
 
 func (p *Player) move(dx, dy float64) {
@@ -96,6 +131,28 @@ func (p *Player) move(dx, dy float64) {
 		}
 	}
 	p.Y += dy
+}
+
+func (p *Player) animate() {
+	if p.Frame == p.Sprite.Meta.FrameTags[p.State].To {
+		p.animationBasedStateChanges()
+	}
+	p.Frame = Animate(p.Frame, p.Tick, p.Sprite.Meta.FrameTags[p.State])
+}
+
+// Animation-trigged state changes
+func (p *Player) animationBasedStateChanges() {
+	switch p.State {
+	case playerJumpingstart, playerJumpingmidair:
+		if p.Input.ActionIsPressed(ActionJump) {
+			p.State = playerJumpingmidair
+		} else {
+			p.State = playerJumpingend
+		}
+	case playerJumpingend:
+		p.State = playerIdle
+		p.Jumping = false
+	}
 }
 
 func (p *Player) Draw(screen *ebiten.Image) {
