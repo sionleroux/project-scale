@@ -13,6 +13,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	input "github.com/quasilyte/ebitengine-input"
+	"github.com/solarlune/ldtkgo"
 	"github.com/solarlune/resolv"
 )
 
@@ -45,6 +46,19 @@ func main() {
 	g.Player.Input = g.InputSystem.NewHandler(0, keymap)
 	g.Space.Add(g.Player.Object)
 
+	// Pre-render map
+	g.LDTKProject = loadMaps("assets/maps/Project scale.ldtk")
+	g.TileRenderer = NewTileRenderer(&EmbedLoader{"assets/maps"})
+	level := g.LDTKProject.Levels[g.Level]
+	bg := ebiten.NewImage(level.Width, level.Height)
+	bg.Fill(level.BGColor)
+	g.TileRenderer.Render(level)
+	for _, layer := range g.TileRenderer.RenderedLayers {
+		log.Println("Pre-rendering layer:", layer.Layer.Identifier)
+		bg.DrawImage(layer.Image, &ebiten.DrawImageOptions{})
+	}
+	g.Background = bg
+
 	// Obstacles
 	obstacle := resolv.NewObject(
 		float64(gameWidth/2), float64(gameHeight/2-80),
@@ -65,12 +79,16 @@ func main() {
 
 // Game represents the main game state
 type Game struct {
-	Width       int
-	Height      int
-	Player      *Player
-	InputSystem input.System
-	Space       *resolv.Space
-	Obstacle    *resolv.Object
+	Width        int
+	Height       int
+	Player       *Player
+	InputSystem  input.System
+	Space        *resolv.Space
+	Obstacle     *resolv.Object
+	TileRenderer *TileRenderer
+	LDTKProject  *ldtkgo.Project
+	Background   *ebiten.Image
+	Level        int
 }
 
 // Layout is hardcoded for now, may be made dynamic in future
@@ -104,6 +122,8 @@ func (g *Game) Update() error {
 
 // Draw draws the game screen by one frame
 func (g *Game) Draw(screen *ebiten.Image) {
+	screen.DrawImage(g.Background, &ebiten.DrawImageOptions{})
+
 	ebitenutil.DrawRect(
 		screen,
 		float64(g.Obstacle.X),
