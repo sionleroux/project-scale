@@ -10,6 +10,9 @@ import (
 
 //go:generate ./tools/gen_sprite_tags.sh assets/sprites/Nanobot.json player_anim.go player
 
+const MinJumpTime = 5
+const MaxJumpTime = 30
+
 const (
 	ActionMoveUp input.Action = iota
 	ActionMoveLeft
@@ -29,13 +32,14 @@ const (
 // Player is the player character in the game
 type Player struct {
 	*resolv.Object
-	Input   *input.Handler
-	State   playerAnimationTags
-	Sprite  *SpriteSheet
-	Frame   int
-	Tick    int
-	Jumping bool
-	Axis    PlayerAxis
+	Input    *input.Handler
+	State    playerAnimationTags
+	Sprite   *SpriteSheet
+	Frame    int
+	Tick     int
+	Jumping  bool
+	Axis     PlayerAxis
+	JumpTime int
 }
 
 func NewPlayer(position []int) *Player {
@@ -57,6 +61,9 @@ func NewPlayer(position []int) *Player {
 
 func (p *Player) Update() {
 	p.Tick++
+	if p.State == playerJumpingmidair {
+		p.JumpTime++
+	}
 	p.updateMovement()
 	p.animate()
 	p.Object.Update()
@@ -65,18 +72,17 @@ func (p *Player) Update() {
 func (p *Player) updateMovement() {
 	speed := 1.0
 
-	if p.Input.ActionIsPressed(ActionJump) {
+	if p.Input.ActionIsJustPressed(ActionJump) {
+		p.Jumping = true
+		p.State = playerJumpingstart
+	}
+
+	if p.Jumping {
 		speed = 2.0
-		if p.Input.ActionIsJustPressed(ActionJump) {
-			p.Jumping = true
-			p.State = playerJumpingstart
-		}
 		if p.State == playerJumpingmidair {
 			p.move(+0, -speed)
 		}
-	}
-
-	if !p.Jumping { // XXX: I don't like this
+	} else {
 		p.State = playerIdle
 		if p.Input.ActionIsPressed(ActionMoveUp) {
 			p.move(+0, -speed)
@@ -144,7 +150,7 @@ func (p *Player) animate() {
 func (p *Player) animationBasedStateChanges() {
 	switch p.State {
 	case playerJumpingstart, playerJumpingmidair:
-		if p.Input.ActionIsPressed(ActionJump) {
+		if (p.Input.ActionIsPressed(ActionJump) || p.JumpTime < MinJumpTime) && p.JumpTime < MaxJumpTime {
 			p.State = playerJumpingmidair
 		} else {
 			p.State = playerJumpingend
@@ -152,6 +158,7 @@ func (p *Player) animationBasedStateChanges() {
 	case playerJumpingend:
 		p.State = playerIdle
 		p.Jumping = false
+		p.JumpTime = 0
 	}
 }
 
