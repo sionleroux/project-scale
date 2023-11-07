@@ -27,9 +27,10 @@ func main() {
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 
 	g := &Game{
-		Width:  gameWidth,
-		Height: gameHeight,
-		Camera: camera.NewCamera(gameWidth, gameHeight, 0, 0, 0, 1),
+		Width:     gameWidth,
+		Height:    gameHeight,
+		Camera:    camera.NewCamera(gameWidth, gameHeight, 0, 0, 0, 1),
+		Debuggers: debuggers,
 	}
 
 	// Input setup
@@ -85,6 +86,7 @@ type Game struct {
 	Background   *ebiten.Image
 	Level        int
 	Camera       *camera.Camera
+	Debuggers    Debuggers
 }
 
 // Layout is hardcoded for now, may be made dynamic in future
@@ -129,4 +131,5 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	g.Camera.Blit(screen)
 
 	ebitenutil.DebugPrint(screen, fmt.Sprintln("Tag:", g.Player.WhatTile))
+	g.Debuggers.Debug(g, screen)
 }
