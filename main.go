@@ -6,7 +6,7 @@ package main
 
 import (
 	"errors"
-	"image/color"
+	"fmt"
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -62,17 +62,7 @@ func main() {
 	g.Background = bg
 
 	// Obstacles
-	obstacle := resolv.NewObject(
-		float64(gameWidth/2), float64(gameHeight/2-80),
-		16, 16,
-	)
-	obstacle.SetShape(resolv.NewRectangle(
-		0, 0, // origin
-		16, 16,
-	))
-	obstacle.Shape.(*resolv.ConvexPolygon).RecenterPoints()
-	g.Space.Add(obstacle)
-	g.Obstacle = obstacle
+	tilesToObstacles(level.Layers[0], g.Space)
 
 	if err := ebiten.RunGame(g); err != nil {
 		log.Fatal(err)
@@ -86,7 +76,6 @@ type Game struct {
 	Player       *Player
 	InputSystem  input.System
 	Space        *resolv.Space
-	Obstacle     *resolv.Object
 	TileRenderer *TileRenderer
 	LDTKProject  *ldtkgo.Project
 	Background   *ebiten.Image
@@ -125,15 +114,6 @@ func (g *Game) Update() error {
 // Draw draws the game screen by one frame
 func (g *Game) Draw(screen *ebiten.Image) {
 	screen.DrawImage(g.Background, &ebiten.DrawImageOptions{})
-
-	ebitenutil.DrawRect(
-		screen,
-		float64(g.Obstacle.X),
-		float64(g.Obstacle.Y),
-		16,
-		16,
-		color.NRGBA{255, 0, 0, 255},
-	)
-
 	g.Player.Draw(screen)
+	ebitenutil.DebugPrint(screen, fmt.Sprintln("Tag:", g.Player.WhatTile))
 }

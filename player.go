@@ -40,6 +40,7 @@ type Player struct {
 	Jumping  bool
 	Axis     PlayerAxis
 	JumpTime int
+	WhatTile string
 }
 
 func NewPlayer(position []int) *Player {
@@ -120,7 +121,7 @@ func (p *Player) updateMovement() {
 }
 
 func (p *Player) move(dx, dy float64) {
-	if collision := p.Check(dx, 0); collision != nil {
+	if collision := p.Check(dx, 0, TagWall); collision != nil {
 		for _, o := range collision.Objects {
 			if p.Shape.Intersection(dx, 0, o.Shape) != nil {
 				dx = 0
@@ -129,7 +130,7 @@ func (p *Player) move(dx, dy float64) {
 	}
 	p.X += dx
 
-	if collision := p.Check(0, dy); collision != nil {
+	if collision := p.Check(0, dy, TagWall); collision != nil {
 		for _, o := range collision.Objects {
 			if p.Shape.Intersection(0, dy, o.Shape) != nil {
 				dy = 0
@@ -137,6 +138,14 @@ func (p *Player) move(dx, dy float64) {
 		}
 	}
 	p.Y += dy
+
+	if collision := p.Check(0, 0); collision != nil {
+		for _, o := range collision.Objects {
+			if p.Shape.Intersection(0, 0, o.Shape) != nil {
+				p.WhatTile = o.Tags()[0]
+			}
+		}
+	}
 }
 
 func (p *Player) animate() {
