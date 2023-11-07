@@ -50,7 +50,7 @@ func NewPlayer(position []int) *Player {
 	)
 	object.SetShape(resolv.NewRectangle(
 		0, 0, // origin
-		16, 16,
+		8, 8,
 	))
 	object.Shape.(*resolv.ConvexPolygon).RecenterPoints()
 
