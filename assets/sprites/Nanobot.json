@@ -538,6 +538,24 @@
     "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 16 },
     "sourceSize": { "w": 16, "h": 16 },
     "duration": 100
+   },
+   {
+    "filename": "Nanobot centred 60.aseprite",
+    "frame": { "x": 960, "y": 0, "w": 16, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 16 },
+    "sourceSize": { "w": 16, "h": 16 },
+    "duration": 100
+   },
+   {
+    "filename": "Nanobot centred 61.aseprite",
+    "frame": { "x": 976, "y": 0, "w": 16, "h": 16 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 16 },
+    "sourceSize": { "w": 16, "h": 16 },
+    "duration": 100
    }
  ],
  "meta": {
@@ -545,22 +563,22 @@
   "version": "1.3-rc4-dev",
   "image": "Nanobot centred.png",
   "format": "I8",
-  "size": { "w": 960, "h": 16 },
+  "size": { "w": 992, "h": 16 },
   "scale": "1",
   "frameTags": [
-   { "name": "Idle", "from": 0, "to": 0, "direction": "forward", "color": "#000000ff" },
-   { "name": "Climping up/down", "from": 0, "to": 7, "direction": "forward", "color": "#000000ff" },
-   { "name": "Climbing left/right", "from": 8, "to": 13, "direction": "forward", "color": "#000000ff" },
-   { "name": "Climbing diagonally", "from": 14, "to": 20, "direction": "forward", "color": "#000000ff" },
-   { "name": "Jumping start", "from": 21, "to": 25, "direction": "forward", "color": "#000000ff" },
-   { "name": "Jumping midair", "from": 26, "to": 27, "direction": "forward", "color": "#000000ff" },
-   { "name": "Jumping end", "from": 28, "to": 31, "direction": "forward", "color": "#000000ff" },
-   { "name": "Slipping start", "from": 32, "to": 34, "direction": "forward", "color": "#000000ff" },
-   { "name": "Slipping scrambling", "from": 35, "to": 38, "direction": "forward", "color": "#000000ff" },
-   { "name": "Slipping recovery", "from": 39, "to": 44, "direction": "forward", "color": "#000000ff" },
-   { "name": "Falling start", "from": 45, "to": 46, "direction": "forward", "color": "#000000ff" },
-   { "name": "Falling freefall", "from": 47, "to": 50, "direction": "forward", "color": "#000000ff" },
-   { "name": "Falling recovery", "from": 51, "to": 59, "direction": "forward", "color": "#000000ff" }
+   { "name": "Idle", "from": 0, "to": 1, "direction": "forward", "color": "#000000ff" },
+   { "name": "Climping up/down", "from": 2, "to": 9, "direction": "forward", "color": "#000000ff" },
+   { "name": "Climbing left/right", "from": 10, "to": 15, "direction": "forward", "color": "#000000ff" },
+   { "name": "Climbing diagonally", "from": 16, "to": 22, "direction": "forward", "color": "#000000ff" },
+   { "name": "Jumping start", "from": 23, "to": 27, "direction": "forward", "color": "#000000ff" },
+   { "name": "Jumping midair", "from": 28, "to": 29, "direction": "forward", "color": "#000000ff" },
+   { "name": "Jumping end", "from": 30, "to": 33, "direction": "forward", "color": "#000000ff" },
+   { "name": "Slipping start", "from": 34, "to": 36, "direction": "forward", "color": "#000000ff" },
+   { "name": "Slipping scrambling", "from": 37, "to": 40, "direction": "forward", "color": "#000000ff" },
+   { "name": "Slipping recovery", "from": 41, "to": 46, "direction": "forward", "color": "#000000ff" },
+   { "name": "Falling start", "from": 47, "to": 48, "direction": "forward", "color": "#000000ff" },
+   { "name": "Falling freefall", "from": 49, "to": 52, "direction": "forward", "color": "#000000ff" },
+   { "name": "Falling recovery", "from": 53, "to": 61, "direction": "forward", "color": "#000000ff" }
   ],
   "layers": [
    { "name": "Background", "opacity": 255, "blendMode": "normal" },
