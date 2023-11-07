@@ -18,10 +18,12 @@ import (
 )
 
 func main() {
-	gameWidth, gameHeight := 640, 480
+	const gameWidth, gameHeight = 320, 240
+	const screenScaleFactor = 4
 
-	ebiten.SetWindowSize(gameWidth, gameHeight)
+	ebiten.SetWindowSize(gameWidth*screenScaleFactor, gameHeight*screenScaleFactor)
 	ebiten.SetWindowTitle("project-scale")
+	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 
 	g := &Game{
 		Width:  gameWidth,
