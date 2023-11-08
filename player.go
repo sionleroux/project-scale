@@ -4,6 +4,7 @@ import (
 	"image"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	camera "github.com/melonfunction/ebiten-camera"
 	input "github.com/quasilyte/ebitengine-input"
 	"github.com/solarlune/resolv"
 )
@@ -171,9 +172,8 @@ func (p *Player) animationBasedStateChanges() {
 	}
 }
 
-func (p *Player) Draw(screen *ebiten.Image) {
+func (p *Player) Draw(camera *camera.Camera) {
 	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(p.X, p.Y)
 
 	s := p.Sprite
 	frame := s.Sprite[p.Frame]
@@ -184,5 +184,5 @@ func (p *Player) Draw(screen *ebiten.Image) {
 		frame.Position.Y+frame.Position.H,
 	)).(*ebiten.Image)
 
-	screen.DrawImage(img, op)
+	camera.Surface.DrawImage(img, camera.GetTranslation(op, p.X, p.Y))
 }

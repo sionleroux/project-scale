@@ -12,6 +12,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	camera "github.com/melonfunction/ebiten-camera"
 	input "github.com/quasilyte/ebitengine-input"
 	"github.com/solarlune/ldtkgo"
 	"github.com/solarlune/resolv"
@@ -29,6 +30,7 @@ func main() {
 		Width:  gameWidth,
 		Height: gameHeight,
 		Space:  resolv.NewSpace(gameWidth, gameHeight, 16, 16),
+		Camera: camera.NewCamera(gameWidth, gameHeight, 0, 0, 0, 1),
 	}
 
 	// Input setup
@@ -80,6 +82,7 @@ type Game struct {
 	LDTKProject  *ldtkgo.Project
 	Background   *ebiten.Image
 	Level        int
+	Camera       *camera.Camera
 }
 
 // Layout is hardcoded for now, may be made dynamic in future
@@ -108,12 +111,20 @@ func (g *Game) Update() error {
 	g.InputSystem.Update()
 	g.Player.Update()
 
+	// Position camera
+	g.Camera.SetPosition(g.Player.X, g.Player.Y)
+
 	return nil
 }
 
 // Draw draws the game screen by one frame
 func (g *Game) Draw(screen *ebiten.Image) {
-	screen.DrawImage(g.Background, &ebiten.DrawImageOptions{})
-	g.Player.Draw(screen)
+	g.Camera.Surface.Clear()
+	cameraOrigin := g.Camera.GetTranslation(&ebiten.DrawImageOptions{}, 0, 0)
+
+	g.Camera.Surface.DrawImage(g.Background, cameraOrigin)
+	g.Player.Draw(g.Camera)
+	g.Camera.Blit(screen)
+
 	ebitenutil.DebugPrint(screen, fmt.Sprintln("Tag:", g.Player.WhatTile))
 }

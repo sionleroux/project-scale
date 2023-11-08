@@ -4,6 +4,7 @@ go 1.21
 
 require (
 	github.com/hajimehoshi/ebiten/v2 v2.6.2
+	github.com/melonfunction/ebiten-camera v0.0.0-20220812153034-695003d18a6d
 	github.com/quasilyte/ebitengine-input v0.9.0
 	github.com/solarlune/ldtkgo v0.9.3
 	github.com/solarlune/resolv v0.6.1
