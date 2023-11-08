@@ -6,9 +6,18 @@ import (
 )
 
 const (
+	// TileClimbable is basic climbable terrain
 	TileClimbable int8 = iota
+
+	// TileWall is an impassable wall, cannot be jumped or grappled over
 	TileWall
+
+	// TileChasm is a chasm, passable but causes you to fall to first passable
+	// tile below
 	TileChasm
+
+	// TileSlippery  is slippery terrain, player guaranteed to slip until they
+	// reach bottom but can be jumped or grappled off of
 	TileSlippery
 )
 
