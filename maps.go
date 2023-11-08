@@ -50,7 +50,6 @@ func tilesToObstacles(layer *ldtkgo.Layer, space *resolv.Space) {
 				0, 0, // origin
 				size, size,
 			))
-			object.Shape.(*resolv.ConvexPolygon).RecenterPoints()
 
 			space.Add(object)
 		}

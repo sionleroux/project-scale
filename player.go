@@ -53,7 +53,6 @@ func NewPlayer(position []int) *Player {
 		0, 0, // origin
 		8, 8,
 	))
-	object.Shape.(*resolv.ConvexPolygon).RecenterPoints()
 
 	return &Player{
 		Object: object,
@@ -183,6 +182,12 @@ func (p *Player) Draw(camera *camera.Camera) {
 		frame.Position.X+frame.Position.W,
 		frame.Position.Y+frame.Position.H,
 	)).(*ebiten.Image)
+
+	// Centre sprite
+	op.GeoM.Translate(
+		float64(-frame.Position.W/4),
+		float64(-frame.Position.H/4),
+	)
 
 	camera.Surface.DrawImage(img, camera.GetTranslation(op, p.X, p.Y))
 }
