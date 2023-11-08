@@ -29,7 +29,6 @@ func main() {
 	g := &Game{
 		Width:  gameWidth,
 		Height: gameHeight,
-		Space:  resolv.NewSpace(gameWidth, gameHeight, 16, 16),
 		Camera: camera.NewCamera(gameWidth, gameHeight, 0, 0, 0, 1),
 	}
 
@@ -45,11 +44,6 @@ func main() {
 		ActionJump:      {input.KeySpace, input.KeyGamepadA},
 	}
 
-	// Player setup
-	g.Player = NewPlayer([]int{gameWidth / 2, gameHeight / 2})
-	g.Player.Input = g.InputSystem.NewHandler(0, keymap)
-	g.Space.Add(g.Player.Object)
-
 	// Pre-render map
 	g.LDTKProject = loadMaps("assets/maps/Project scale.ldtk")
 	g.TileRenderer = NewTileRenderer(&EmbedLoader{"assets/maps"})
@@ -63,8 +57,16 @@ func main() {
 	}
 	g.Background = bg
 
+	// Create space for collision detection
+	g.Space = resolv.NewSpace(level.Width, level.Height, 16, 16)
+
 	// Obstacles
 	tilesToObstacles(level.Layers[0], g.Space)
+
+	// Player setup
+	g.Player = NewPlayer([]int{gameWidth / 2, gameHeight / 2})
+	g.Player.Input = g.InputSystem.NewHandler(0, keymap)
+	g.Space.Add(g.Player.Object)
 
 	if err := ebiten.RunGame(g); err != nil {
 		log.Fatal(err)
