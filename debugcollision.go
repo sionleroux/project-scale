@@ -29,6 +29,19 @@ func debugPosition(g ebiten.Game, screen *ebiten.Image, o *resolv.Object) {
 	if o.Shape == nil {
 		return
 	}
+
+	lineColor := color.NRGBA{255, 255, 255, 255}
+	if tags := o.Tags(); len(tags) > 0 {
+		switch tags[0] {
+		case TagWall:
+			lineColor = color.NRGBA{255, 0, 0, 255}
+		case TagChasm:
+			lineColor = color.NRGBA{0, 255, 0, 255}
+		case TagSlippery:
+			lineColor = color.NRGBA{0, 0, 255, 255}
+		}
+	}
+
 	verts := o.Shape.(*resolv.ConvexPolygon).Transformed()
 	for i := 0; i < len(verts); i++ {
 		vert := verts[i]
@@ -38,6 +51,6 @@ func debugPosition(g ebiten.Game, screen *ebiten.Image, o *resolv.Object) {
 		}
 		vX, vY := g.(*Game).Camera.GetScreenCoords(vert.X(), vert.Y())
 		nX, nY := g.(*Game).Camera.GetScreenCoords(next.X(), next.Y())
-		ebitenutil.DrawLine(screen, vX, vY, nX, nY, color.White)
+		ebitenutil.DrawLine(screen, vX, vY, nX, nY, lineColor)
 	}
 }
