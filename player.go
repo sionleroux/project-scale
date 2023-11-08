@@ -39,6 +39,7 @@ type Player struct {
 	Frame    int
 	Tick     int
 	Jumping  bool
+	Falling  bool
 	Axis     PlayerAxis
 	JumpTime int
 	WhatTile string
@@ -83,6 +84,14 @@ func (p *Player) updateMovement() {
 		if p.State == playerJumpingmidair {
 			p.move(+0, -speed)
 		}
+	} else if p.Falling {
+		switch p.State {
+		case playerFallingfreefall:
+			speed = -3.0
+		case playerFallingstart, playerFallingrecovery:
+			speed = -0.5
+		}
+		p.move(+0, -speed)
 	} else {
 		p.State = playerIdle
 		if p.Input.ActionIsPressed(ActionMoveUp) {
@@ -134,6 +143,11 @@ func (p *Player) move(dx, dy float64) {
 		for _, o := range collision.Objects {
 			if p.Shape.Intersection(0, dy, o.Shape) != nil {
 				dy = 0
+				// recover from fall
+				if p.Falling {
+					p.Falling = false
+					p.State = playerFallingrecovery
+				}
 			}
 		}
 	}
@@ -158,16 +172,36 @@ func (p *Player) animate() {
 // Animation-trigged state changes
 func (p *Player) animationBasedStateChanges() {
 	switch p.State {
+
 	case playerJumpingstart, playerJumpingmidair:
 		if (p.Input.ActionIsPressed(ActionJump) || p.JumpTime < MinJumpTime) && p.JumpTime < MaxJumpTime {
 			p.State = playerJumpingmidair
 		} else {
 			p.State = playerJumpingend
+			// Start falling if the jumped ended in a chasm
+			if collision := p.Check(0, 0, TagChasm); collision != nil {
+				for _, o := range collision.Objects {
+					if p.Shape.Intersection(0, 0, o.Shape) != nil {
+						p.Jumping = false
+						p.JumpTime = 0
+						p.State = playerFallingstart
+						p.Falling = true
+					}
+				}
+			}
 		}
+
 	case playerJumpingend:
 		p.State = playerIdle
 		p.Jumping = false
 		p.JumpTime = 0
+
+	case playerFallingstart:
+		p.State = playerFallingfreefall
+
+	case playerFallingrecovery:
+		p.State = playerIdle
+
 	}
 }
 
