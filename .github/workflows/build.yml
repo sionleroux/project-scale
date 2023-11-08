@@ -30,6 +30,9 @@ jobs:
     - name: Build Windows exe
       shell: bash
       run: go build
+    - name: Build Windows collision debug exe
+      shell: bash
+      run: go build -tags debugcol -o project-scale-debugcol.exe .
     - name: Upload Windows exe
       uses: actions/upload-artifact@v3
       with:
@@ -37,6 +40,7 @@ jobs:
         path: |
           LICENSE
           project-scale.exe
+          project-scale-debugcol.exe
 
   build-mac:
     name: Build MacOS binary
@@ -134,6 +138,7 @@ jobs:
           project-scale-lin.tar.gz
           project-scale-mac.tar.gz
           project-scale.exe
+          project-scale-debugcol.exe
 
   deploy-win:
     name: Deploy Windows build to itch.io
