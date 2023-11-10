@@ -5,7 +5,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"log"
 
@@ -97,11 +96,6 @@ func (g *Game) Layout(outsideWidth int, outsideHeight int) (screenWidth int, scr
 
 // Update calculates game logic
 func (g *Game) Update() error {
-
-	// Pressing Q any time quits immediately
-	if ebiten.IsKeyPressed(ebiten.KeyQ) {
-		return errors.New("game quit by player")
-	}
 
 	// Pressing F toggles full-screen
 	if inpututil.IsKeyJustPressed(ebiten.KeyF) {
