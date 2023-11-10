@@ -26,6 +26,7 @@ const (
 	TagWall      = "wall"
 	TagChasm     = "chasm"
 	TagSlippery  = "slippery"
+	TagFinish    = "finish"
 )
 
 var TileTags = []string{

@@ -5,6 +5,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"log"
 
@@ -63,8 +64,21 @@ func main() {
 	// Obstacles
 	tilesToObstacles(level.LayerByIdentifier(LayerTiles), g.Space)
 
-	// Player setup
+	// Finish point
 	entities := level.LayerByIdentifier(LayerEntities)
+	finishPos := entities.EntityByIdentifier(EntityFinish)
+	finish := resolv.NewObject(
+		float64(finishPos.Position[0]), float64(finishPos.Position[1]),
+		float64(finishPos.Width), float64(finishPos.Height),
+		TagFinish,
+	)
+	finish.SetShape(resolv.NewRectangle(
+		0, 0, // origin
+		float64(finishPos.Width), float64(finishPos.Height),
+	))
+	g.Space.Add(finish)
+
+	// Player setup
 	startPos := entities.EntityByIdentifier(EntityPlayerStart)
 	startCenter := []int{
 		startPos.Position[0] + (startPos.Width / 2),
@@ -115,6 +129,10 @@ func (g *Game) Update() error {
 	g.InputSystem.Update()
 	g.Player.Update()
 
+	if g.CheckFinish() {
+		return errors.New("Player hit the finish line")
+	}
+
 	// Position camera
 	g.Camera.SetPosition(g.Player.X, g.Player.Y)
 
@@ -132,4 +150,15 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 	ebitenutil.DebugPrint(screen, fmt.Sprintln("Tag:", g.Player.WhatTile))
 	g.Debuggers.Debug(g, screen)
+}
+
+func (g *Game) CheckFinish() bool {
+	if collision := g.Player.Check(0, 0, TagFinish); collision != nil {
+		for _, o := range collision.Objects {
+			if g.Player.Shape.Intersection(0, 0, o.Shape) != nil {
+				return true
+			}
+		}
+	}
+	return false
 }
