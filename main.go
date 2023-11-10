@@ -125,6 +125,13 @@ func (g *Game) Update() error {
 		}
 	}
 
+	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
+		x, y := ebiten.CursorPosition()
+		wx, wy := g.Camera.GetWorldCoords(float64(x), float64(y))
+		g.Player.X = wx
+		g.Player.Y = wy
+	}
+
 	// Movement controls
 	g.InputSystem.Update()
 	g.Player.Update()
