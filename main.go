@@ -62,10 +62,11 @@ func main() {
 	g.Space = resolv.NewSpace(level.Width, level.Height, 16, 16)
 
 	// Obstacles
-	tilesToObstacles(level.Layers[0], g.Space)
+	tilesToObstacles(level.LayerByIdentifier(LayerTiles), g.Space)
 
 	// Player setup
-	g.Player = NewPlayer([]int{gameWidth / 2, gameHeight / 2})
+	g.Player = NewPlayer(level.LayerByIdentifier(LayerEntities).
+		EntityByIdentifier(EntityPlayerStart).Position)
 	g.Player.Input = g.InputSystem.NewHandler(0, keymap)
 	g.Space.Add(g.Player.Object)
 

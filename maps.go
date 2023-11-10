@@ -55,3 +55,13 @@ func tilesToObstacles(layer *ldtkgo.Layer, space *resolv.Space) {
 		}
 	}
 }
+
+const (
+	EntityPlayerStart = "Player_start"
+	EntityFinish      = "Finish"
+)
+
+const (
+	LayerEntities = "Entities"
+	LayerTiles    = "Tiles"
+)
