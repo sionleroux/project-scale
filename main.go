@@ -64,8 +64,13 @@ func main() {
 	tilesToObstacles(level.LayerByIdentifier(LayerTiles), g.Space)
 
 	// Player setup
-	g.Player = NewPlayer(level.LayerByIdentifier(LayerEntities).
-		EntityByIdentifier(EntityPlayerStart).Position)
+	entities := level.LayerByIdentifier(LayerEntities)
+	startPos := entities.EntityByIdentifier(EntityPlayerStart)
+	startCenter := []int{
+		startPos.Position[0] + (startPos.Width / 2),
+		startPos.Position[1] + (startPos.Height / 2),
+	}
+	g.Player = NewPlayer(startCenter)
 	g.Player.Input = g.InputSystem.NewHandler(0, keymap)
 	g.Space.Add(g.Player.Object)
 
