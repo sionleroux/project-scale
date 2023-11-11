@@ -74,7 +74,7 @@ func (p *Player) Update() {
 func (p *Player) updateMovement() {
 	speed := 0.6
 
-	if p.Input.ActionIsJustPressed(ActionJump) {
+	if !p.Falling && !p.Jumping && p.Input.ActionIsJustPressed(ActionJump) {
 		p.Jumping = true
 		p.State = playerJumpingstart
 	}
