@@ -67,6 +67,7 @@ func (p *Player) Update() {
 		p.JumpTime++
 	}
 	p.updateMovement()
+	p.collisionChecks()
 	p.animate()
 	p.Object.Update()
 }
@@ -129,6 +130,30 @@ func (p *Player) updateMovement() {
 
 }
 
+func (p *Player) collisionChecks() {
+	if collision := p.Check(0, 0); collision != nil {
+		for _, o := range collision.Objects {
+			if p.Shape.Intersection(0, 0, o.Shape) != nil {
+				p.WhatTile = o.Tags()[0]
+			}
+		}
+	}
+
+	// Start falling if the jumped ended in a chasm
+	if p.State != playerJumpingmidair && !p.Falling {
+		if collision := p.Check(0, 0, TagChasm); collision != nil {
+			for _, o := range collision.Objects {
+				if p.Shape.Intersection(0, 0, o.Shape) != nil {
+					p.Jumping = false // XXX: this is not the right place for this
+					p.JumpTime = 0
+					p.State = playerFallingstart
+					p.Falling = true
+				}
+			}
+		}
+	}
+}
+
 func (p *Player) move(dx, dy float64) {
 	if collision := p.Check(dx, 0, TagWall); collision != nil {
 		for _, o := range collision.Objects {
@@ -153,13 +178,6 @@ func (p *Player) move(dx, dy float64) {
 	}
 	p.Y += dy
 
-	if collision := p.Check(0, 0); collision != nil {
-		for _, o := range collision.Objects {
-			if p.Shape.Intersection(0, 0, o.Shape) != nil {
-				p.WhatTile = o.Tags()[0]
-			}
-		}
-	}
 }
 
 func (p *Player) animate() {
@@ -178,17 +196,6 @@ func (p *Player) animationBasedStateChanges() {
 			p.State = playerJumpingmidair
 		} else {
 			p.State = playerJumpingend
-			// Start falling if the jumped ended in a chasm
-			if collision := p.Check(0, 0, TagChasm); collision != nil {
-				for _, o := range collision.Objects {
-					if p.Shape.Intersection(0, 0, o.Shape) != nil {
-						p.Jumping = false
-						p.JumpTime = 0
-						p.State = playerFallingstart
-						p.Falling = true
-					}
-				}
-			}
 		}
 
 	case playerJumpingend:
