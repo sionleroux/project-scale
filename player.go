@@ -139,11 +139,11 @@ func (p *Player) collisionChecks() {
 		}
 	}
 
-	// Start falling if the jumped ended in a chasm
+	// Start falling if you're stepping on a chasm
 	if p.State != playerJumpingmidair && !p.Falling {
 		if collision := p.Check(0, 0, TagChasm); collision != nil {
 			for _, o := range collision.Objects {
-				if p.Shape.Intersection(0, 0, o.Shape) != nil {
+				if p.Shape.Intersection(0, 0, o.Shape) != nil || p.insideOf(o) {
 					p.Jumping = false // XXX: this is not the right place for this
 					p.JumpTime = 0
 					p.State = playerFallingstart
@@ -210,6 +210,20 @@ func (p *Player) animationBasedStateChanges() {
 		p.State = playerIdle
 
 	}
+}
+
+func (p *Player) insideOf(o *resolv.Object) bool {
+	if o.Shape == nil {
+		return false
+	}
+
+	verts := p.Shape.(*resolv.ConvexPolygon).Transformed()
+	for _, v := range verts {
+		if !o.Shape.(*resolv.ConvexPolygon).PointInside(v) {
+			return false
+		}
+	}
+	return true
 }
 
 func (p *Player) Draw(camera *camera.Camera) {
