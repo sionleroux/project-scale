@@ -22,14 +22,6 @@ const (
 	ActionJump
 )
 
-type PlayerAxis int8
-
-const (
-	AxisVertical PlayerAxis = iota
-	AxisHorizontal
-	AxisBoth
-)
-
 // Player is the player character in the game
 type Player struct {
 	*resolv.Object
@@ -41,7 +33,6 @@ type Player struct {
 	Jumping  bool
 	Falling  bool
 	Slipping bool
-	Axis     PlayerAxis
 	JumpTime int
 	WhatTile string
 }
@@ -102,33 +93,15 @@ func (p *Player) updateMovement() {
 		if p.Input.ActionIsPressed(ActionMoveUp) {
 			p.move(+0, -speed)
 			p.State = playerClimpingupdown
-			p.Axis = AxisVertical
-		}
-		if p.Input.ActionIsPressed(ActionMoveDown) {
+		} else if p.Input.ActionIsPressed(ActionMoveDown) {
 			p.move(+0, +speed)
 			p.State = playerClimpingupdown
-			p.Axis = AxisVertical
-		}
-		if p.Input.ActionIsPressed(ActionMoveLeft) {
+		} else if p.Input.ActionIsPressed(ActionMoveLeft) {
 			p.move(-speed, +0)
 			p.State = playerClimbingleftright
-			if p.Axis == AxisVertical {
-				p.Axis = AxisBoth
-			} else {
-				p.Axis = AxisHorizontal
-			}
-		}
-		if p.Input.ActionIsPressed(ActionMoveRight) {
+		} else if p.Input.ActionIsPressed(ActionMoveRight) {
 			p.move(+speed, +0) // TODO: cancel movement when pressing opposite directions
 			p.State = playerClimbingleftright
-			if p.Axis == AxisVertical {
-				p.Axis = AxisBoth
-			} else {
-				p.Axis = AxisHorizontal
-			}
-		}
-		if p.Axis == AxisBoth {
-			p.State = playerClimbingdiagonally
 		}
 	}
 
