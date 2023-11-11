@@ -87,11 +87,11 @@ func (p *Player) updateMovement() {
 	} else if p.Falling {
 		switch p.State {
 		case playerFallingfreefall:
-			speed = -3.0
+			speed = 3.0
 		case playerFallingstart, playerFallingrecovery:
-			speed = -0.5
+			speed = 0.5
 		}
-		p.move(+0, -speed)
+		p.move(+0, speed)
 	} else {
 		p.State = playerIdle
 		if p.Input.ActionIsPressed(ActionMoveUp) {
