@@ -6,11 +6,9 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	camera "github.com/melonfunction/ebiten-camera"
 	input "github.com/quasilyte/ebitengine-input"
@@ -155,12 +153,6 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	g.Player.Draw(g.Camera)
 	g.Camera.Blit(screen)
 
-	ebitenutil.DebugPrint(screen, fmt.Sprintf(
-		"Tile: %s\n"+
-			"State: %s",
-		g.Player.WhatTile,
-		playerAnimationNames[g.Player.State],
-	))
 	g.Debuggers.Debug(g, screen)
 }
 
