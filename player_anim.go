@@ -7,32 +7,56 @@ type playerAnimationTags uint8
 
 const (
 	playerIdle playerAnimationTags = iota
-	playerClimpingupdown
-	playerClimbingleftright
-	playerClimbingdiagonally
-	playerJumpingstart
-	playerJumpingmidair
-	playerJumpingend
-	playerSlippingstart
-	playerSlippingscrambling
-	playerSlippingrecovery
-	playerFallingstart
-	playerFallingfreefall
-	playerFallingrecovery
+	playerClimbup
+	playerClimbdown
+	playerClimbright
+	playerClimbleft
+	playerPushwallstartend
+	playerPushwallloop
+	playerJumpstart
+	playerJumploop
+	playerJumpendfloor
+	playerJumpendmantle
+	playerJumpendwall
+	playerSlipstart
+	playerSliploop
+	playerSlipend
+	playerFallstart
+	playerFallloop
+	playerFallendfloor
+	playerFallendwall
+	playerStand
+	playerWalkright
+	playerWalkleft
+	playerSwitchtotopview
+	playerGrapplestartend
+	playerGrappleloop
 )
 
 var playerAnimationNames = []string{
 	"Idle",
-	"Climping up/down",
-	"Climbing left/right",
-	"Climbing diagonally",
-	"Jumping start",
-	"Jumping midair",
-	"Jumping end",
-	"Slipping start",
-	"Slipping scrambling",
-	"Slipping recovery",
-	"Falling start",
-	"Falling freefall",
-	"Falling recovery",
+	"Climb up",
+	"Climb down",
+	"Climb right",
+	"Climb left",
+	"Push wall start/end",
+	"Push wall loop",
+	"Jump start",
+	"Jump loop",
+	"Jump end floor",
+	"Jump end mantle",
+	"Jump end wall",
+	"Slip start",
+	"Slip loop",
+	"Slip end",
+	"Fall start",
+	"Fall loop",
+	"Fall end floor",
+	"Fall end wall",
+	"Stand",
+	"Walk right",
+	"Walk left",
+	"Switch to topview",
+	"Grapple start/end",
+	"Grapple loop",
 }

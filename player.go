@@ -55,7 +55,7 @@ func NewPlayer(position []int) *Player {
 
 func (p *Player) Update() {
 	p.Tick++
-	if p.State == playerJumpingmidair {
+	if p.State == playerJumploop {
 		p.JumpTime++
 	}
 	p.updateMovement()
@@ -69,19 +69,19 @@ func (p *Player) updateMovement() {
 
 	if !p.Falling && !p.Jumping && p.Input.ActionIsJustPressed(ActionJump) {
 		p.Jumping = true
-		p.State = playerJumpingstart
+		p.State = playerJumpstart
 	}
 
 	if p.Jumping {
 		speed = 2.0
-		if p.State == playerJumpingmidair {
+		if p.State == playerJumploop {
 			p.move(+0, -speed)
 		}
 	} else if p.Falling {
 		switch p.State {
-		case playerFallingfreefall:
+		case playerFallloop:
 			speed = 3.0
-		case playerFallingstart, playerFallingrecovery:
+		case playerFallstart, playerFallendwall:
 			speed = 0.5
 		}
 		p.move(+0, speed)
@@ -92,16 +92,16 @@ func (p *Player) updateMovement() {
 		p.State = playerIdle
 		if p.Input.ActionIsPressed(ActionMoveUp) {
 			p.move(+0, -speed)
-			p.State = playerClimpingupdown
+			p.State = playerClimbup
 		} else if p.Input.ActionIsPressed(ActionMoveDown) {
 			p.move(+0, +speed)
-			p.State = playerClimpingupdown
+			p.State = playerClimbdown
 		} else if p.Input.ActionIsPressed(ActionMoveLeft) {
 			p.move(-speed, +0)
-			p.State = playerClimbingleftright
+			p.State = playerClimbleft
 		} else if p.Input.ActionIsPressed(ActionMoveRight) {
 			p.move(+speed, +0) // TODO: cancel movement when pressing opposite directions
-			p.State = playerClimbingleftright
+			p.State = playerClimbright
 		}
 	}
 
@@ -117,7 +117,7 @@ func (p *Player) collisionChecks() {
 	}
 
 	// Start falling if you're stepping on a chasm
-	if p.State != playerJumpingmidair && !p.Falling && !p.Slipping {
+	if p.State != playerJumploop && !p.Falling && !p.Slipping {
 		if collision := p.Check(0, 0, TagChasm, TagSlippery); collision != nil {
 			for _, o := range collision.Objects {
 				if p.Shape.Intersection(0, 0, o.Shape) != nil || p.insideOf(o) {
@@ -125,10 +125,10 @@ func (p *Player) collisionChecks() {
 					p.JumpTime = 0
 					switch o.Tags()[0] {
 					case TagChasm:
-						p.State = playerFallingstart
+						p.State = playerFallstart
 						p.Falling = true
 					case TagSlippery:
-						p.State = playerSlippingstart
+						p.State = playerSlipstart
 						p.Slipping = true
 					}
 				}
@@ -156,16 +156,16 @@ func (p *Player) move(dx, dy float64) {
 					// recover from fall
 					if p.Falling && p.Y > 0 {
 						p.Falling = false
-						p.State = playerFallingrecovery
+						p.State = playerFallendwall
 					}
 					if p.Slipping {
 						p.Slipping = false
-						p.State = playerSlippingrecovery
+						p.State = playerSlipend
 					}
 				case TagClimbable:
 					if p.Slipping {
 						p.Slipping = false
-						p.State = playerSlippingrecovery
+						p.State = playerSlipend
 					}
 				}
 			}
@@ -186,28 +186,28 @@ func (p *Player) animate() {
 func (p *Player) animationBasedStateChanges() {
 	switch p.State {
 
-	case playerJumpingstart, playerJumpingmidair:
+	case playerJumpstart, playerJumploop:
 		if (p.Input.ActionIsPressed(ActionJump) || p.JumpTime < MinJumpTime) && p.JumpTime < MaxJumpTime {
-			p.State = playerJumpingmidair
+			p.State = playerJumploop
 		} else {
-			p.State = playerJumpingend
+			p.State = playerJumpendwall
 		}
 
-	case playerJumpingend:
+	case playerJumpendwall:
 		p.State = playerIdle
 		p.Jumping = false
 		p.JumpTime = 0
 
-	case playerFallingstart:
-		p.State = playerFallingfreefall
+	case playerFallstart:
+		p.State = playerFallloop
 
-	case playerFallingrecovery:
+	case playerFallendwall:
 		p.State = playerIdle
 
-	case playerSlippingstart:
-		p.State = playerSlippingscrambling
+	case playerSlipstart:
+		p.State = playerSliploop
 
-	case playerSlippingrecovery:
+	case playerSlipend:
 		p.State = playerIdle
 
 	}
