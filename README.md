@@ -8,8 +8,8 @@ For alpha testing use [⬇️ this link](https://nightly.link/sinisterstuf/proje
 
 Game controls:
 - F: toggle full-screen
-- Q: quit the game
-- Space: move up
+- WASD, Arrows, Left Stick, D-Pad: climb
+- Space, Button A: jump
 
 If you find an issue with the game [please open a new ticket here](https://github.com/sinisterstuf/project-scale/issues).
 
