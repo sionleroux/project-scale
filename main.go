@@ -155,7 +155,12 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	g.Player.Draw(g.Camera)
 	g.Camera.Blit(screen)
 
-	ebitenutil.DebugPrint(screen, fmt.Sprintln("Tag:", g.Player.WhatTile))
+	ebitenutil.DebugPrint(screen, fmt.Sprintf(
+		"Tile: %s\n"+
+			"State: %s",
+		g.Player.WhatTile,
+		playerAnimationNames[g.Player.State],
+	))
 	g.Debuggers.Debug(g, screen)
 }
 

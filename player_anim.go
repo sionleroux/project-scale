@@ -20,3 +20,19 @@ const (
 	playerFallingfreefall
 	playerFallingrecovery
 )
+
+var playerAnimationNames = []string{
+	"Idle",
+	"Climping up/down",
+	"Climbing left/right",
+	"Climbing diagonally",
+	"Jumping start",
+	"Jumping midair",
+	"Jumping end",
+	"Slipping start",
+	"Slipping scrambling",
+	"Slipping recovery",
+	"Falling start",
+	"Falling freefall",
+	"Falling recovery",
+}
