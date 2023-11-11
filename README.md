@@ -22,3 +22,6 @@ To build the game yourself, run: `go build .` it will produce a project-scale fi
 To run the tests, run: `go test ./...` but there are no tests yet.
 
 The project has a very simple, flat structure, the first place to start looking is the main.go file.
+
+Here is a top-level state diagram using the animation states of the "Nanobot" player character:
+![Nanobot State Diagram](docs/nanobot.png)

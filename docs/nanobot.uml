@@ -1,0 +1,27 @@
+@startuml
+hide empty description
+
+[*] --> idle
+idle --> climbing : arrow keys pressed
+idle --> jumpingStart : spacebar pressed
+
+climbing --> idle : key released
+climbing --> fallingStart : climb over a chasm
+climbing --> slippingStart : climb over a slippery
+
+jumpingStart --> jumpingMidair : animation end
+jumpingMidair --> jumpingEnd : key released
+jumpingMidair --> jumpingEnd : max jump time reached
+jumpingEnd --> idle : landed on climbable
+jumpingEnd --> fallingStart : landed on chasm
+
+fallingStart -> fallingFreefall : animation end
+fallingFreefall -> fallingRecovery : collided with wall
+fallingRecovery -> idle : animation end
+
+slippingStart -> slippingScrambling : animation end
+slippingScrambling -> slippingRecovery : slip onto a climbable tile
+slippingScrambling -> slippingRecovery : collided with wall
+slippingRecovery -> idle : animation end
+
+@enduml
