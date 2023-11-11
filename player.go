@@ -40,6 +40,7 @@ type Player struct {
 	Tick     int
 	Jumping  bool
 	Falling  bool
+	Slipping bool
 	Axis     PlayerAxis
 	JumpTime int
 	WhatTile string
@@ -93,6 +94,9 @@ func (p *Player) updateMovement() {
 			speed = 0.5
 		}
 		p.move(+0, speed)
+	} else if p.Slipping {
+		speed = 1.0
+		p.move(+0, speed)
 	} else {
 		p.State = playerIdle
 		if p.Input.ActionIsPressed(ActionMoveUp) {
@@ -141,13 +145,19 @@ func (p *Player) collisionChecks() {
 
 	// Start falling if you're stepping on a chasm
 	if p.State != playerJumpingmidair && !p.Falling {
-		if collision := p.Check(0, 0, TagChasm); collision != nil {
+		if collision := p.Check(0, 0, TagChasm, TagSlippery); collision != nil {
 			for _, o := range collision.Objects {
 				if p.Shape.Intersection(0, 0, o.Shape) != nil || p.insideOf(o) {
 					p.Jumping = false // XXX: this is not the right place for this
 					p.JumpTime = 0
-					p.State = playerFallingstart
-					p.Falling = true
+					switch o.Tags()[0] {
+					case TagChasm:
+						p.State = playerFallingstart
+						p.Falling = true
+					case TagSlippery:
+						p.State = playerSlippingstart
+						p.Slipping = true
+					}
 				}
 			}
 		}
@@ -164,14 +174,26 @@ func (p *Player) move(dx, dy float64) {
 	}
 	p.X += dx
 
-	if collision := p.Check(0, dy, TagWall); collision != nil {
+	if collision := p.Check(0, dy, TagWall, TagClimbable); collision != nil {
 		for _, o := range collision.Objects {
 			if p.Shape.Intersection(0, dy, o.Shape) != nil {
-				dy = 0
-				// recover from fall
-				if p.Falling && p.Y > 0 {
-					p.Falling = false
-					p.State = playerFallingrecovery
+				switch o.Tags()[0] {
+				case TagWall:
+					dy = 0
+					// recover from fall
+					if p.Falling && p.Y > 0 {
+						p.Falling = false
+						p.State = playerFallingrecovery
+					}
+					if p.Slipping {
+						p.Slipping = false
+						p.State = playerSlippingrecovery
+					}
+				case TagClimbable:
+					if p.Slipping {
+						p.Slipping = false
+						p.State = playerSlippingrecovery
+					}
 				}
 			}
 		}
@@ -207,6 +229,12 @@ func (p *Player) animationBasedStateChanges() {
 		p.State = playerFallingfreefall
 
 	case playerFallingrecovery:
+		p.State = playerIdle
+
+	case playerSlippingstart:
+		p.State = playerSlippingscrambling
+
+	case playerSlippingrecovery:
 		p.State = playerIdle
 
 	}
