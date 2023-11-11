@@ -117,7 +117,7 @@ func (p *Player) collisionChecks() {
 	}
 
 	// Start falling if you're stepping on a chasm
-	if p.State != playerJumpingmidair && !p.Falling {
+	if p.State != playerJumpingmidair && !p.Falling && !p.Slipping {
 		if collision := p.Check(0, 0, TagChasm, TagSlippery); collision != nil {
 			for _, o := range collision.Objects {
 				if p.Shape.Intersection(0, 0, o.Shape) != nil || p.insideOf(o) {
