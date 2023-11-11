@@ -169,7 +169,7 @@ func (p *Player) move(dx, dy float64) {
 			if p.Shape.Intersection(0, dy, o.Shape) != nil {
 				dy = 0
 				// recover from fall
-				if p.Falling {
+				if p.Falling && p.Y > 0 {
 					p.Falling = false
 					p.State = playerFallingrecovery
 				}
