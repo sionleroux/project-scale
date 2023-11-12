@@ -74,10 +74,15 @@ func (p *Player) updateMovement() {
 	}
 
 	if p.Jumping {
-		speed = 2.0
-		if p.State == playerJumploop {
-			p.move(+0, -speed)
+		switch p.State {
+		case playerJumploop:
+			speed = 2.0
+		case playerJumpstart:
+			speed = -0.3
+		case playerJumpendfloor:
+			speed = 0.2
 		}
+		p.move(+0, -speed)
 	} else if p.Falling {
 		switch p.State {
 		case playerFallloop:
@@ -194,10 +199,10 @@ func (p *Player) animationBasedStateChanges() {
 		if (p.Input.ActionIsPressed(ActionJump) || p.JumpTime < MinJumpTime) && p.JumpTime < MaxJumpTime {
 			p.State = playerJumploop
 		} else {
-			p.State = playerJumpendwall
+			p.State = playerJumpendfloor
 		}
 
-	case playerJumpendwall:
+	case playerJumpendwall, playerJumpendfloor, playerJumpendmantle:
 		p.State = playerIdle
 		p.Jumping = false
 		p.JumpTime = 0
