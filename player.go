@@ -167,6 +167,9 @@ func (p *Player) move(dx, dy float64) {
 						p.Slipping = false
 						p.State = playerSlipend
 					}
+					if p.Jumping {
+						p.State = playerJumpendwall
+					}
 				case TagClimbable:
 					if p.Falling {
 						p.Falling = false
