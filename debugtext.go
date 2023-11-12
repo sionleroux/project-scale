@@ -30,12 +30,14 @@ func DebugText(g ebiten.Game, screen *ebiten.Image) {
 			"X: %.2f\n"+
 			"Y: %.2f\n"+
 			"Tile: %s\n"+
-			"State: %s",
+			"State: %s\n"+
+			"Leaning: %v",
 		ebiten.ActualFPS(),
 		ebiten.ActualTPS(),
 		player.X/gridSize,
 		player.Y/gridSize,
 		player.WhatTile,
 		playerAnimationNames[player.State],
+		player.Leaning,
 	))
 }

@@ -34,6 +34,7 @@ type Player struct {
 	Falling  bool
 	Slipping bool
 	Standing bool
+	Leaning  bool
 	JumpTime int
 	WhatTile string
 }
@@ -60,9 +61,9 @@ func (p *Player) Update() {
 		p.JumpTime++
 	}
 	p.updateMovement()
+	p.Object.Update()
 	p.collisionChecks()
 	p.animate()
-	p.Object.Update()
 }
 
 func (p *Player) updateMovement() {
@@ -71,6 +72,10 @@ func (p *Player) updateMovement() {
 	if !p.Falling && !p.Jumping && p.Input.ActionIsJustPressed(ActionJump) {
 		p.Jumping = true
 		p.State = playerJumpstart
+	}
+
+	if p.Leaning {
+		return
 	}
 
 	if p.Jumping {
@@ -123,7 +128,7 @@ func (p *Player) collisionChecks() {
 	}
 
 	// Start falling if you're stepping on a chasm
-	if p.State != playerJumploop && !p.Falling && !p.Slipping {
+	if p.State != playerJumploop && !p.Falling && !p.Slipping && !p.Leaning {
 		if collision := p.Check(0, 0, TagChasm, TagSlippery); collision != nil {
 			for _, o := range collision.Objects {
 				if p.Shape.Intersection(0, 0, o.Shape) != nil || p.insideOf(o) {
@@ -153,10 +158,16 @@ func (p *Player) move(dx, dy float64) {
 	}
 	p.X += dx
 
-	if collision := p.Check(0, dy, TagWall, TagClimbable); collision != nil {
+	if collision := p.Check(0, dy); collision != nil {
 		for _, o := range collision.Objects {
 			if p.Shape.Intersection(0, dy, o.Shape) != nil {
 				switch o.Tags()[0] {
+				case TagChasm:
+					if !p.Jumping && !p.Falling && !p.Slipping && dy < 0 { // <0 means up
+						dy = collision.ContactWithObject(o).Y() * 2
+						p.State = playerLeanstart
+						// p.Leaning = true
+					}
 				case TagWall:
 					dy = 0
 					if p.Falling {
@@ -212,18 +223,21 @@ func (p *Player) animationBasedStateChanges() {
 
 	case playerFallstart:
 		p.State = playerFallloop
-
 	case playerFallendwall:
 		p.State = playerIdle
-
 	case playerFallendfloor:
 		p.State = playerStand
 
 	case playerSlipstart:
 		p.State = playerSliploop
-
 	case playerSlipend:
 		p.State = playerIdle
+
+	case playerLeanstart:
+		p.State = playerLeanloop
+	case playerLeanloop:
+		p.State = playerLeanend
+		p.Leaning = false
 
 	}
 }
