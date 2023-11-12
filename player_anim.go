@@ -11,6 +11,9 @@ const (
 	playerClimbdown
 	playerClimbright
 	playerClimbleft
+	playerLeanstart
+	playerLeanloop
+	playerLeanend
 	playerPushwallstartend
 	playerPushwallloop
 	playerJumpstart
@@ -39,6 +42,9 @@ var playerAnimationNames = []string{
 	"Climb down",
 	"Climb right",
 	"Climb left",
+	"Lean start",
+	"Lean loop",
+	"Lean end",
 	"Push wall start/end",
 	"Push wall loop",
 	"Jump start",
