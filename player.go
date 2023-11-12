@@ -90,18 +90,18 @@ func (p *Player) updateMovement() {
 		p.move(+0, speed)
 	} else {
 		p.State = playerIdle
-		if p.Input.ActionIsPressed(ActionMoveUp) {
+		if p.Input.ActionIsPressed(ActionMoveLeft) {
+			p.move(-speed, +0)
+			p.State = playerClimbleft
+		} else if p.Input.ActionIsPressed(ActionMoveRight) {
+			p.move(+speed, +0)
+			p.State = playerClimbright
+		} else if p.Input.ActionIsPressed(ActionMoveUp) {
 			p.move(+0, -speed)
 			p.State = playerClimbup
 		} else if p.Input.ActionIsPressed(ActionMoveDown) {
 			p.move(+0, +speed)
 			p.State = playerClimbdown
-		} else if p.Input.ActionIsPressed(ActionMoveLeft) {
-			p.move(-speed, +0)
-			p.State = playerClimbleft
-		} else if p.Input.ActionIsPressed(ActionMoveRight) {
-			p.move(+speed, +0) // TODO: cancel movement when pressing opposite directions
-			p.State = playerClimbright
 		}
 	}
 
