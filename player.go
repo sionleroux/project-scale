@@ -33,6 +33,7 @@ type Player struct {
 	Jumping  bool
 	Falling  bool
 	Slipping bool
+	Standing bool
 	JumpTime int
 	WhatTile string
 }
@@ -153,16 +154,19 @@ func (p *Player) move(dx, dy float64) {
 				switch o.Tags()[0] {
 				case TagWall:
 					dy = 0
-					// recover from fall
-					if p.Falling && p.Y > 0 {
+					if p.Falling {
 						p.Falling = false
-						p.State = playerFallendwall
+						p.State = playerFallendfloor
 					}
 					if p.Slipping {
 						p.Slipping = false
 						p.State = playerSlipend
 					}
 				case TagClimbable:
+					if p.Falling {
+						p.Falling = false
+						p.State = playerFallendwall
+					}
 					if p.Slipping {
 						p.Slipping = false
 						p.State = playerSlipend
@@ -203,6 +207,9 @@ func (p *Player) animationBasedStateChanges() {
 
 	case playerFallendwall:
 		p.State = playerIdle
+
+	case playerFallendfloor:
+		p.State = playerStand
 
 	case playerSlipstart:
 		p.State = playerSliploop
