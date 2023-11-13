@@ -210,11 +210,11 @@ func (p *Player) animationBasedStateChanges() {
 		p.State = playerFallloop
 
 	case playerFallendwall:
-		p.State = playerIdle
+		p.State = playerStand
 		p.Falling = false
 
 	case playerFallendfloor:
-		p.State = playerStand
+		p.State = playerIdle
 		p.Falling = false
 
 	case playerSlipstart:
