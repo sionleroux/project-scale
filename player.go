@@ -11,8 +11,8 @@ import (
 
 //go:generate ./tools/gen_sprite_tags.sh assets/sprites/Nanobot.json player_anim.go player
 
-const MinJumpTime = 13
-const MaxJumpTime = 21
+const MinJumpTime = 6
+const MaxJumpTime = 10
 
 const (
 	ActionMoveUp input.Action = iota
