@@ -96,6 +96,7 @@ func (p *Player) updateMovement() {
 		p.move(+0, speed)
 	} else {
 		p.State = playerIdle
+		// TODO: split this into 2 funcs for climbing and walking
 		if p.Input.ActionIsPressed(ActionMoveLeft) {
 			p.move(-speed, +0)
 			p.State = playerClimbleft
