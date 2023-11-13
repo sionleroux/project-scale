@@ -87,8 +87,10 @@ func (p *Player) updateMovement() {
 		switch p.State {
 		case playerFallloop:
 			speed = 6.0
-		case playerFallstart, playerFallendwall:
+		case playerFallstart:
 			speed = 0.2
+		case playerFallendwall, playerFallendfloor:
+			speed = -0.2
 		}
 		p.move(+0, speed)
 	} else if p.Slipping {
