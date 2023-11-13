@@ -20,8 +20,13 @@ func init() {
 // DebugCollision draws boxes around objects in collision space to easily
 // visualise how they move and collide
 func DebugCollision(g ebiten.Game, screen *ebiten.Image) {
-	for _, o := range g.(*Game).Space.Objects() {
-		debugPosition(g, screen, o)
+	p := g.(*Game).Player
+	if collision := p.Check(0, 0); collision != nil {
+		for _, o := range collision.Objects {
+			if p.Shape.Intersection(0, 0, o.Shape) != nil {
+				debugPosition(g, screen, o)
+			}
+		}
 	}
 }
 
