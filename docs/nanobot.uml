@@ -1,27 +1,77 @@
 @startuml
 hide empty description
+legend right
+    | <#pink> unimplemented |
+endlegend
 
-[*] --> idle
-idle --> climbing : arrow keys pressed
-idle --> jumpingStart : spacebar pressed
+title Nanobot State Diagram
+footer Siôn le Roux 2023-11-13\ngithub.com/sinisterstuf/project-scale
 
-climbing --> idle : key released
-climbing --> fallingStart : climb over a chasm
-climbing --> slippingStart : climb over a slippery
+[*] --> Idle
 
-jumpingStart --> jumpingMidair : animation end
-jumpingMidair --> jumpingEnd : key released
-jumpingMidair --> jumpingEnd : max jump time reached
-jumpingEnd --> idle : landed on climbable
-jumpingEnd --> fallingStart : landed on chasm
+state Idle : hanging on a climbable
+Idle --> Idle : no key pressed
+Idle --> Climb : MOVEMENT keys pressed (any)
+Idle --> JumpStart : JUMP key pressed
+Idle -[#pink]-> GrappleStart : ACTION key pressed
 
-fallingStart -> fallingFreefall : animation end
-fallingFreefall -> fallingRecovery : collided with wall
-fallingRecovery -> idle : animation end
+state Climb : climbing in 2D
+Climb --> Idle : key released
+Climb -[#pink]-> LeanStart : climb UP towards chasm
+Climb --> FallStart : climb over a chasm
+Climb --> SlipStart : climb over a slippery
+Climb -[#pink]-> PushWallStart : collided with wall
 
-slippingStart -> slippingScrambling : animation end
-slippingScrambling -> slippingRecovery : slip onto a climbable tile
-slippingScrambling -> slippingRecovery : collided with wall
-slippingRecovery -> idle : animation end
+JumpStart --> JumpLoop : animation end
+JumpLoop --> JumpEnd : key released
+JumpLoop --> JumpEnd : max jump time reached
+JumpLoop -[#pink]> GrappleStart : ACTION key pressed
+JumpEnd --> Idle : landed on climbable
+JumpEnd --> FallStart : landed on chasm
+JumpEnd --> SlipStart : landed on slippery
+
+FallStart --> FallLoop : animation end
+FallLoop --> FallEndWall : collided with wall
+FallLoop --> FallEndFloor : collided with floor
+FallLoop -[#pink]> GrappleStart : ACTION key pressed
+FallEndWall --> Stand : animation end
+FallEndFloor --> Idle : animation end
+
+SlipStart --> SlipLoop : animation end
+SlipLoop --> SlipEnd : slip onto a climbable tile
+SlipLoop --> FallStart : slip onto a chasm
+SlipLoop -[#pink]-> GrappleStart : ACTION key pressed
+SlipLoop -[#pink]-> JumpStart : JUMP key pressed
+SlipEnd  --> Idle : animation end
+
+state Stand : standing on top of a wall
+Stand -[#pink]-> Walk : MOVEMENT keys pressed (L/R)
+Stand -[#pink]-> SwitchToTopView : UP keys pressed
+Stand -[#pink]-> JumpStart : JUMP key pressed
+
+state Walk #pink : walking in 1D on a wall
+Walk -[#pink]-> Stand : key released
+Walk -[#pink]-> FallStart : walk over chasm
+Walk -[#pink]-> SlipStart : walk over slippery
+
+state SwitchToTopView #pink
+SwitchToTopView -[#pink]-> Idle : animation ends
+
+state PushWallStart #pink
+PushWallStart -[#pink]-> PushWallLoop #pink : animation end
+PushWallLoop  -[#pink]-> PushWallEnd #pink : key released
+PushWallEnd   -[#pink]-> Idle : animation end
+
+state LeanStart #pink
+LeanStart -[#pink]-> LeanLoop #pink : animation end
+LeanLoop  -[#pink]-> LeanEnd #pink : key released
+LeanEnd   -[#pink]-> Idle : animation end
+
+state GrappleStart #pink : shoots a grappling hook to grab a wall
+GrappleStart -[#pink]-> GrappleLoop #pink : animation end
+GrappleLoop -[#pink]-> GrappleEnd #pink : key released
+GrappleEnd -[#pink]-> Idle : landed on climbable
+GrappleEnd -[#pink]-> FallStart : landed on chasm
+GrappleEnd -[#pink]-> SlipStart : landed on slippery
 
 @enduml
