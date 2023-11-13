@@ -123,7 +123,7 @@ func (p *Player) collisionChecks() {
 	}
 
 	// Start falling if you're stepping on a chasm
-	if p.State != playerJumploop && !p.Falling && !p.Slipping {
+	if p.State != playerJumploop && !p.Falling && !p.Slipping && p.Standing {
 		if collision := p.Check(0, 0, TagChasm, TagSlippery); collision != nil {
 			for _, o := range collision.Objects {
 				if p.Shape.Intersection(0, 0, o.Shape) != nil || p.insideOf(o) {
@@ -215,6 +215,7 @@ func (p *Player) animationBasedStateChanges() {
 
 	case playerFallendwall:
 		p.State = playerStand
+		p.Standing = true
 		p.Falling = false
 
 	case playerFallendfloor:
