@@ -59,8 +59,8 @@ func (p *Player) Update() {
 	if p.State == playerJumploop {
 		p.JumpTime++
 	}
-	p.updateMovement()
 	p.collisionChecks()
+	p.updateMovement()
 	p.animate()
 	p.Object.Update()
 }
