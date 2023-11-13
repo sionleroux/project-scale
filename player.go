@@ -160,23 +160,19 @@ func (p *Player) move(dx, dy float64) {
 				case TagWall:
 					dy = 0
 					if p.Falling {
-						p.Falling = false
 						p.State = playerFallendwall
 					}
 					if p.Slipping {
-						p.Slipping = false
 						p.State = playerSlipend
 					}
 					if p.Jumping {
 						p.State = playerJumpendwall
 					}
 				case TagClimbable:
-					if p.Falling {
-						p.Falling = false
+					if p.State == playerFallloop {
 						p.State = playerFallendfloor
 					}
-					if p.Slipping {
-						p.Slipping = false
+					if p.State == playerSliploop {
 						p.State = playerSlipend
 					}
 				}
@@ -215,15 +211,18 @@ func (p *Player) animationBasedStateChanges() {
 
 	case playerFallendwall:
 		p.State = playerIdle
+		p.Falling = false
 
 	case playerFallendfloor:
 		p.State = playerStand
+		p.Falling = false
 
 	case playerSlipstart:
 		p.State = playerSliploop
 
 	case playerSlipend:
 		p.State = playerIdle
+		p.Slipping = false
 
 	}
 }
