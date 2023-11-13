@@ -155,7 +155,7 @@ func (p *Player) move(dx, dy float64) {
 
 	if collision := p.Check(0, dy, TagWall, TagClimbable); collision != nil {
 		for _, o := range collision.Objects {
-			if p.Shape.Intersection(0, dy, o.Shape) != nil {
+			if intersection := p.Shape.Intersection(0, dy, o.Shape); intersection != nil {
 				switch o.Tags()[0] {
 				case TagWall:
 					dy = 0
@@ -169,11 +169,15 @@ func (p *Player) move(dx, dy float64) {
 						p.State = playerJumpendwall
 					}
 				case TagClimbable:
-					if p.State == playerFallloop {
-						p.State = playerFallendfloor
-					}
-					if p.State == playerSliploop {
-						p.State = playerSlipend
+					// only recover onto tiles below you, that means the MTV to
+					// get out of them will be negative, i.e. upwards
+					if intersection.MTV.Y() < 0 {
+						if p.State == playerFallloop {
+							p.State = playerFallendfloor
+						}
+						if p.State == playerSliploop {
+							p.State = playerSlipend
+						}
 					}
 				}
 			}
