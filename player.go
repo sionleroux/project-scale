@@ -3,8 +3,9 @@ package main
 import (
 	"image"
 
+	"github.com/sinisterstuf/project-scale/camera"
+
 	"github.com/hajimehoshi/ebiten/v2"
-	camera "github.com/melonfunction/ebiten-camera"
 	input "github.com/quasilyte/ebitengine-input"
 	"github.com/solarlune/resolv"
 )
@@ -36,9 +37,10 @@ type Player struct {
 	Standing bool
 	JumpTime int
 	WhatTile string
+	Camera   *camera.Camera
 }
 
-func NewPlayer(position []int) *Player {
+func NewPlayer(position []int, camera *camera.Camera) *Player {
 	object := resolv.NewObject(
 		float64(position[0]), float64(position[1]),
 		16, 16,
@@ -51,6 +53,7 @@ func NewPlayer(position []int) *Player {
 	return &Player{
 		Object: object,
 		Sprite: loadSprite("Nanobot"),
+		Camera: camera,
 	}
 }
 
@@ -169,8 +172,9 @@ func (p *Player) move(dx, dy float64) {
 					if p.Slipping {
 						p.State = playerSlipend
 					}
-					if p.Jumping {
+					if p.Jumping && p.State != playerJumpendwall {
 						p.State = playerJumpendwall
+						p.Camera.Shake()
 					}
 				case TagClimbable:
 					// only recover onto tiles below you, that means the MTV to
@@ -210,7 +214,6 @@ func (p *Player) animationBasedStateChanges() {
 		}
 
 	case playerJumpendwall, playerJumpendfloor, playerJumpendmantle:
-		p.State = playerIdle
 		p.Jumping = false
 		p.JumpTime = 0
 

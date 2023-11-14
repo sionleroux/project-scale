@@ -8,9 +8,10 @@ import (
 	"errors"
 	"log"
 
+	"github.com/sinisterstuf/project-scale/camera"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
-	camera "github.com/melonfunction/ebiten-camera"
 	input "github.com/quasilyte/ebitengine-input"
 	"github.com/solarlune/ldtkgo"
 	"github.com/solarlune/resolv"
@@ -27,7 +28,7 @@ func main() {
 	g := &Game{
 		Width:     gameWidth,
 		Height:    gameHeight,
-		Camera:    camera.NewCamera(gameWidth, gameHeight, 0, 0, 0, 1),
+		Camera:    camera.NewCamera(gameWidth, gameHeight),
 		Debuggers: debuggers,
 	}
 
@@ -82,7 +83,7 @@ func main() {
 		startPos.Position[0] + (startPos.Width / 2),
 		startPos.Position[1] + (startPos.Height / 2),
 	}
-	g.Player = NewPlayer(startCenter)
+	g.Player = NewPlayer(startCenter, g.Camera)
 	g.Player.Input = g.InputSystem.NewHandler(0, keymap)
 	g.Space.Add(g.Player.Object)
 
@@ -140,6 +141,7 @@ func (g *Game) Update() error {
 
 	// Position camera
 	g.Camera.SetPosition(g.Player.X, g.Player.Y)
+	g.Camera.Update()
 
 	return nil
 }
