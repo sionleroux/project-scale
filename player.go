@@ -4,19 +4,21 @@ import (
 	"image"
 	"image/color"
 	"log"
+	"math"
 	"path"
 
 	"github.com/sinisterstuf/project-scale/camera"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/quartercastle/vector"
 	input "github.com/quasilyte/ebitengine-input"
 	"github.com/solarlune/resolv"
 )
 
 //go:generate ./tools/gen_sprite_tags.sh assets/sprites/Nanobot.json player_anim.go player
 
-const MinJumpTime = 6
-const MaxJumpTime = 10
+const MinJumpDist = 0
+const MaxJumpDist = 16
 
 const (
 	ActionMoveUp input.Action = iota
@@ -38,7 +40,7 @@ type Player struct {
 	Falling  bool
 	Slipping bool
 	Standing bool
-	JumpTime int
+	JumpFrom vector.Vector
 	WhatTile string
 	Camera   *camera.Camera
 	Light    *Light
@@ -64,15 +66,15 @@ func NewPlayer(position []int, camera *camera.Camera) *Player {
 
 func (p *Player) Update() {
 	p.Tick++
-	if p.State == playerJumploop {
-		p.JumpTime++
-	}
 	p.collisionChecks()
 	p.updateMovement()
 	p.Light.SetPos(p.X, p.Y)
 	p.Light.SetColor(p.State)
 	p.animate()
 	p.Object.Update()
+	if p.Jumping {
+		log.Println(p.jumpDistance())
+	}
 }
 
 func (p *Player) updateMovement() {
@@ -136,7 +138,6 @@ func (p *Player) collisionChecks() {
 			for _, o := range collision.Objects {
 				if p.Shape.Intersection(0, 0, o.Shape) != nil || p.insideOf(o) {
 					p.Jumping = false // XXX: this is not the right place for this
-					p.JumpTime = 0
 					switch o.Tags()[0] {
 					case TagChasm:
 						p.State = playerFallstart
@@ -214,8 +215,12 @@ func (p *Player) animate() {
 func (p *Player) animationBasedStateChanges() {
 	switch p.State {
 
-	case playerJumpstart, playerJumploop:
-		if (p.Input.ActionIsPressed(ActionJump) || p.JumpTime < MinJumpTime) && p.JumpTime < MaxJumpTime {
+	case playerJumpstart:
+		p.JumpFrom = vector.Vector{p.X, p.Y}
+		p.State = playerJumploop
+
+	case playerJumploop:
+		if (p.Input.ActionIsPressed(ActionJump) || !p.jumpedMin()) && !p.jumpedMax() {
 			p.State = playerJumploop
 		} else {
 			p.State = playerJumpendfloor
@@ -223,7 +228,6 @@ func (p *Player) animationBasedStateChanges() {
 
 	case playerJumpendwall, playerJumpendfloor, playerJumpendmantle:
 		p.Jumping = false
-		p.JumpTime = 0
 
 	case playerFallstart:
 		p.State = playerFallloop
@@ -258,6 +262,18 @@ func (p *Player) insideOf(o *resolv.Object) bool {
 		}
 	}
 	return true
+}
+
+func (p *Player) jumpedMax() bool {
+	return math.Abs(p.jumpDistance().Magnitude()) >= MaxJumpDist
+}
+
+func (p *Player) jumpedMin() bool {
+	return math.Abs(p.jumpDistance().Magnitude()) >= MinJumpDist
+}
+
+func (p *Player) jumpDistance() vector.Vector {
+	return vector.Vector{p.X, p.Y}.Sub(p.JumpFrom)
 }
 
 func (p *Player) Draw(camera *camera.Camera) {
