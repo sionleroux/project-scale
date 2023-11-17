@@ -12,6 +12,12 @@ const (
 	// TileWall is an impassable wall, cannot be jumped or grappled over
 	TileWall
 
+	// TileDecor1 is a decorative tile
+	TileDecor1
+
+	// TileDecor2 is a decorative tile
+	TileDecor2
+
 	// TileChasm is a chasm, passable but causes you to fall to first passable
 	// tile below
 	TileChasm
@@ -19,31 +25,39 @@ const (
 	// TileSlippery  is slippery terrain, player guaranteed to slip until they
 	// reach bottom but can be jumped or grappled off of
 	TileSlippery
+
+	// TileDecor3 is a decorative tile
+	TileDecor3
+
+	// TileDecor4 is a decorative tile
+	TileDecor4
+
+	// TileTrans is a transparent tile that behaves like a chasm
+	TileTrans
 )
 
+// A list of map tile tag names
 const (
 	TagClimbable = "climbable"
 	TagWall      = "wall"
 	TagChasm     = "chasm"
 	TagSlippery  = "slippery"
 	TagFinish    = "finish"
-	TagDeco1     = "decoration"
-	TagDeco2     = "decoration"
-	TagDeco3     = "decoration"
-	TagDeco4     = "decoration"
-	TagTrans     = "chasm"
+	TagDecor     = "decoration"
 )
 
+// TileTags is a lookup table for getting a map tile tag's string representation
+// via it's numeric tile ID
 var TileTags = []string{
 	TagClimbable,
 	TagWall,
-	TagDeco1,
-	TagDeco2,
+	TagDecor,
+	TagDecor,
 	TagChasm,
 	TagSlippery,
-	TagDeco3,
-	TagDeco4,
-	TagTrans,
+	TagDecor,
+	TagDecor,
+	TagChasm,
 }
 
 func tilesToObstacles(layer *ldtkgo.Layer, space *resolv.Space) {
@@ -73,7 +87,8 @@ const (
 )
 
 const (
-	LayerEntities = "Entities"
-	LayerFloor    = "Floor"
-	LayerWalls    = "Walls"
+	LayerEntities  = "Entities"
+	LayerFloor     = "Floor"
+	LayerWalls     = "Walls"
+	LayerInvisible = "Invisible"
 )

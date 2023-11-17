@@ -54,9 +54,12 @@ func main() {
 	g.TileRenderer.Render(level)
 	for _, layer := range g.TileRenderer.RenderedLayers {
 		log.Println("Pre-rendering layer:", layer.Layer.Identifier)
-		if layer.Layer.Identifier == LayerWalls {
+		switch layer.Layer.Identifier {
+		case LayerInvisible:
+			continue
+		case LayerWalls:
 			fg.DrawImage(layer.Image, &ebiten.DrawImageOptions{})
-		} else {
+		default:
 			bg.DrawImage(layer.Image, &ebiten.DrawImageOptions{})
 		}
 	}
@@ -67,8 +70,13 @@ func main() {
 	g.Space = resolv.NewSpace(level.Width, level.Height, 16, 16)
 
 	// Obstacles
-	tilesToObstacles(level.LayerByIdentifier(LayerFloor), g.Space)
-	tilesToObstacles(level.LayerByIdentifier(LayerWalls), g.Space)
+	for _, layerName := range []string{
+		LayerFloor,
+		LayerWalls,
+		LayerInvisible,
+	} {
+		tilesToObstacles(level.LayerByIdentifier(layerName), g.Space)
+	}
 
 	// Finish point
 	entities := level.LayerByIdentifier(LayerEntities)
