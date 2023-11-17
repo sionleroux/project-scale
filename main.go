@@ -48,20 +48,27 @@ func main() {
 	g.LDTKProject = loadMaps("assets/maps/Project scale.ldtk")
 	g.TileRenderer = NewTileRenderer(&EmbedLoader{"assets/maps"})
 	level := g.LDTKProject.Levels[g.Level]
+	fg := ebiten.NewImage(level.Width, level.Height)
 	bg := ebiten.NewImage(level.Width, level.Height)
 	bg.Fill(level.BGColor)
 	g.TileRenderer.Render(level)
 	for _, layer := range g.TileRenderer.RenderedLayers {
 		log.Println("Pre-rendering layer:", layer.Layer.Identifier)
-		bg.DrawImage(layer.Image, &ebiten.DrawImageOptions{})
+		if layer.Layer.Identifier == LayerWalls {
+			fg.DrawImage(layer.Image, &ebiten.DrawImageOptions{})
+		} else {
+			bg.DrawImage(layer.Image, &ebiten.DrawImageOptions{})
+		}
 	}
 	g.Background = bg
+	g.Foreground = fg
 
 	// Create space for collision detection
 	g.Space = resolv.NewSpace(level.Width, level.Height, 16, 16)
 
 	// Obstacles
-	tilesToObstacles(level.LayerByIdentifier(LayerTiles), g.Space)
+	tilesToObstacles(level.LayerByIdentifier(LayerFloor), g.Space)
+	tilesToObstacles(level.LayerByIdentifier(LayerWalls), g.Space)
 
 	// Finish point
 	entities := level.LayerByIdentifier(LayerEntities)
@@ -102,6 +109,7 @@ type Game struct {
 	TileRenderer *TileRenderer
 	LDTKProject  *ldtkgo.Project
 	Background   *ebiten.Image
+	Foreground   *ebiten.Image
 	Level        int
 	Camera       *camera.Camera
 	Debuggers    Debuggers
@@ -153,6 +161,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 	g.Camera.Surface.DrawImage(g.Background, cameraOrigin)
 	g.Player.Draw(g.Camera)
+	g.Camera.Surface.DrawImage(g.Foreground, cameraOrigin)
 	g.Camera.Blit(screen)
 
 	g.Debuggers.Debug(g, screen)

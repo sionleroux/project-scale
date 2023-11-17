@@ -27,13 +27,23 @@ const (
 	TagChasm     = "chasm"
 	TagSlippery  = "slippery"
 	TagFinish    = "finish"
+	TagDeco1     = "decoration"
+	TagDeco2     = "decoration"
+	TagDeco3     = "decoration"
+	TagDeco4     = "decoration"
+	TagTrans     = "chasm"
 )
 
 var TileTags = []string{
 	TagClimbable,
 	TagWall,
+	TagDeco1,
+	TagDeco2,
 	TagChasm,
 	TagSlippery,
+	TagDeco3,
+	TagDeco4,
+	TagTrans,
 }
 
 func tilesToObstacles(layer *ldtkgo.Layer, space *resolv.Space) {
@@ -64,5 +74,6 @@ const (
 
 const (
 	LayerEntities = "Entities"
-	LayerTiles    = "Tiles"
+	LayerFloor    = "Floor"
+	LayerWalls    = "Walls"
 )
