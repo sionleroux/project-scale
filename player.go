@@ -2,6 +2,8 @@ package main
 
 import (
 	"image"
+	"image/color"
+	"path"
 
 	"github.com/sinisterstuf/project-scale/camera"
 
@@ -38,6 +40,7 @@ type Player struct {
 	JumpTime int
 	WhatTile string
 	Camera   *camera.Camera
+	Light    *Light
 }
 
 func NewPlayer(position []int, camera *camera.Camera) *Player {
@@ -54,6 +57,7 @@ func NewPlayer(position []int, camera *camera.Camera) *Player {
 		Object: object,
 		Sprite: loadSprite("Nanobot"),
 		Camera: camera,
+		Light:  NewLight(),
 	}
 }
 
@@ -64,6 +68,7 @@ func (p *Player) Update() {
 	}
 	p.collisionChecks()
 	p.updateMovement()
+	p.Light.SetPos(p.X, p.Y)
 	p.animate()
 	p.Object.Update()
 }
@@ -253,6 +258,8 @@ func (p *Player) insideOf(o *resolv.Object) bool {
 }
 
 func (p *Player) Draw(camera *camera.Camera) {
+	p.Light.Draw(camera)
+
 	op := &ebiten.DrawImageOptions{}
 
 	s := p.Sprite
@@ -271,4 +278,39 @@ func (p *Player) Draw(camera *camera.Camera) {
 	)
 
 	camera.Surface.DrawImage(img, camera.GetTranslation(op, p.X, p.Y))
+}
+
+func NewLight() *Light {
+	sprite := loadImage(path.Join("assets", "light.png"))
+	const lightWidth = 32       // the PNG is 32px wide, trust me
+	const playerCenter = 16 / 4 // 🙄 I didn't feel like passing in player
+	return &Light{
+		Sprite: sprite,
+		Offset: -lightWidth/2 + playerCenter, // un-offset by the player centre
+	}
+}
+
+type Light struct {
+	On     bool
+	Sprite *ebiten.Image
+	X      float64
+	Y      float64
+	Offset float64
+}
+
+func (l *Light) SetPos(x, y float64) {
+	l.X = x
+	l.Y = y
+}
+
+func (l *Light) Update() {
+	panic("not implemented") // TODO: Implement
+}
+
+func (l *Light) Draw(cam *camera.Camera) {
+	op := cam.GetTranslation(&ebiten.DrawImageOptions{}, l.X, l.Y)
+	op.GeoM.Translate(l.Offset, l.Offset) // centring
+	op.ColorScale.ScaleWithColor(color.NRGBA{0, 255, 0, 100})
+	op.Blend = ebiten.BlendLighter
+	cam.Surface.DrawImage(l.Sprite, op)
 }

@@ -185,3 +185,8 @@ func (g *Game) CheckFinish() bool {
 	}
 	return false
 }
+
+type Entity interface {
+	Update()
+	Draw(cam *camera.Camera)
+}
