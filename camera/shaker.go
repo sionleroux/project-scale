@@ -9,6 +9,7 @@ import (
 
 type Shaker struct {
 	Ease         *gween.Tween
+	Done         bool
 	time         float64
 	maxMagnitude float32
 	maxTime      float32
@@ -27,7 +28,11 @@ func NewShaker() *Shaker {
 }
 
 func (s *Shaker) calcShake() (x, y float64) {
-	magnitude, _ := s.Ease.Update(1)
+	magnitude, done := s.Ease.Update(1)
+	s.Done = done
+	if s.Done {
+		return 0, 0
+	}
 	s.time++
 	return math.Sin(s.time*2*math.Pi/s.period) * (float64(magnitude) / 2), 0
 }
