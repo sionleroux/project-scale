@@ -69,6 +69,7 @@ func (p *Player) Update() {
 	p.collisionChecks()
 	p.updateMovement()
 	p.Light.SetPos(p.X, p.Y)
+	p.Light.SetColor(p.State)
 	p.animate()
 	p.Object.Update()
 }
@@ -280,6 +281,12 @@ func (p *Player) Draw(camera *camera.Camera) {
 	camera.Surface.DrawImage(img, camera.GetTranslation(op, p.X, p.Y))
 }
 
+var (
+	lightGood = color.NRGBA{0, 255, 0, 100}
+	lightWarn = color.NRGBA{255, 255, 0, 100}
+	lightBad  = color.NRGBA{255, 0, 0, 100}
+)
+
 func NewLight() *Light {
 	sprite := loadImage(path.Join("assets", "light.png"))
 	const lightWidth = 32       // the PNG is 32px wide, trust me
@@ -287,30 +294,43 @@ func NewLight() *Light {
 	return &Light{
 		Sprite: sprite,
 		Offset: -lightWidth/2 + playerCenter, // un-offset by the player centre
+		Color:  lightGood,
 	}
 }
 
 type Light struct {
 	On     bool
 	Sprite *ebiten.Image
-	X      float64
-	Y      float64
+	X, Y   float64
 	Offset float64
+	Color  color.Color
 }
 
 func (l *Light) SetPos(x, y float64) {
-	l.X = x
-	l.Y = y
+	l.X, l.Y = x, y
 }
 
-func (l *Light) Update() {
-	panic("not implemented") // TODO: Implement
+func (l *Light) SetColor(state playerAnimationTags) {
+	switch state {
+	case playerFallstart,
+		playerFallloop,
+		playerFallendwall,
+		playerFallendfloor,
+		playerJumpendwall:
+		l.Color = lightBad
+	case playerSlipend,
+		playerSlipstart,
+		playerSliploop:
+		l.Color = lightWarn
+	default:
+		l.Color = lightGood
+	}
 }
 
 func (l *Light) Draw(cam *camera.Camera) {
 	op := cam.GetTranslation(&ebiten.DrawImageOptions{}, l.X, l.Y)
 	op.GeoM.Translate(l.Offset, l.Offset) // centring
-	op.ColorScale.ScaleWithColor(color.NRGBA{0, 255, 0, 100})
+	op.ColorScale.ScaleWithColor(l.Color)
 	op.Blend = ebiten.BlendLighter
 	cam.Surface.DrawImage(l.Sprite, op)
 }
