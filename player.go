@@ -55,7 +55,7 @@ func NewPlayer(position []int, camera *camera.Camera) *Player {
 
 	return &Player{
 		Object: object,
-		Sprite: loadSprite("Nanobot"),
+		Sprite: loadSpriteWithOSOverride("Nanobot"),
 		Camera: camera,
 		Light:  NewLight(),
 	}

@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"log"
 	"math/rand"
+	"os"
 	"path"
 	"strconv"
 	"time"
@@ -117,6 +118,38 @@ func loadSprite(name string) *SpriteSheet {
 	return &ss
 }
 
+func loadSpriteWithOSOverride(name string) *SpriteSheet {
+	fname := name
+	log.Printf("loading %s\n from OS", fname)
+
+	file, err := os.Open(fname + ".json")
+	if err != nil {
+		log.Printf("error opening file from OS %s: %v\n", fname, err)
+		log.Println("delegating opening file to internal assets")
+		return loadSprite(name)
+	}
+	defer file.Close()
+
+	data, err := ioutil.ReadAll(file)
+	if err != nil {
+		log.Println(err)
+		log.Println("delegating opening file to internal assets")
+		return loadSprite(name)
+	}
+
+	var ss SpriteSheet
+	json.Unmarshal(data, &ss)
+	if err != nil {
+		log.Println(err)
+		log.Println("delegating opening file to internal assets")
+		return loadSprite(name)
+	}
+
+	ss.Image = loadImageWithOSOverride(fname)
+
+	return &ss
+}
+
 // Convenience function to load entity/checkpoint PNGs from the maps folder
 func loadEntityImage(name string) *ebiten.Image {
 	name = path.Join("assets", "maps", name) + ".png"
@@ -140,6 +173,37 @@ func loadImage(name string) *ebiten.Image {
 
 	if raw == nil {
 		log.Fatalf("error empty data for sprite file %s\n", name)
+	}
+
+	return ebiten.NewImageFromImage(raw)
+}
+
+func loadImageWithOSOverride(name string) *ebiten.Image {
+
+	name = name + ".png"
+	assetName := path.Join("assets", "sprites", name)
+
+	log.Printf("loading %s\n from OS", name)
+
+	file, err := os.Open(name)
+	if err != nil {
+		log.Printf("error opening file from OS %s: %v\n", name, err)
+		log.Println("delegating opening file to internal assets")
+		return loadImage(assetName)
+	}
+	defer file.Close()
+
+	raw, err := png.Decode(file)
+	if err != nil {
+		log.Printf("error decoding file %s as PNG: %v\n", name, err)
+		log.Println("delegating opening file to internal assets")
+		return loadImage(assetName)
+	}
+
+	if raw == nil {
+		log.Printf("error empty data for sprite file %s\n", name)
+		log.Println("delegating opening file to internal assets")
+		return loadImage(assetName)
 	}
 
 	return ebiten.NewImageFromImage(raw)
