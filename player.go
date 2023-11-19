@@ -17,8 +17,8 @@ import (
 
 //go:generate ./tools/gen_sprite_tags.sh assets/sprites/Nanobot.json player_anim.go player
 
-const MinJumpDist = 0
-const MaxJumpDist = 16
+const MinJumpDist = 16 - 4 // I it's because 4 is the distance from the player sprite origin to the collision object or maybe it's because 4 is the current jump movement distance and a fencepost error means it has already moved once by 4 before the check happens
+const MaxJumpDist = 32 - 4 // either way 4 is the value that seems to take you the right distance to the next tile in practice
 
 const (
 	ActionMoveUp input.Action = iota
@@ -72,9 +72,6 @@ func (p *Player) Update() {
 	p.Light.SetColor(p.State)
 	p.animate()
 	p.Object.Update()
-	if p.Jumping {
-		log.Println(p.jumpDistance())
-	}
 }
 
 func (p *Player) updateMovement() {
@@ -88,6 +85,11 @@ func (p *Player) updateMovement() {
 	if p.Jumping {
 		switch p.State {
 		case playerJumploop:
+			if (p.Input.ActionIsPressed(ActionJump) || !p.jumpedMin()) && !p.jumpedMax() {
+				p.State = playerJumploop
+			} else {
+				p.State = playerJumpendfloor
+			}
 			speed = 4.0
 		}
 		p.move(+0, -speed)
@@ -220,11 +222,7 @@ func (p *Player) animationBasedStateChanges() {
 		p.State = playerJumploop
 
 	case playerJumploop:
-		if (p.Input.ActionIsPressed(ActionJump) || !p.jumpedMin()) && !p.jumpedMax() {
-			p.State = playerJumploop
-		} else {
-			p.State = playerJumpendfloor
-		}
+		p.State = playerJumploop
 
 	case playerJumpendwall, playerJumpendfloor, playerJumpendmantle:
 		p.Jumping = false
