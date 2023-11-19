@@ -14,8 +14,10 @@ const (
 	playerLeanstart
 	playerLeanloop
 	playerLeanend
-	playerPushwallstartend
+	playerPushwallstart
 	playerPushwallloop
+	playerPushwallend
+	playernogriploop
 	playerJumpstart
 	playerJumploop
 	playerJumpendfloor
@@ -32,8 +34,9 @@ const (
 	playerWalkright
 	playerWalkleft
 	playerSwitchtotopview
-	playerGrapplestartend
+	playerGrapplestart
 	playerGrappleloop
+	playerGrappleEnd
 )
 
 var playerAnimationNames = []string{
@@ -45,8 +48,10 @@ var playerAnimationNames = []string{
 	"Lean start",
 	"Lean loop",
 	"Lean end",
-	"Push wall start/end",
+	"Push wall start",
 	"Push wall loop",
+	"Push wall end",
+	"no grip loop",
 	"Jump start",
 	"Jump loop",
 	"Jump end floor",
@@ -63,6 +68,7 @@ var playerAnimationNames = []string{
 	"Walk right",
 	"Walk left",
 	"Switch to topview",
-	"Grapple start/end",
+	"Grapple start",
 	"Grapple loop",
+	"Grapple End",
 }
