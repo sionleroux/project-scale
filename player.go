@@ -75,7 +75,7 @@ func (p *Player) Update() {
 }
 
 func (p *Player) updateMovement() {
-	speed := 1.2
+	speed := 0.0
 
 	if !p.Falling && !p.Jumping && p.Input.ActionIsJustPressed(ActionJump) {
 		p.Jumping = true
@@ -86,29 +86,23 @@ func (p *Player) updateMovement() {
 		switch p.State {
 		case playerJumploop:
 			speed = 4.0
-		case playerJumpstart:
-			speed = -0.3
-		case playerJumpendfloor:
-			speed = 0.2
 		}
 		p.move(+0, -speed)
+
 	} else if p.Falling {
 		switch p.State {
 		case playerFallloop:
 			speed = 6.0
-		case playerFallstart:
-			speed = 0.2
-		case playerFallendfloor:
-			speed = -0.1
-		case playerFallendwall:
-			speed = 0.1
 		}
 		p.move(+0, speed)
-	} else if p.Slipping {
+
+	} else if p.Slipping && p.State == playerSliploop {
 		speed = 2.0
 		p.move(+0, speed)
+
 	} else {
 		p.State = playerIdle
+		speed = 1.2
 		if p.Input.ActionIsPressed(ActionMoveLeft) {
 			p.move(-speed, +0)
 			p.State = playerClimbleft
