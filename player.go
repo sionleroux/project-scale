@@ -3,6 +3,7 @@ package main
 import (
 	"image"
 	"image/color"
+	"log"
 	"path"
 
 	"github.com/sinisterstuf/project-scale/camera"
@@ -153,8 +154,11 @@ func (p *Player) collisionChecks() {
 func (p *Player) move(dx, dy float64) {
 	if collision := p.Check(dx, 0, TagWall); collision != nil {
 		for _, o := range collision.Objects {
-			if p.Shape.Intersection(dx, 0, o.Shape) != nil {
+			if intersection := p.Shape.Intersection(dx, 0, o.Shape); intersection != nil {
 				dx = 0
+				if intersection.MTV.X() != 0 {
+					log.Println("MTV X:", intersection.MTV.X())
+				}
 			}
 		}
 	}
@@ -175,6 +179,10 @@ func (p *Player) move(dx, dy float64) {
 					if p.Jumping && p.State != playerJumpendwall {
 						p.State = playerJumpendwall
 						p.Camera.Shake()
+						dy -= intersection.MTV.Y()
+						if intersection.MTV.Y() != 0 {
+							log.Println("MTV Y:", intersection.MTV.Y())
+						}
 					}
 				case TagClimbable:
 					// only recover onto tiles below you, that means the MTV to
