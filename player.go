@@ -101,8 +101,12 @@ func (p *Player) updateMovement() {
 		}
 		p.move(+0, speed)
 
-	} else if p.Slipping && p.State == playerSliploop {
-		speed = 2.0
+	} else if p.Slipping {
+		if p.State == playerSliploop {
+			speed = 2.0
+		} else {
+			speed = 0.5
+		}
 		p.move(+0, speed)
 
 	} else {
