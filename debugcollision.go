@@ -19,8 +19,8 @@ func init() {
 
 // DebugCollision draws boxes around objects in collision space to easily
 // visualise how they move and collide
-func DebugCollision(g ebiten.Game, screen *ebiten.Image) {
-	p := g.(*Game).Player
+func DebugCollision(g *GameScene, screen *ebiten.Image) {
+	p := g.Player
 	if collision := p.Check(0, 0); collision != nil {
 		for _, o := range collision.Objects {
 			if p.Shape.Intersection(0, 0, o.Shape) != nil {
@@ -30,7 +30,7 @@ func DebugCollision(g ebiten.Game, screen *ebiten.Image) {
 	}
 }
 
-func debugPosition(g ebiten.Game, screen *ebiten.Image, o *resolv.Object) {
+func debugPosition(g *GameScene, screen *ebiten.Image, o *resolv.Object) {
 	if o.Shape == nil {
 		return
 	}
@@ -54,8 +54,8 @@ func debugPosition(g ebiten.Game, screen *ebiten.Image, o *resolv.Object) {
 		if i < len(verts)-1 {
 			next = verts[i+1]
 		}
-		vX, vY := g.(*Game).Camera.GetScreenCoords(vert.X(), vert.Y())
-		nX, nY := g.(*Game).Camera.GetScreenCoords(next.X(), next.Y())
+		vX, vY := g.Camera.GetScreenCoords(vert.X(), vert.Y())
+		nX, nY := g.Camera.GetScreenCoords(next.X(), next.Y())
 		ebitenutil.DrawLine(screen, vX, vY, nX, nY, lineColor)
 	}
 }
