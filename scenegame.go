@@ -127,6 +127,10 @@ func (g *GameScene) Update() (SceneIndex, error) {
 		}
 	}
 
+	if inpututil.IsKeyJustPressed(ebiten.KeyP) {
+		return gamePaused, nil
+	}
+
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
 		x, y := ebiten.CursorPosition()
 		wx, wy := g.Camera.GetWorldCoords(float64(x), float64(y))

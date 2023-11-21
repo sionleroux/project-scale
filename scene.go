@@ -16,6 +16,7 @@ type SceneIndex int
 const (
 	gameStart   SceneIndex = iota // Game start screen is shown
 	gameRunning                   // The game is running the main game code
+	gamePaused                    // The game is paused temporarily
 	gameOver                      // The game has ended because you died
 	gameWon                       // The game has ended because you won
 )

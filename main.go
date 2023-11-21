@@ -22,6 +22,7 @@ func main() {
 	game.Scenes = []Scene{
 		&StartScene{},
 		NewGameScene(game),
+		&PauseScreen{},
 	}
 
 	if err := ebiten.RunGame(game); err != nil {
