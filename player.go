@@ -54,6 +54,7 @@ type Player struct {
 	Camera   *camera.Camera
 	Light    *Light
 	Facing   Direction
+	Angle    float64
 }
 
 func NewPlayer(position []int, camera *camera.Camera) *Player {
@@ -81,7 +82,14 @@ func (p *Player) Update() {
 	p.Light.SetPos(p.X, p.Y)
 	p.Light.SetColor(p.State)
 	p.animate()
+	p.updateAngle()
 	p.Object.Update()
+}
+
+func (p *Player) updateAngle() {
+	if p.Angle != math.Pi/2*float64(p.Facing) {
+		p.Angle = ((math.Pi / 2 * float64(p.Facing)) - p.Angle) / 5
+	}
 }
 
 func (p *Player) updateMovement() {
@@ -321,7 +329,7 @@ func (p *Player) Draw(camera *camera.Camera) {
 		float64(-frame.Position.W/2),
 		float64(-frame.Position.H/2),
 	)
-	op.GeoM.Rotate(math.Pi / 2 * float64(p.Facing))
+	op.GeoM.Rotate(p.Angle)
 	op.GeoM.Translate(
 		float64(+frame.Position.W/2),
 		float64(+frame.Position.H/2),
@@ -334,6 +342,10 @@ func (p *Player) Draw(camera *camera.Camera) {
 	)
 
 	camera.Surface.DrawImage(img, camera.GetTranslation(op, p.X, p.Y))
+}
+
+func rotateAboutCenter(op *ebiten.DrawImageOptions, angle float64) {
+
 }
 
 var (
