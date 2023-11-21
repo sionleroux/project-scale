@@ -19,7 +19,10 @@ func main() {
 		Height: gameHeight,
 	}
 
-	game.GameScene = NewGameScene(game)
+	game.Scenes = []Scene{
+		&StartScene{},
+		NewGameScene(game),
+	}
 
 	if err := ebiten.RunGame(game); err != nil {
 		log.Fatal(err)
@@ -28,17 +31,27 @@ func main() {
 
 type Game struct {
 	Width, Height int
-	GameScene     *GameScene
+	Scenes        []Scene
+	CurrentScene  SceneIndex
 }
 
 // Update updates the inner game scene by one tick
 func (g *Game) Update() error {
-	return g.GameScene.Update()
+	prevScene := g.CurrentScene
+	nextScene, err := g.Scenes[g.CurrentScene].Update()
+	if err != nil {
+		return err
+	}
+	if prevScene != nextScene {
+		g.Scenes[g.CurrentScene].Load()
+	}
+	g.CurrentScene = nextScene
+	return nil
 }
 
 // Draw delegates drawing to the inner game scene
 func (g *Game) Draw(screen *ebiten.Image) {
-	g.GameScene.Draw(screen)
+	g.Scenes[g.CurrentScene].Draw(screen)
 }
 
 // Layout is hardcoded for now, may be made dynamic in future

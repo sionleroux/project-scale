@@ -116,7 +116,7 @@ type GameScene struct {
 }
 
 // Update calculates game logic
-func (g *GameScene) Update() error {
+func (g *GameScene) Update() (SceneIndex, error) {
 
 	// Pressing F toggles full-screen
 	if inpututil.IsKeyJustPressed(ebiten.KeyF) {
@@ -139,14 +139,14 @@ func (g *GameScene) Update() error {
 	g.Player.Update()
 
 	if g.CheckFinish() {
-		return errors.New("Player hit the finish line")
+		return gameRunning, errors.New("Player hit the finish line")
 	}
 
 	// Position camera
 	g.Camera.SetPosition(g.Player.X, g.Player.Y)
 	g.Camera.Update()
 
-	return nil
+	return gameRunning, nil
 }
 
 // Draw draws the game screen by one frame
@@ -160,6 +160,10 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 	g.Camera.Blit(screen)
 
 	g.Debuggers.Debug(g, screen)
+}
+
+func (g *GameScene) Load() {
+	// TODO: put some game reset logic here, unpause music etc.
 }
 
 func (g *GameScene) CheckFinish() bool {

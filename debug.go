@@ -11,14 +11,14 @@ var debuggers Debuggers
 
 // Debugger provides debug information by rendering it on-screen
 type Debugger interface {
-	Debug(g ebiten.Game, screen *ebiten.Image)
+	Debug(g *GameScene, screen *ebiten.Image)
 }
 
 // DebugFunc implements the Debugger interface
-type DebugFunc func(g ebiten.Game, screen *ebiten.Image)
+type DebugFunc func(g *GameScene, screen *ebiten.Image)
 
 // Debug calls the debug callback with the provided arguments
-func (f DebugFunc) Debug(g ebiten.Game, screen *ebiten.Image) {
+func (f DebugFunc) Debug(g *GameScene, screen *ebiten.Image) {
 	f(g, screen)
 }
 
@@ -26,7 +26,7 @@ func (f DebugFunc) Debug(g ebiten.Game, screen *ebiten.Image) {
 type Debuggers []Debugger
 
 // Debug passes on the Debug call to all its child Debuggers
-func (ds Debuggers) Debug(g ebiten.Game, screen *ebiten.Image) {
+func (ds Debuggers) Debug(g *GameScene, screen *ebiten.Image) {
 	for _, d := range ds {
 		d.Debug(g, screen)
 	}
