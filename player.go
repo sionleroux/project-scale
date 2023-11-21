@@ -28,6 +28,15 @@ const (
 	ActionJump
 )
 
+type Direction int8
+
+const (
+	directionUp Direction = iota
+	directionRight
+	directionDown
+	directionLeft
+)
+
 // Player is the player character in the game
 type Player struct {
 	*resolv.Object
@@ -44,6 +53,7 @@ type Player struct {
 	WhatTile string
 	Camera   *camera.Camera
 	Light    *Light
+	Facing   Direction
 }
 
 func NewPlayer(position []int, camera *camera.Camera) *Player {
@@ -92,13 +102,13 @@ func (p *Player) updateMovement() {
 			}
 			speed = 4.0
 		}
-		if p.Input.ActionIsPressed(ActionMoveLeft) {
+		if p.Facing == directionLeft {
 			p.move(-speed, +0)
-		} else if p.Input.ActionIsPressed(ActionMoveRight) {
+		} else if p.Facing == directionRight {
 			p.move(+speed, +0)
-		} else if p.Input.ActionIsPressed(ActionMoveUp) {
+		} else if p.Facing == directionUp {
 			p.move(+0, -speed)
-		} else if p.Input.ActionIsPressed(ActionMoveDown) {
+		} else if p.Facing == directionDown {
 			p.move(+0, +speed)
 		} else {
 			p.move(+0, -speed)
@@ -124,16 +134,20 @@ func (p *Player) updateMovement() {
 		speed = 1.2
 		if p.Input.ActionIsPressed(ActionMoveLeft) {
 			p.move(-speed, +0)
-			p.State = playerClimbleft
+			p.State = playerClimbup
+			p.Facing = directionLeft
 		} else if p.Input.ActionIsPressed(ActionMoveRight) {
 			p.move(+speed, +0)
-			p.State = playerClimbright
+			p.State = playerClimbup
+			p.Facing = directionRight
 		} else if p.Input.ActionIsPressed(ActionMoveUp) {
 			p.move(+0, -speed)
 			p.State = playerClimbup
+			p.Facing = directionUp
 		} else if p.Input.ActionIsPressed(ActionMoveDown) {
 			p.move(+0, +speed)
-			p.State = playerClimbdown
+			p.State = playerClimbup
+			p.Facing = directionDown
 		}
 	}
 
@@ -302,7 +316,18 @@ func (p *Player) Draw(camera *camera.Camera) {
 		frame.Position.Y+frame.Position.H,
 	)).(*ebiten.Image)
 
-	// Centre sprite
+	// Rotate
+	op.GeoM.Translate(
+		float64(-frame.Position.W/2),
+		float64(-frame.Position.H/2),
+	)
+	op.GeoM.Rotate(math.Pi / 2 * float64(p.Facing))
+	op.GeoM.Translate(
+		float64(+frame.Position.W/2),
+		float64(+frame.Position.H/2),
+	)
+
+	// Centre sprite on object centre
 	op.GeoM.Translate(
 		float64(-frame.Position.W/4),
 		float64(-frame.Position.H/4),
