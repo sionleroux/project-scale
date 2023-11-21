@@ -5,7 +5,6 @@
 package main
 
 import (
-	"errors"
 	"log"
 
 	"github.com/sinisterstuf/project-scale/camera"
@@ -96,6 +95,8 @@ func NewGameScene(game *Game) *GameScene {
 	g.Player.Input = g.InputSystem.NewHandler(0, keymap)
 	g.Space.Add(g.Player.Object)
 
+	g.Water = NewWater(float64(level.Height) + 4*g.Player.H)
+
 	return g
 }
 
@@ -113,6 +114,7 @@ type GameScene struct {
 	Level        int
 	Camera       *camera.Camera
 	Debuggers    Debuggers
+	Water        *Water
 }
 
 // Update calculates game logic
@@ -143,12 +145,18 @@ func (g *GameScene) Update() (SceneIndex, error) {
 	g.Player.Update()
 
 	if g.CheckFinish() {
-		return gameRunning, errors.New("Player hit the finish line")
+		return gameWon, nil
 	}
 
 	// Position camera
 	g.Camera.SetPosition(g.Player.X, g.Player.Y)
 	g.Camera.Update()
+
+	g.Water.Update()
+
+	if g.CheckDeath() {
+		return gameOver, nil
+	}
 
 	return gameRunning, nil
 }
@@ -161,6 +169,7 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 	g.Camera.Surface.DrawImage(g.Background, cameraOrigin)
 	g.Player.Draw(g.Camera)
 	g.Camera.Surface.DrawImage(g.Foreground, cameraOrigin)
+	g.Water.Draw(g.Camera)
 	g.Camera.Blit(screen)
 
 	g.Debuggers.Debug(g, screen)
@@ -178,6 +187,15 @@ func (g *GameScene) CheckFinish() bool {
 			}
 		}
 	}
+	return false
+}
+
+func (g *GameScene) CheckDeath() bool {
+	// Death by water (water covers the top of you)
+	if g.Water.Level < g.Player.Y-g.Player.H/4 {
+		return true
+	}
+
 	return false
 }
 
