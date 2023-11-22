@@ -189,9 +189,6 @@ func (p *Player) move(dx, dy float64) {
 		for _, o := range collision.Objects {
 			if intersection := p.Shape.Intersection(dx, 0, o.Shape); intersection != nil {
 				dx = 0
-				if intersection.MTV.X() != 0 {
-					log.Println("MTV X:", intersection.MTV.X())
-				}
 			}
 		}
 	}
@@ -202,19 +199,29 @@ func (p *Player) move(dx, dy float64) {
 			if intersection := p.Shape.Intersection(0, dy, o.Shape); intersection != nil {
 				switch o.Tags()[0] {
 				case TagWall:
-					dy = 0
-					if p.Falling {
-						p.State = playerFallendwall
-					}
-					if p.Slipping {
-						p.State = playerSlipend
-					}
-					if p.Jumping && p.State != playerJumpendwall {
-						p.State = playerJumpendwall
-						p.Camera.Shake()
-						dy -= intersection.MTV.Y()
-						if intersection.MTV.Y() != 0 {
-							log.Println("MTV Y:", intersection.MTV.Y())
+					// slide := collision.SlideAgainstCell(collision.Cells[0], TagWall)
+					// if p.Jumping && slide != nil && math.Abs(slide.X()) <= p.W/2 { // Sliding mercy for players
+					// 	log.Println("Sliding X:", slide.X())
+					// 	p.X -= slide.X()
+					// }
+					if p.Jumping && intersection.MTV.X() != 0 { // && math.Abs(intersection.MTV.X()) <= p.W/2 { // Sliding mercy for players
+						log.Println("Sliding X:", intersection.MTV.X())
+						p.X -= intersection.MTV.X()
+					} else {
+						dy = 0
+						if p.Falling {
+							p.State = playerFallendwall
+						}
+						if p.Slipping {
+							p.State = playerSlipend
+						}
+						if p.Jumping && p.State != playerJumpendwall {
+							p.State = playerJumpendwall
+							p.Camera.Shake()
+							dy -= intersection.MTV.Y()
+							if intersection.MTV.Y() != 0 {
+								log.Println("MTV Y:", intersection.MTV.Y())
+							}
 						}
 					}
 				case TagChasm:
@@ -227,9 +234,11 @@ func (p *Player) move(dx, dy float64) {
 					if intersection.MTV.Y() < 0 {
 						if p.State == playerFallloop {
 							p.State = playerFallendfloor
+							p.X += intersection.MTV.X()
 						}
 						if p.State == playerSliploop {
 							p.State = playerSlipend
+							p.X += intersection.MTV.X()
 						}
 					}
 				}
