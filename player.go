@@ -172,9 +172,11 @@ func (p *Player) collisionChecks() {
 					case TagChasm:
 						p.State = playerFallstart
 						p.Falling = true
+						p.Facing = directionUp
 					case TagSlippery:
 						p.State = playerSlipstart
 						p.Slipping = true
+						p.Facing = directionUp
 					}
 				}
 			}
