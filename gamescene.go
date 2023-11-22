@@ -175,7 +175,7 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 	g.Camera.Surface.Clear()
 	cameraOrigin := g.Camera.GetTranslation(&ebiten.DrawImageOptions{}, 0, 0)
 
-	g.Backdrops.Draw(g.Camera)
+	g.Backdrops.Draw(g.Camera, g.Water.Level)
 	g.Camera.Surface.DrawImage(g.Background, cameraOrigin)
 	g.Player.Draw(g.Camera)
 	g.Camera.Surface.DrawImage(g.Foreground, cameraOrigin)
@@ -242,14 +242,27 @@ type Backdrops struct {
 	Backdrops   []Backdrop
 }
 
-func (bs Backdrops) Draw(cam *camera.Camera) {
+func (bs Backdrops) Draw(cam *camera.Camera, waterLevel float64) {
+	const waterSpacing = 16.0
+	const howManyWaters = 5.0 // I counted them by hand.0
+	backdropCenter := -float64(bs.Backdrops[0].Image.Bounds().Dx()) / 2
+	watersDone := 0.0
+
 	backdropPos := cam.GetTranslation(
 		&ebiten.DrawImageOptions{},
-		-float64(bs.Backdrops[0].Image.Bounds().Dx())/2,
+		backdropCenter,
 		-float64(bs.Backdrops[0].Image.Bounds().Dy())+bs.bottomOfMap,
 	)
+
 	for _, b := range bs.Backdrops {
-		if !b.Water {
+		if b.Water {
+			cam.Surface.DrawImage(b.Image, cam.GetTranslation(
+				&ebiten.DrawImageOptions{},
+				backdropCenter,
+				waterLevel-(howManyWaters-watersDone)*waterSpacing,
+			))
+			watersDone++
+		} else {
 			cam.Surface.DrawImage(b.Image, backdropPos)
 		}
 	}
