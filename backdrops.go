@@ -34,7 +34,7 @@ type Backdrops struct {
 }
 
 func (bs Backdrops) Draw(cam *camera.Camera, waterLevel float64) {
-	const waterSpacing = 16.0
+	const waterSpacing = 8.0
 	const howManyWaters = 5.0 // I counted them by hand.0
 	backdropCenter := -float64(bs.Backdrops[0].Image.Bounds().Dx()) / 2
 	watersDone := 0.0
