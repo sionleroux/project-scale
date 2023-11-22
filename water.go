@@ -7,7 +7,7 @@ import (
 	"github.com/sinisterstuf/project-scale/camera"
 )
 
-const WaterSpeed = 0.4
+const WaterSpeed = 0.35
 
 type Water struct {
 	Level float64
