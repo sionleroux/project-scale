@@ -3,6 +3,7 @@ package main
 import (
 	"image/color"
 
+	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/sinisterstuf/project-scale/camera"
 )
@@ -20,7 +21,9 @@ func NewWater(startLevel float64) *Water {
 }
 
 func (w *Water) Update() {
-	w.Level -= WaterSpeed
+	if !ebiten.IsKeyPressed(ebiten.KeyM) {
+		w.Level -= WaterSpeed
+	}
 }
 
 func (w *Water) Draw(cam *camera.Camera) {
