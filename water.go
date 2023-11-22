@@ -1,10 +1,7 @@
 package main
 
 import (
-	"image/color"
-
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/sinisterstuf/project-scale/camera"
 )
 
@@ -29,8 +26,10 @@ func (w *Water) Update() {
 }
 
 func (w *Water) Draw(cam *camera.Camera) {
-	// backdropPos := cam.GetTranslation(&ebiten.DrawImageOptions{}, -float64(bs[0].Image.Bounds().Dx())/2, 0)
-	_, camY := cam.GetScreenCoords(0, w.Level)
-	ebitenutil.DrawRect(cam.Surface, 0, camY, float64(cam.Width), float64(cam.Height), color.Black)
-	ebitenutil.DrawLine(cam.Surface, 0, camY, float64(cam.Width), camY, color.White)
+	backdropPos := cam.GetTranslation(
+		&ebiten.DrawImageOptions{},
+		-float64(w.Image.Bounds().Dx())/2,
+		w.Level,
+	)
+	cam.Surface.DrawImage(w.Image, backdropPos)
 }
