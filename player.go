@@ -197,7 +197,7 @@ func (p *Player) move(dx, dy float64) {
 	}
 	p.X += dx
 
-	if collision := p.Check(0, dy, TagWall, TagClimbable); collision != nil {
+	if collision := p.Check(0, dy, TagWall, TagClimbable, TagChasm); collision != nil {
 		for _, o := range collision.Objects {
 			if intersection := p.Shape.Intersection(0, dy, o.Shape); intersection != nil {
 				switch o.Tags()[0] {
@@ -216,6 +216,10 @@ func (p *Player) move(dx, dy float64) {
 						if intersection.MTV.Y() != 0 {
 							log.Println("MTV Y:", intersection.MTV.Y())
 						}
+					}
+				case TagChasm:
+					if dy < 0 && !p.Jumping { // Don't climb up into chasm
+						dy = 0
 					}
 				case TagClimbable:
 					// only recover onto tiles below you, that means the MTV to
