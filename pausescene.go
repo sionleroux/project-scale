@@ -26,5 +26,5 @@ func (p *PauseScreen) Draw(screen *ebiten.Image) {
 	ebitenutil.DebugPrint(screen, "Game paused\nPress P to unpause\nPress Esc to quit")
 }
 
-func (p *PauseScreen) Load() {
+func (p *PauseScreen) Load(prev SceneIndex) {
 }

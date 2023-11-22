@@ -46,7 +46,7 @@ func (g *Game) Update() error {
 		return err
 	}
 	if prevScene != nextScene {
-		g.Scenes[g.CurrentScene].Load()
+		g.Scenes[nextScene].Load(prevScene)
 	}
 	g.CurrentScene = nextScene
 	return nil

@@ -21,6 +21,6 @@ func (s *StartScene) Draw(screen *ebiten.Image) {
 	ebitenutil.DebugPrint(screen, "Press space to start")
 }
 
-func (s *StartScene) Load() {
+func (s *StartScene) Load(prev SceneIndex) {
 	log.Println("Game start screen")
 }

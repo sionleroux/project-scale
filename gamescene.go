@@ -30,7 +30,7 @@ func NewGameScene(game *Game) *GameScene {
 	g.InputSystem.Init(input.SystemConfig{
 		DevicesEnabled: input.AnyDevice,
 	})
-	keymap := input.Keymap{
+	g.Keymap = input.Keymap{
 		ActionMoveUp:    {input.KeyUp, input.KeyW, input.KeyGamepadUp, input.KeyGamepadLStickUp},
 		ActionMoveLeft:  {input.KeyLeft, input.KeyA, input.KeyGamepadLeft, input.KeyGamepadLStickLeft},
 		ActionMoveDown:  {input.KeyDown, input.KeyS, input.KeyGamepadDown, input.KeyGamepadLStickDown},
@@ -94,8 +94,9 @@ func NewGameScene(game *Game) *GameScene {
 		startPos.Position[0] + (startPos.Width / 2),
 		startPos.Position[1] + (startPos.Height / 2),
 	}
+	g.StartPos = startCenter
 	g.Player = NewPlayer(startCenter, g.Camera)
-	g.Player.Input = g.InputSystem.NewHandler(0, keymap)
+	g.Player.Input = g.InputSystem.NewHandler(0, g.Keymap)
 	g.Space.Add(g.Player.Object)
 
 	g.Water = NewWater(float64(level.Height) + 4*g.Player.H)
@@ -109,6 +110,7 @@ type GameScene struct {
 	Height       int
 	Player       *Player
 	InputSystem  input.System
+	Keymap       input.Keymap
 	Space        *resolv.Space
 	TileRenderer *TileRenderer
 	LDTKProject  *ldtkgo.Project
@@ -118,6 +120,7 @@ type GameScene struct {
 	Camera       *camera.Camera
 	Debuggers    Debuggers
 	Water        *Water
+	StartPos     []int
 	Backdrops    Backdrops
 }
 
@@ -185,8 +188,11 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 	g.Debuggers.Debug(g, screen)
 }
 
-func (g *GameScene) Load() {
-	// TODO: put some game reset logic here, unpause music etc.
+func (g *GameScene) Load(prev SceneIndex) {
+	switch prev {
+	case gameOver:
+		g.Reset()
+	}
 }
 
 func (g *GameScene) CheckFinish() bool {
@@ -207,6 +213,18 @@ func (g *GameScene) CheckDeath() bool {
 	}
 
 	return false
+}
+
+func (g *GameScene) Reset() {
+	level := g.LDTKProject.Levels[g.Level]
+	g.Player.X, g.Player.Y = float64(g.StartPos[0]), float64(g.StartPos[1])
+	g.Player.State = playerIdle
+	g.Player.Jumping = false
+	g.Player.Falling = false
+	g.Player.Standing = false
+	g.Player.Slipping = false // :-(
+	g.Player.Input = g.InputSystem.NewHandler(0, g.Keymap)
+	g.Water = NewWater(float64(level.Height) + 4*g.Player.H)
 }
 
 type Entity interface {

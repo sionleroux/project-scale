@@ -7,7 +7,7 @@ import "github.com/hajimehoshi/ebiten/v2"
 type Scene interface {
 	Update() (SceneIndex, error)
 	Draw(screen *ebiten.Image)
-	Load()
+	Load(prev SceneIndex)
 }
 
 // SceneIndex is global state for the whole game

@@ -27,6 +27,6 @@ func (s *SceneOver) Draw(screen *ebiten.Image) {
 	ebitenutil.DebugPrint(screen, "You died\nPress space to restart\nPress Esc to quit")
 }
 
-func (s *SceneOver) Load() {
+func (s *SceneOver) Load(prev SceneIndex) {
 	log.Println("Game over")
 }
