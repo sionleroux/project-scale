@@ -37,14 +37,15 @@ func NewGameScene(game *Game) *GameScene {
 		ActionJump:      {input.KeySpace, input.KeyGamepadA},
 	}
 
+	// Backdrop
+	g.Backdrops = NewBackdrops()
+
 	// Pre-render map
 	g.LDTKProject = loadMaps("assets/maps/Project scale.ldtk")
 	g.TileRenderer = NewTileRenderer(&EmbedLoader{"assets/maps"})
 	level := g.LDTKProject.Levels[g.Level]
 	fg := ebiten.NewImage(level.Width, level.Height)
 	bg := ebiten.NewImage(level.Width, level.Height)
-	bg.Fill(level.BGColor)
-	fg.DrawImage(loadImage("assets/backdrop/Project-scale-parallax-backdrop_0000_Water-1.png"), &ebiten.DrawImageOptions{})
 	g.TileRenderer.Render(level)
 	for _, layer := range g.TileRenderer.RenderedLayers {
 		log.Println("Pre-rendering layer:", layer.Layer.Identifier)
@@ -116,6 +117,7 @@ type GameScene struct {
 	Camera       *camera.Camera
 	Debuggers    Debuggers
 	Water        *Water
+	Backdrops    Backdrops
 }
 
 // Update calculates game logic
@@ -167,9 +169,11 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 	g.Camera.Surface.Clear()
 	cameraOrigin := g.Camera.GetTranslation(&ebiten.DrawImageOptions{}, 0, 0)
 
+	g.Backdrops.Draw(g.Camera, false)
 	g.Camera.Surface.DrawImage(g.Background, cameraOrigin)
 	g.Player.Draw(g.Camera)
 	g.Camera.Surface.DrawImage(g.Foreground, cameraOrigin)
+	// g.Backdrops.Draw(g.Camera, true)
 	g.Water.Draw(g.Camera)
 	g.Camera.Blit(screen)
 
@@ -203,4 +207,43 @@ func (g *GameScene) CheckDeath() bool {
 type Entity interface {
 	Update()
 	Draw(cam *camera.Camera)
+}
+
+func NewBackdrops() Backdrops {
+	return Backdrops{
+		{loadImage("assets/backdrop/Project-scale-parallax-backdrop_0015_Background.png"), false, 0.0},
+		{loadImage("assets/backdrop/Project-scale-parallax-backdrop_0014_Sky.png"), false, 0.0},
+		{loadImage("assets/backdrop/Project-scale-parallax-backdrop_0013_Smog-5.png"), false, 0.0},
+		{loadImage("assets/backdrop/Project-scale-parallax-backdrop_0012_Water-5.png"), true, 0.0},
+		{loadImage("assets/backdrop/Project-scale-parallax-backdrop_0011_City-4.png"), false, 0.0},
+		{loadImage("assets/backdrop/Project-scale-parallax-backdrop_0010_Smog-4.png"), false, 0.0},
+		{loadImage("assets/backdrop/Project-scale-parallax-backdrop_0009_Water-4.png"), true, 0.0},
+		{loadImage("assets/backdrop/Project-scale-parallax-backdrop_0008_City-3.png"), false, 0.0},
+		{loadImage("assets/backdrop/Project-scale-parallax-backdrop_0007_Smog-3.png"), false, 0.0},
+		{loadImage("assets/backdrop/Project-scale-parallax-backdrop_0006_Water-3.png"), true, 0.0},
+		{loadImage("assets/backdrop/Project-scale-parallax-backdrop_0005_City-2.png"), false, 0.0},
+		{loadImage("assets/backdrop/Project-scale-parallax-backdrop_0004_Smog-2.png"), false, 0.0},
+		{loadImage("assets/backdrop/Project-scale-parallax-backdrop_0003_Water-2.png"), true, 0.0},
+		{loadImage("assets/backdrop/Project-scale-parallax-backdrop_0002_City-1.png"), false, 0.0},
+		{loadImage("assets/backdrop/Project-scale-parallax-backdrop_0001_Smog-1.png"), false, 0.0},
+		{loadImage("assets/backdrop/Project-scale-parallax-backdrop_0000_Water-1.png"), true, 0.0},
+	}
+}
+
+type Backdrops []Backdrop
+
+func (bs Backdrops) Draw(cam *camera.Camera, watery bool) {
+
+	backdropPos := cam.GetTranslation(&ebiten.DrawImageOptions{}, -float64(bs[0].Image.Bounds().Dx())/2, 0)
+	for _, b := range bs {
+		if b.Water == watery {
+			cam.Surface.DrawImage(b.Image, backdropPos)
+		}
+	}
+}
+
+type Backdrop struct {
+	Image *ebiten.Image
+	Water bool
+	Speed float64
 }
