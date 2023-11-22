@@ -44,6 +44,7 @@ func NewGameScene(game *Game) *GameScene {
 	fg := ebiten.NewImage(level.Width, level.Height)
 	bg := ebiten.NewImage(level.Width, level.Height)
 	bg.Fill(level.BGColor)
+	fg.DrawImage(loadImage("assets/backdrop/Project-scale-parallax-backdrop_0000_Water-1.png"), &ebiten.DrawImageOptions{})
 	g.TileRenderer.Render(level)
 	for _, layer := range g.TileRenderer.RenderedLayers {
 		log.Println("Pre-rendering layer:", layer.Layer.Identifier)
