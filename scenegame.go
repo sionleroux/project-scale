@@ -6,6 +6,7 @@ package main
 
 import (
 	"log"
+	"math"
 
 	"github.com/sinisterstuf/project-scale/camera"
 
@@ -151,8 +152,13 @@ func (g *GameScene) Update() (SceneIndex, error) {
 		return gameWon, nil
 	}
 
-	// Position camera
-	g.Camera.SetPosition(g.Player.X, g.Player.Y)
+	// Position camera and clamp in to the Map dimensions
+	maxHeight := g.LDTKProject.Levels[g.Level].Height
+	g.Camera.SetPosition(g.Player.X, math.Min(
+		math.Max(g.Player.Y, float64(g.Camera.Height/2)),
+		float64(maxHeight-g.Camera.Height/2),
+	))
+
 	g.Camera.Update()
 
 	g.Water.Update()
