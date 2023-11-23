@@ -135,7 +135,7 @@ func (g *GameScene) Update() error {
 	}
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyP) {
-		g.SceneManager.SwitchTo(g.State.Game.Scenes[gamePaused])
+		g.SceneManager.SwitchTo(g.State.Scenes[gamePaused])
 		return nil
 	}
 
@@ -151,7 +151,7 @@ func (g *GameScene) Update() error {
 	g.Player.Update()
 
 	if g.CheckFinish() {
-		g.SceneManager.SwitchTo(g.State.Game.Scenes[gameWon])
+		g.SceneManager.SwitchTo(g.State.Scenes[gameWon])
 		return nil
 	}
 
@@ -167,7 +167,7 @@ func (g *GameScene) Update() error {
 	g.Water.Update()
 
 	if g.CheckDeath() {
-		g.SceneManager.SwitchTo(g.State.Game.Scenes[gameOver])
+		g.SceneManager.SwitchTo(g.State.Scenes[gameOver])
 		return nil
 	}
 

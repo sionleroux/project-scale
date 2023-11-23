@@ -29,7 +29,7 @@ func main() {
 		&WonScene{},
 	}
 
-	sceneManager := stagehand.NewSceneManager[State](game.Scenes[gameStart], State{Game: game})
+	sceneManager := stagehand.NewSceneManager[State](game.Scenes[gameStart], game)
 
 	if err := ebiten.RunGame(sceneManager); err != nil {
 		log.Fatal(err)

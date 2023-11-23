@@ -15,7 +15,7 @@ type PauseScreen struct {
 
 func (p *PauseScreen) Update() error {
 	if inpututil.IsKeyJustPressed(ebiten.KeyP) {
-		p.SceneManager.SwitchTo(p.State.Game.Scenes[gameRunning])
+		p.SceneManager.SwitchTo(p.State.Scenes[gameRunning])
 	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
 		os.Exit(0)

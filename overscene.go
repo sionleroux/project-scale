@@ -16,7 +16,7 @@ type OverScene struct {
 
 func (s *OverScene) Update() error {
 	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
-		s.SceneManager.SwitchTo(s.State.Game.Scenes[gameRunning])
+		s.SceneManager.SwitchTo(s.State.Scenes[gameRunning])
 	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
 		os.Exit(0)

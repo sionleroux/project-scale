@@ -4,9 +4,7 @@ import (
 	"github.com/joelschutz/stagehand"
 )
 
-type State struct {
-	Game *Game
-}
+type State *Game
 
 type BaseScene struct {
 	State        State
@@ -14,7 +12,7 @@ type BaseScene struct {
 }
 
 func (s *BaseScene) Layout(w, h int) (int, int) {
-	return s.State.Game.Width, s.State.Game.Height
+	return s.State.Width, s.State.Height
 }
 
 func (s *BaseScene) Load(st State, sm *stagehand.SceneManager[State]) {

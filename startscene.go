@@ -12,7 +12,7 @@ type StartScene struct {
 
 func (s *StartScene) Update() error {
 	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
-		s.SceneManager.SwitchTo(s.State.Game.Scenes[gameRunning])
+		s.SceneManager.SwitchTo(s.State.Scenes[gameRunning])
 	}
 	return nil
 }
