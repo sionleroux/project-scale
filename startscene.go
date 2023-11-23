@@ -1,26 +1,22 @@
 package main
 
 import (
-	"log"
-
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 type StartScene struct {
+	BaseScene
 }
 
-func (s *StartScene) Update() (SceneIndex, error) {
-	if ebiten.IsKeyPressed(ebiten.KeySpace) {
-		return gameRunning, nil
+func (s *StartScene) Update() error {
+	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
+		s.SceneManager.SwitchTo(s.State.Scenes[gameRunning])
 	}
-	return gameStart, nil
+	return nil
 }
 
 func (s *StartScene) Draw(screen *ebiten.Image) {
 	ebitenutil.DebugPrint(screen, "Press space to start")
-}
-
-func (s *StartScene) Load(prev SceneIndex) {
-	log.Println("Game start screen")
 }

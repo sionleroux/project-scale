@@ -1,13 +1,27 @@
 package main
 
-import "github.com/hajimehoshi/ebiten/v2"
+import (
+	"github.com/joelschutz/stagehand"
+)
 
-// Scene is a full-screen UI Screen for some part of the game like a menu or a
-// game level
-type Scene interface {
-	Update() (SceneIndex, error)
-	Draw(screen *ebiten.Image)
-	Load(prev SceneIndex)
+type State *Game
+
+type BaseScene struct {
+	State        State
+	SceneManager *stagehand.SceneManager[State]
+}
+
+func (s *BaseScene) Layout(w, h int) (int, int) {
+	return s.State.Width, s.State.Height
+}
+
+func (s *BaseScene) Load(st State, sm *stagehand.SceneManager[State]) {
+	s.State = st
+	s.SceneManager = sm
+}
+
+func (s *BaseScene) Unload() State {
+	return s.State
 }
 
 // SceneIndex is global state for the whole game

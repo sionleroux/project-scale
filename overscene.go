@@ -1,32 +1,30 @@
 package main
 
 import (
-	"errors"
-	"log"
+	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
-type SceneOver struct {
+// OverScene is shown when the player dies and the game is over
+type OverScene struct {
+	BaseScene
 	// TODO: some high score count here
 }
 
-func (s *SceneOver) Update() (SceneIndex, error) {
+func (s *OverScene) Update() error {
 	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
-		return gameRunning, nil
+		s.State.ResetNeeded = true
+		s.SceneManager.SwitchTo(s.State.Scenes[gameRunning])
 	}
-	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
-		return gameOver, errors.New("game quit by player")
+	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
+		os.Exit(0)
 	}
-	return gameOver, nil
+	return nil
 }
 
-func (s *SceneOver) Draw(screen *ebiten.Image) {
+func (s *OverScene) Draw(screen *ebiten.Image) {
 	ebitenutil.DebugPrint(screen, "You died\nPress space to restart\nPress Esc to quit")
-}
-
-func (s *SceneOver) Load(prev SceneIndex) {
-	log.Println("Game over")
 }

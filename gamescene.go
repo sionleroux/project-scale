@@ -8,6 +8,7 @@ import (
 	"log"
 	"math"
 
+	"github.com/joelschutz/stagehand"
 	"github.com/sinisterstuf/project-scale/camera"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -20,8 +21,6 @@ import (
 func NewGameScene(game *Game) *GameScene {
 
 	g := &GameScene{
-		Width:     game.Width,
-		Height:    game.Height,
 		Camera:    camera.NewCamera(game.Width, game.Height),
 		Debuggers: debuggers,
 	}
@@ -106,8 +105,7 @@ func NewGameScene(game *Game) *GameScene {
 
 // GameScene represents the main game state
 type GameScene struct {
-	Width        int
-	Height       int
+	BaseScene
 	Player       *Player
 	InputSystem  input.System
 	Keymap       input.Keymap
@@ -125,7 +123,7 @@ type GameScene struct {
 }
 
 // Update calculates game logic
-func (g *GameScene) Update() (SceneIndex, error) {
+func (g *GameScene) Update() error {
 
 	// Pressing F toggles full-screen
 	if inpututil.IsKeyJustPressed(ebiten.KeyF) {
@@ -137,7 +135,8 @@ func (g *GameScene) Update() (SceneIndex, error) {
 	}
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyP) {
-		return gamePaused, nil
+		g.SceneManager.SwitchTo(g.State.Scenes[gamePaused])
+		return nil
 	}
 
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
@@ -152,7 +151,8 @@ func (g *GameScene) Update() (SceneIndex, error) {
 	g.Player.Update()
 
 	if g.CheckFinish() {
-		return gameWon, nil
+		g.SceneManager.SwitchTo(g.State.Scenes[gameWon])
+		return nil
 	}
 
 	// Position camera and clamp in to the Map dimensions
@@ -167,10 +167,11 @@ func (g *GameScene) Update() (SceneIndex, error) {
 	g.Water.Update()
 
 	if g.CheckDeath() {
-		return gameOver, nil
+		g.SceneManager.SwitchTo(g.State.Scenes[gameOver])
+		return nil
 	}
 
-	return gameRunning, nil
+	return nil
 }
 
 // Draw draws the game screen by one frame
@@ -188,10 +189,11 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 	g.Debuggers.Debug(g, screen)
 }
 
-func (g *GameScene) Load(prev SceneIndex) {
-	switch prev {
-	case gameOver:
-		g.Reset()
+func (s *GameScene) Load(st State, sm *stagehand.SceneManager[State]) {
+	s.BaseScene.Load(st, sm)
+	if s.State.ResetNeeded {
+		s.State.ResetNeeded = false
+		s.Reset()
 	}
 }
 

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"errors"
+	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -10,21 +10,19 @@ import (
 
 // PauseScreen is shown when the game is paused
 type PauseScreen struct {
+	BaseScene
 }
 
-func (p *PauseScreen) Update() (SceneIndex, error) {
+func (p *PauseScreen) Update() error {
 	if inpututil.IsKeyJustPressed(ebiten.KeyP) {
-		return gameRunning, nil
+		p.SceneManager.SwitchTo(p.State.Scenes[gameRunning])
 	}
-	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
-		return gameOver, errors.New("game quit by player")
+	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
+		os.Exit(0)
 	}
-	return gamePaused, nil
+	return nil
 }
 
 func (p *PauseScreen) Draw(screen *ebiten.Image) {
 	ebitenutil.DebugPrint(screen, "Game paused\nPress P to unpause\nPress Esc to quit")
-}
-
-func (p *PauseScreen) Load(prev SceneIndex) {
 }
