@@ -39,4 +39,5 @@ func main() {
 type Game struct {
 	Width, Height int
 	Scenes        []stagehand.Scene[State]
+	ResetNeeded   bool
 }

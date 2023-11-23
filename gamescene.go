@@ -191,7 +191,10 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 
 func (s *GameScene) Load(st State, sm *stagehand.SceneManager[State]) {
 	s.BaseScene.Load(st, sm)
-	s.Reset()
+	if s.State.ResetNeeded {
+		s.State.ResetNeeded = false
+		s.Reset()
+	}
 }
 
 func (g *GameScene) CheckFinish() bool {

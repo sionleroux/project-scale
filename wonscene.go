@@ -16,6 +16,7 @@ type WonScene struct {
 
 func (s *WonScene) Update() error {
 	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
+		s.State.ResetNeeded = true
 		s.SceneManager.SwitchTo(s.State.Scenes[gameRunning])
 	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
