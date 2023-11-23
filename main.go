@@ -4,11 +4,13 @@ import (
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/joelschutz/stagehand"
 )
+
+const screenScaleFactor = 4
 
 func main() {
 	const gameWidth, gameHeight = 320, 240
-	const screenScaleFactor = 4
 
 	ebiten.SetWindowSize(gameWidth*screenScaleFactor, gameHeight*screenScaleFactor)
 	ebiten.SetWindowTitle("project-scale")
@@ -19,45 +21,22 @@ func main() {
 		Height: gameHeight,
 	}
 
-	game.Scenes = []Scene{
+	game.Scenes = []stagehand.Scene[State]{
 		&StartScene{},
 		NewGameScene(game),
 		&PauseScreen{},
-		&SceneOver{},
-		&SceneWon{},
+		&OverScene{},
+		&WonScene{},
 	}
 
-	if err := ebiten.RunGame(game); err != nil {
+	sceneManager := stagehand.NewSceneManager[State](game.Scenes[gameStart], State{Game: game})
+
+	if err := ebiten.RunGame(sceneManager); err != nil {
 		log.Fatal(err)
 	}
 }
 
 type Game struct {
 	Width, Height int
-	Scenes        []Scene
-	CurrentScene  SceneIndex
-}
-
-// Update updates the inner game scene by one tick
-func (g *Game) Update() error {
-	prevScene := g.CurrentScene
-	nextScene, err := g.Scenes[g.CurrentScene].Update()
-	if err != nil {
-		return err
-	}
-	if prevScene != nextScene {
-		g.Scenes[nextScene].Load(prevScene)
-	}
-	g.CurrentScene = nextScene
-	return nil
-}
-
-// Draw delegates drawing to the inner game scene
-func (g *Game) Draw(screen *ebiten.Image) {
-	g.Scenes[g.CurrentScene].Draw(screen)
-}
-
-// Layout is hardcoded for now, may be made dynamic in future
-func (g *Game) Layout(outsideWidth int, outsideHeight int) (screenWidth int, screenHeight int) {
-	return g.Width, g.Height
+	Scenes        []stagehand.Scene[State]
 }
