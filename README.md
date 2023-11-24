@@ -25,3 +25,6 @@ The project has a very simple, flat structure, the first place to start looking 
 
 Here is a top-level state diagram using the animation states of the "Nanobot" player character:
 ![Nanobot State Diagram](docs/nanobot.png)
+
+And a similar top-level state diagram showing the transitions between different scenes in the game:
+![Scenes State Diagram](docs/scenes.png)

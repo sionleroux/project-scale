@@ -1,0 +1,37 @@
+@startuml
+hide empty description
+
+title Scenes State Diagram
+footer Siôn le Roux 2023-11-13\ngithub.com/sinisterstuf/project-scale
+
+state "Loading Scene" as Load
+state "Start Scene" as Start
+state "Settings Scene" as Settings
+state "Credits Scene" as Credits
+state "Win Scene" as Win
+state "Game Over Scene" as Over
+state "Pause Scene" as Pause
+state "Game Scene" as Game
+
+[*] --> Load
+Load -right-> Start : all assets loaded
+Start -up-> Game : "start" menu item selected
+Start --> Settings : "settings" menu item selected
+Start --> Credits : "credits" menu item selected
+Start --> [*] : "quit" menu item selected
+
+Settings --> Start : back/menu button pressed
+Credits --> Start : back/menu button pressed
+
+Game --> Pause : pause/menu button pressed
+Game --> Win : player reaches top of the level
+Game --> Over : water reaches player
+
+Pause --> Game : action button pressed
+Pause --> Start : back button pressed
+
+Win --> Start : back/menu button pressed
+Over --> Start : back/menu button pressed
+Over --> Game : action button pressed (game must reset)
+
+@enduml
