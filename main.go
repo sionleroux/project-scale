@@ -22,7 +22,7 @@ func main() {
 	}
 
 	game.Scenes = []stagehand.Scene[State]{
-		&StartScene{},
+		NewStartScene(),
 		NewGameScene(game),
 		&PauseScreen{},
 		&OverScene{},
