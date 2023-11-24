@@ -1,7 +1,6 @@
 package main
 
 import (
-	"image"
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -11,10 +10,8 @@ import (
 
 type StartScene struct {
 	BaseScene
-	BackgroundSprite *SpriteSheet
+	BackgroundSprite *SpriteAnimation
 	TextRenderer     *StartTextRenderer
-	Frame            int
-	Tick             int
 	Transition       bool
 }
 
@@ -24,14 +21,13 @@ type StartTextRenderer struct {
 }
 
 func (s *StartScene) Update() error {
-	s.Tick++
 	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
 		s.Transition = true
 	}
 
 	if s.Transition {
-		s.Frame = Animate(s.Frame, s.Tick, s.BackgroundSprite.Meta.FrameTags[1])
-		if s.Frame == s.BackgroundSprite.Meta.FrameTags[1].To {
+
+		if s.BackgroundSprite.Update(1) {
 			s.SceneManager.SwitchTo(s.State.Scenes[gameRunning])
 		}
 	}
@@ -39,15 +35,7 @@ func (s *StartScene) Update() error {
 }
 
 func (s *StartScene) Draw(screen *ebiten.Image) {
-	sprite := s.BackgroundSprite
-	frame := sprite.Sprite[s.Frame]
-
-	screen.DrawImage(sprite.Image.SubImage(image.Rect(
-		frame.Position.X,
-		frame.Position.Y,
-		frame.Position.X+frame.Position.W,
-		frame.Position.Y+frame.Position.H,
-	)).(*ebiten.Image), &ebiten.DrawImageOptions{})
+	screen.DrawImage(s.BackgroundSprite.GetImage(), &ebiten.DrawImageOptions{})
 
 	if !s.Transition {
 		s.TextRenderer.Draw(screen, "Press SPACE to start")
@@ -56,11 +44,9 @@ func (s *StartScene) Draw(screen *ebiten.Image) {
 
 func NewStartScene() *StartScene {
 	return &StartScene{
-		BackgroundSprite: loadSprite("Menu"),
+		BackgroundSprite: NewSpriteAnimation("Menu"),
 		TextRenderer:     NewStartTextRenderer(),
-		Frame:            0,
 	}
-
 }
 
 func NewStartTextRenderer() *StartTextRenderer {
