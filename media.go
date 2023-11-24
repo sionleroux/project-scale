@@ -77,19 +77,6 @@ type SpriteSheet struct {
 	Image  *ebiten.Image
 }
 
-// SpriteType is a unique identifier to load a sprite by name
-type SpriteType uint64
-
-const (
-	spritePlayer SpriteType = iota
-	spriteDog
-	spriteZombieSprinter
-	spriteZombieBig
-	spriteZombieCrawler
-)
-
-const zombieVariants = 4
-
 // Load a sprite image and associated meta-data given a file name (without
 // extension)
 func loadSprite(name string) *SpriteSheet {
@@ -237,31 +224,11 @@ func loadMaps(name string) *ldtkgo.Project {
 type SoundType uint8
 
 const (
-	musicBackground SoundType = iota
+	menuBackground SoundType = iota
 )
 
 const (
-	soundGunShot SoundType = iota
-	soundGunReload
-	soundDogBark
-	soundPlayerDies
-	soundHit
-	soundDryFire
-	soundZombieScream
-	soundZombieGrowl
-	soundZombieDeath
-	soundBigZombieSound
-	soundBigZombieDeath1
-	soundBigZombieScream
-	soundBigZombieDeath2
-)
-
-const (
-	voiceCheckpoint SoundType = iota
-	voiceRespawn
-	voiceKill
-	voiceFlavour
-	voiceEndgame
+	voiceStartGame SoundType = iota
 )
 
 // Sound stores and plays all the sound variants for one single soundType

@@ -5,6 +5,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/joelschutz/stagehand"
 	"github.com/tinne26/etxt"
 )
 
@@ -14,6 +15,8 @@ type StartScene struct {
 	ButtonSprite     *SpriteAnimation
 	TextRenderer     *StartTextRenderer
 	TransitionPhase  int
+	Music            *MusicLoop
+	Voice            Sound
 }
 
 type StartTextRenderer struct {
@@ -24,6 +27,8 @@ type StartTextRenderer struct {
 func (s *StartScene) Update() error {
 	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
 		s.TransitionPhase = 1
+		s.Music.Pause()
+		s.Voice.Play()
 	}
 
 	if s.TransitionPhase == 1 {
@@ -55,10 +60,18 @@ func (s *StartScene) Draw(screen *ebiten.Image) {
 }
 
 func NewStartScene() *StartScene {
+	voice := Sound{Volume: 0.5}
+	voice.AddSound("assets/voices/Start_button", sampleRate, context)
+
+	bgMusic := NewMusicPlayer(loadSoundFile("assets/music/Start_menu_idle.ogg", sampleRate))
+	bgMusic.SetVolume(0.7)
+
 	return &StartScene{
 		BackgroundSprite: NewSpriteAnimation("Menu"),
 		ButtonSprite:     NewSpriteAnimation("Start button"),
 		TextRenderer:     NewStartTextRenderer(),
+		Music:            bgMusic,
+		Voice:            voice,
 	}
 }
 
@@ -75,4 +88,9 @@ func (r StartTextRenderer) Draw(screen *ebiten.Image, text string) {
 	r.SetTarget(screen)
 	r.SetColor(color.RGBA{0xff, 0xff, 0xff, r.alpha})
 	r.Renderer.Draw(text, screen.Bounds().Dx()/2, screen.Bounds().Dy()/8*7)
+}
+
+func (s *StartScene) Load(st State, sm *stagehand.SceneManager[State]) {
+	s.BaseScene.Load(st, sm)
+	s.Music.Play()
 }
