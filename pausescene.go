@@ -4,7 +4,6 @@ import (
 	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
@@ -24,5 +23,5 @@ func (p *PauseScreen) Update() error {
 }
 
 func (p *PauseScreen) Draw(screen *ebiten.Image) {
-	ebitenutil.DebugPrint(screen, "Game paused\nPress P to unpause\nPress Esc to quit")
+	p.State.TextRenderer.Draw(screen, "Game paused\nPress P to unpause\nPress Esc to quit", 8, 50, 50)
 }
