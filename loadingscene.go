@@ -54,8 +54,6 @@ func (s *LoadingScene) Draw(screen *ebiten.Image) {
 	if int(*s.Counter) < len(loadingWhat) {
 		whatTxt = loadingWhat[*s.Counter]
 	}
-	s.State.TextRenderer.Draw(screen, "Loading..."+whatTxt, 8,
-		screen.Bounds().Dx()/2,
-		screen.Bounds().Dy()/8*7)
+	s.State.TextRenderer.Draw(screen, "Loading..."+whatTxt, 8, 50, 85)
 
 }

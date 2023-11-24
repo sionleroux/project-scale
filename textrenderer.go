@@ -23,9 +23,11 @@ func NewTextRenderer(fontName string) *TextRenderer {
 	return &TextRenderer{r, 0xff}
 }
 
-func (r *TextRenderer) Draw(screen *ebiten.Image, text string, size int, x int, y int) {
+// xRatio is where to align horizontally: 0 = left, 100 = right
+// yRatio is where to align vertiocally: 0 = top, 100 = bottom
+func (r *TextRenderer) Draw(screen *ebiten.Image, text string, size int, xRatio int, yRatio int) {
 	r.SetTarget(screen)
 	r.SetColor(color.RGBA{0xff, 0xff, 0xff, r.alpha})
 	r.SetSizePx(size)
-	r.Renderer.Draw(text, x, y)
+	r.Renderer.Draw(text, screen.Bounds().Dx()*xRatio/100, screen.Bounds().Dy()*yRatio/100)
 }

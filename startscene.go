@@ -52,7 +52,7 @@ func (s *StartScene) Draw(screen *ebiten.Image) {
 	}
 
 	if s.TransitionPhase == 0 {
-		s.State.TextRenderer.Draw(screen, "Press SPACE to start", 8, screen.Bounds().Dx()/2, screen.Bounds().Dy()/8*7)
+		s.State.TextRenderer.Draw(screen, "Press SPACE to start", 8, 50, 85)
 	}
 }
 
