@@ -1,8 +1,6 @@
 package main
 
 import (
-	"image/color"
-
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/joelschutz/stagehand"
@@ -13,7 +11,6 @@ type StartScene struct {
 	BaseScene
 	BackgroundSprite *SpriteAnimation
 	ButtonSprite     *SpriteAnimation
-	TextRenderer     *StartTextRenderer
 	TransitionPhase  int
 	Music            *MusicLoop
 	Voice            Sound
@@ -55,7 +52,7 @@ func (s *StartScene) Draw(screen *ebiten.Image) {
 	}
 
 	if s.TransitionPhase == 0 {
-		s.TextRenderer.Draw(screen, "Press SPACE to start")
+		s.State.TextRenderer.Draw(screen, "Press SPACE to start", 8, screen.Bounds().Dx()/2, screen.Bounds().Dy()/8*7)
 	}
 }
 
@@ -69,25 +66,9 @@ func NewStartScene() *StartScene {
 	return &StartScene{
 		BackgroundSprite: NewSpriteAnimation("Menu"),
 		ButtonSprite:     NewSpriteAnimation("Start button"),
-		TextRenderer:     NewStartTextRenderer(),
 		Music:            bgMusic,
 		Voice:            voice,
 	}
-}
-
-func NewStartTextRenderer() *StartTextRenderer {
-	font := loadFont("assets/fonts/PixelOperator8-Bold.ttf")
-	r := etxt.NewStdRenderer()
-	r.SetFont(font)
-	r.SetAlign(etxt.YCenter, etxt.XCenter)
-	r.SetSizePx(8)
-	return &StartTextRenderer{r, 0xff}
-}
-
-func (r StartTextRenderer) Draw(screen *ebiten.Image, text string) {
-	r.SetTarget(screen)
-	r.SetColor(color.RGBA{0xff, 0xff, 0xff, r.alpha})
-	r.Renderer.Draw(text, screen.Bounds().Dx()/2, screen.Bounds().Dy()/8*7)
 }
 
 func (s *StartScene) Load(st State, sm *stagehand.SceneManager[State]) {

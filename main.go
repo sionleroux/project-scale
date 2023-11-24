@@ -17,8 +17,9 @@ func main() {
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 
 	game := &Game{
-		Width:  gameWidth,
-		Height: gameHeight,
+		Width:        gameWidth,
+		Height:       gameHeight,
+		TextRenderer: NewTextRenderer("assets/fonts/PixelOperator8-Bold.ttf"),
 	}
 
 	loadingScene := NewLoadingScene()
@@ -45,4 +46,5 @@ type Game struct {
 	Width, Height int
 	Scenes        []stagehand.Scene[State]
 	ResetNeeded   bool
+	TextRenderer  *TextRenderer
 }
