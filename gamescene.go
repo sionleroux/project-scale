@@ -7,6 +7,7 @@ package main
 import (
 	"log"
 	"math"
+	"time"
 
 	"github.com/joelschutz/stagehand"
 	"github.com/sinisterstuf/project-scale/camera"
@@ -180,6 +181,10 @@ func (g *GameScene) Update() error {
 	g.Water.Update()
 
 	if g.CheckDeath() {
+		g.State.Stat.LastHighestPoint = (g.StartPos[1] - int(g.Player.Y)) / gridSize
+		if g.State.Stat.LastHighestPoint > g.State.Stat.HighestPoint {
+			g.State.Stat.HighestPoint = g.State.Stat.LastHighestPoint
+		}
 		g.SceneManager.SwitchTo(g.State.Scenes[gameOver])
 		return nil
 	}
@@ -202,11 +207,12 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 	g.Debuggers.Debug(g, screen)
 }
 
-func (s *GameScene) Load(st State, sm *stagehand.SceneManager[State]) {
-	s.BaseScene.Load(st, sm)
-	if s.State.ResetNeeded {
-		s.State.ResetNeeded = false
-		s.Reset()
+func (g *GameScene) Load(st State, sm *stagehand.SceneManager[State]) {
+	g.BaseScene.Load(st, sm)
+	if g.State.ResetNeeded {
+		g.State.ResetNeeded = false
+		g.State.Stat.GameStart = time.Now()
+		g.Reset()
 	}
 }
 

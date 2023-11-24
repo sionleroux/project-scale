@@ -8,6 +8,7 @@ import (
 )
 
 const screenScaleFactor = 4
+const gridSize = 16
 
 func main() {
 	const gameWidth, gameHeight = 320, 240
@@ -20,6 +21,7 @@ func main() {
 		Width:        gameWidth,
 		Height:       gameHeight,
 		TextRenderer: NewTextRenderer("assets/fonts/PixelOperator8-Bold.ttf"),
+		Stat:         Stat{LastLevel: 1},
 	}
 
 	loadingScene := NewLoadingScene()
@@ -47,4 +49,5 @@ type Game struct {
 	Scenes        []stagehand.Scene[State]
 	ResetNeeded   bool
 	TextRenderer  *TextRenderer
+	Stat          Stat
 }

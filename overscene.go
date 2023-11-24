@@ -1,10 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
@@ -26,5 +26,10 @@ func (s *OverScene) Update() error {
 }
 
 func (s *OverScene) Draw(screen *ebiten.Image) {
-	ebitenutil.DebugPrint(screen, "You died\nPress space to restart\nPress Esc to quit")
+	s.State.TextRenderer.Draw(screen, "You died!", 8, 50, 10)
+	s.State.TextRenderer.Draw(screen, "Press space to restart\nPress Esc to quit", 8, 50, 80)
+	s.State.TextRenderer.Draw(screen, fmt.Sprintf(
+		"Your last climb: %d m\nYour best climb so far: %d m",
+		s.State.Stat.LastHighestPoint, s.State.Stat.HighestPoint,
+	), 8, 50, 50)
 }

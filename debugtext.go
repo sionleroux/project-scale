@@ -22,7 +22,6 @@ func init() {
 
 // DebugText prints out general debug information as text
 func DebugText(g *GameScene, screen *ebiten.Image) {
-	const gridSize = 16
 	player := g.Player
 	ebitenutil.DebugPrint(screen, fmt.Sprintf(
 		"FPS: %.2f\n"+

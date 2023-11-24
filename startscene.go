@@ -36,6 +36,7 @@ func (s *StartScene) Update() error {
 	if s.TransitionPhase == 2 {
 
 		if s.BackgroundSprite.Update(1) {
+			s.State.ResetNeeded = true
 			s.SceneManager.SwitchTo(s.State.Scenes[gameRunning])
 		}
 	}
