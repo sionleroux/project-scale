@@ -90,6 +90,7 @@ func (p *Player) updateMovement() {
 	if !p.Falling && !p.Jumping && p.Input.ActionIsJustPressed(ActionJump) {
 		p.Jumping = true
 		p.State = playerJumpstart
+		p.JumpFrom = vector.Vector{p.X, p.Y}
 	}
 
 	if p.Jumping {
@@ -252,7 +253,6 @@ func (p *Player) animationBasedStateChanges() {
 	switch p.State {
 
 	case playerJumpstart:
-		p.JumpFrom = vector.Vector{p.X, p.Y}
 		p.State = playerJumploop
 
 	case playerJumploop:
