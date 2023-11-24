@@ -18,7 +18,7 @@ import (
 	"github.com/solarlune/resolv"
 )
 
-func NewGameScene(game *Game) *GameScene {
+func NewGameScene(game *Game, loadingCount LoadingCounter) {
 
 	g := &GameScene{
 		Camera:    camera.NewCamera(game.Width, game.Height),
@@ -37,6 +37,7 @@ func NewGameScene(game *Game) *GameScene {
 		ActionJump:      {input.KeySpace, input.KeyGamepadA},
 	}
 
+	*loadingCount++
 	// Pre-render map
 	g.LDTKProject = loadMaps("assets/maps/Project scale.ldtk")
 	g.TileRenderer = NewTileRenderer(&EmbedLoader{"assets/maps"})
@@ -73,6 +74,15 @@ func NewGameScene(game *Game) *GameScene {
 		tilesToObstacles(level.LayerByIdentifier(layerName), g.Space)
 	}
 
+	// SoundLoops
+	*loadingCount++
+
+	// Sounds
+	*loadingCount++
+
+	// Entities
+	*loadingCount++
+
 	// Finish point
 	entities := level.LayerByIdentifier(LayerEntities)
 	finishPos := entities.EntityByIdentifier(EntityFinish)
@@ -100,7 +110,10 @@ func NewGameScene(game *Game) *GameScene {
 
 	g.Water = NewWater(float64(level.Height) + 4*g.Player.H)
 
-	return g
+	// Done
+	*loadingCount++
+	game.Scenes[gameRunning] = g
+	game.Scenes[gameLoading].(*LoadingScene).Loaded = true
 }
 
 // GameScene represents the main game state

@@ -21,15 +21,20 @@ func main() {
 		Height: gameHeight,
 	}
 
+	loadingScene := NewLoadingScene()
+
 	game.Scenes = []stagehand.Scene[State]{
+		loadingScene,
 		NewStartScene(),
-		NewGameScene(game),
+		&GameScene{},
 		&PauseScreen{},
 		&OverScene{},
 		&WonScene{},
 	}
 
-	sceneManager := stagehand.NewSceneManager[State](game.Scenes[gameStart], game)
+	sceneManager := stagehand.NewSceneManager[State](game.Scenes[gameLoading], game)
+
+	go NewGameScene(game, game.Scenes[gameLoading].(*LoadingScene).Counter)
 
 	if err := ebiten.RunGame(sceneManager); err != nil {
 		log.Fatal(err)

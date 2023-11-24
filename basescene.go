@@ -28,7 +28,8 @@ func (s *BaseScene) Unload() State {
 type SceneIndex int
 
 const (
-	gameStart   SceneIndex = iota // Game start screen is shown
+	gameLoading SceneIndex = iota // Game is loading
+	gameStart                     // Game start screen is shown
 	gameRunning                   // The game is running the main game code
 	gamePaused                    // The game is paused temporarily
 	gameOver                      // The game has ended because you died
