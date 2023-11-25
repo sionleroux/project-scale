@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 
@@ -41,4 +42,11 @@ func (s *Stat) Save() {
 	}
 
 	m.SaveItem("Stat.HighestPoint", []byte(strconv.Itoa(s.HighestPoint)))
+}
+
+func (s *Stat) GetText() string {
+	return fmt.Sprintf(
+		"Your last climb: %d m\nYour best climb so far: %d m",
+		s.LastHighestPoint, s.HighestPoint,
+	)
 }

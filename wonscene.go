@@ -4,7 +4,6 @@ import (
 	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
@@ -26,5 +25,7 @@ func (s *WonScene) Update() error {
 }
 
 func (s *WonScene) Draw(screen *ebiten.Image) {
-	ebitenutil.DebugPrint(screen, "You died\nPress space to restart\nPress Esc to quit")
+	s.State.TextRenderer.Draw(screen, "You WON!", 8, 50, 10)
+	s.State.TextRenderer.Draw(screen, "Press space to restart\nPress Esc to quit", 8, 50, 80)
+	s.State.TextRenderer.Draw(screen, s.State.Stat.GetText(), 8, 50, 50)
 }
