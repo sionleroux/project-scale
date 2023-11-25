@@ -21,8 +21,10 @@ func main() {
 		Width:        gameWidth,
 		Height:       gameHeight,
 		TextRenderer: NewTextRenderer("assets/fonts/PixelOperator8-Bold.ttf"),
-		Stat:         Stat{LastLevel: 1},
+		Stat:         &Stat{},
 	}
+
+	game.Stat.Load()
 
 	loadingScene := NewLoadingScene()
 
@@ -49,5 +51,5 @@ type Game struct {
 	Scenes        []stagehand.Scene[State]
 	ResetNeeded   bool
 	TextRenderer  *TextRenderer
-	Stat          Stat
+	Stat          *Stat
 }

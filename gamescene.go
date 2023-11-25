@@ -187,6 +187,7 @@ func (g *GameScene) Update() error {
 		g.State.Stat.LastHighestPoint = (g.StartPos[1] - int(g.Player.Y)) / gridSize
 		if g.State.Stat.LastHighestPoint > g.State.Stat.HighestPoint {
 			g.State.Stat.HighestPoint = g.State.Stat.LastHighestPoint
+			g.State.Stat.Save()
 		}
 		g.SceneManager.SwitchTo(g.State.Scenes[gameOver])
 		return nil

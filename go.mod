@@ -20,6 +20,7 @@ require (
 	github.com/jfreymuth/vorbis v1.0.2 // indirect
 	github.com/joelschutz/stagehand v1.0.0 // indirect
 	github.com/quartercastle/vector v0.2.0 // indirect
+	github.com/quasilyte/gdata v0.8.1 // indirect
 	github.com/quasilyte/gmath v0.0.0-20221217210116-fba37a2e15c7 // indirect
 	github.com/tidwall/gjson v1.6.4 // indirect
 	github.com/tidwall/match v1.0.1 // indirect

@@ -49,6 +49,8 @@ github.com/quartercastle/vector v0.2.0 h1:qpVsHi7S624B/NrUl6Osfs6F25kKaZJI+gteUI
 github.com/quartercastle/vector v0.2.0/go.mod h1:jRB+p+Bk9qkkZHC72+N6fztVgih6kYslX0vk+3dL5V4=
 github.com/quasilyte/ebitengine-input v0.9.0 h1:EwkWsPjftAF46ZwhVDMWlWTImPjHRz+F5lNYqbDZNLw=
 github.com/quasilyte/ebitengine-input v0.9.0/go.mod h1:HRIFIBHHRkQbZASa/95EM6pxUnjxca+g+TFdnGE6QnA=
+github.com/quasilyte/gdata v0.8.1 h1:cR9TFUHrRciVq1E4hqofan6jcQvmJd9lM1E7YLeUfi8=
+github.com/quasilyte/gdata v0.8.1/go.mod h1:VZbd2RCpKR2cbTGuLC1Esnyl1+KFv/jXBJrs/ijL8TA=
 github.com/quasilyte/gmath v0.0.0-20221217210116-fba37a2e15c7 h1:mvIS9aGirkzuYmHHNWAP6sLRoA5VFaIzMoFdPmqgPdY=
 github.com/quasilyte/gmath v0.0.0-20221217210116-fba37a2e15c7/go.mod h1:EbI+KMbALSVE2s0YFOQpR4uj66zBh9ter5P4CBMSuvA=
 github.com/solarlune/ldtkgo v0.9.3 h1:pPgbO68AlhRzb9hynGoWxuZpYkmxmG0bjuFYpTdH9rQ=
