@@ -235,6 +235,7 @@ const (
 type Sound struct {
 	Audio      []SoundData
 	LastPlayed *audio.Player
+	LastIndex  int
 	Volume     float64
 }
 
@@ -285,6 +286,7 @@ func (s *Sound) PlayVariant(i int) {
 		return
 	}
 	sound := NewSoundPlayer(s.Audio[i])
+	s.LastIndex = i
 	s.LastPlayed = sound
 	sound.SetVolume(s.Volume)
 	sound.Play()
@@ -293,6 +295,20 @@ func (s *Sound) PlayVariant(i int) {
 // Pause pauses the audio being played
 func (s *Sound) Pause() {
 	s.LastPlayed.Pause()
+}
+
+// Resume resumes the last played audio
+func (s *Sound) Resume() {
+	s.LastPlayed.Play()
+}
+
+// Next plays the next audio from the list
+func (s *Sound) PlayNext() {
+	i := s.LastIndex + 1
+	if i >= len(s.Audio) {
+		i = 0
+	}
+	s.PlayVariant(i)
 }
 
 // IsPlaying returns if the sound is playing

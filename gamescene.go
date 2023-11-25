@@ -77,6 +77,8 @@ func NewGameScene(game *Game, loadingCount LoadingCounter) {
 
 	// SoundLoops
 	*loadingCount++
+	g.Music = &Sound{Volume: 0.5}
+	g.Music.AddSound("assets/music/Game-music", sampleRate, context, 2)
 
 	// Sounds
 	*loadingCount++
@@ -134,6 +136,7 @@ type GameScene struct {
 	Water        *Water
 	StartPos     []int
 	Backdrops    Backdrops
+	Music        *Sound
 }
 
 // Update calculates game logic
@@ -189,6 +192,10 @@ func (g *GameScene) Update() error {
 		return nil
 	}
 
+	if !g.Music.IsPlaying() {
+		g.Music.PlayNext()
+	}
+
 	return nil
 }
 
@@ -213,7 +220,17 @@ func (g *GameScene) Load(st State, sm *stagehand.SceneManager[State]) {
 		g.State.ResetNeeded = false
 		g.State.Stat.GameStart = time.Now()
 		g.Reset()
+		g.Music.PlayNext()
+	} else {
+		g.Music.Resume()
 	}
+
+}
+
+func (g *GameScene) Unload() State {
+	g.Music.Pause()
+
+	return g.BaseScene.Unload()
 }
 
 func (g *GameScene) CheckFinish() bool {
