@@ -8,22 +8,18 @@ import (
 )
 
 type Shaker struct {
-	Ease         *gween.Tween
-	Done         bool
-	time         float64
-	maxMagnitude float32
-	maxTime      float32
-	period       float64
+	Ease   *gween.Tween
+	Done   bool
+	time   float64
+	period float64 // loops every this much
 }
 
-func NewShaker() *Shaker {
+func NewShaker(maxMagnitude, maxTime float32, period float64) *Shaker {
 	s := &Shaker{
-		maxMagnitude: 10,
-		maxTime:      40,
-		period:       10, // loops every this much
+		period: period,
 	}
-	s.Ease = gween.New(s.maxMagnitude, 0, s.maxTime, ease.OutExpo)
-	s.Ease.Set(s.maxTime)
+	s.Ease = gween.New(maxMagnitude, 0, maxTime, ease.OutExpo)
+	s.Ease.Set(maxTime)
 	return s
 }
 

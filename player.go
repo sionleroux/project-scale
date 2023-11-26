@@ -211,7 +211,7 @@ func (p *Player) move(dx, dy float64) {
 					}
 					if p.Jumping && p.State != playerJumpendwall {
 						p.State = playerJumpendwall
-						p.Camera.Shake()
+						p.Camera.Shake(camera.NewShaker(10, 40, 10))
 						dy -= intersection.MTV.Y()
 						if intersection.MTV.Y() != 0 {
 							log.Println("MTV Y:", intersection.MTV.Y())
