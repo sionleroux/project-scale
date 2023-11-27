@@ -1564,276 +1564,6 @@
     "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 16 },
     "sourceSize": { "w": 16, "h": 16 },
     "duration": 100
-   },
-   {
-    "filename": "Nanobot 174.aseprite",
-    "frame": { "x": 2784, "y": 0, "w": 16, "h": 16 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 16 },
-    "sourceSize": { "w": 16, "h": 16 },
-    "duration": 100
-   },
-   {
-    "filename": "Nanobot 175.aseprite",
-    "frame": { "x": 2800, "y": 0, "w": 16, "h": 16 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 16 },
-    "sourceSize": { "w": 16, "h": 16 },
-    "duration": 100
-   },
-   {
-    "filename": "Nanobot 176.aseprite",
-    "frame": { "x": 2816, "y": 0, "w": 16, "h": 16 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 16 },
-    "sourceSize": { "w": 16, "h": 16 },
-    "duration": 100
-   },
-   {
-    "filename": "Nanobot 177.aseprite",
-    "frame": { "x": 2832, "y": 0, "w": 16, "h": 16 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 16 },
-    "sourceSize": { "w": 16, "h": 16 },
-    "duration": 100
-   },
-   {
-    "filename": "Nanobot 178.aseprite",
-    "frame": { "x": 2848, "y": 0, "w": 16, "h": 16 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 16 },
-    "sourceSize": { "w": 16, "h": 16 },
-    "duration": 100
-   },
-   {
-    "filename": "Nanobot 179.aseprite",
-    "frame": { "x": 2864, "y": 0, "w": 16, "h": 16 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 16 },
-    "sourceSize": { "w": 16, "h": 16 },
-    "duration": 100
-   },
-   {
-    "filename": "Nanobot 180.aseprite",
-    "frame": { "x": 2880, "y": 0, "w": 16, "h": 16 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 16 },
-    "sourceSize": { "w": 16, "h": 16 },
-    "duration": 100
-   },
-   {
-    "filename": "Nanobot 181.aseprite",
-    "frame": { "x": 2896, "y": 0, "w": 16, "h": 16 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 16 },
-    "sourceSize": { "w": 16, "h": 16 },
-    "duration": 100
-   },
-   {
-    "filename": "Nanobot 182.aseprite",
-    "frame": { "x": 2912, "y": 0, "w": 16, "h": 16 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 16 },
-    "sourceSize": { "w": 16, "h": 16 },
-    "duration": 100
-   },
-   {
-    "filename": "Nanobot 183.aseprite",
-    "frame": { "x": 2928, "y": 0, "w": 16, "h": 16 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 16 },
-    "sourceSize": { "w": 16, "h": 16 },
-    "duration": 100
-   },
-   {
-    "filename": "Nanobot 184.aseprite",
-    "frame": { "x": 2944, "y": 0, "w": 16, "h": 16 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 16 },
-    "sourceSize": { "w": 16, "h": 16 },
-    "duration": 100
-   },
-   {
-    "filename": "Nanobot 185.aseprite",
-    "frame": { "x": 2960, "y": 0, "w": 16, "h": 16 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 16 },
-    "sourceSize": { "w": 16, "h": 16 },
-    "duration": 100
-   },
-   {
-    "filename": "Nanobot 186.aseprite",
-    "frame": { "x": 2976, "y": 0, "w": 16, "h": 16 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 16 },
-    "sourceSize": { "w": 16, "h": 16 },
-    "duration": 100
-   },
-   {
-    "filename": "Nanobot 187.aseprite",
-    "frame": { "x": 2992, "y": 0, "w": 16, "h": 16 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 16 },
-    "sourceSize": { "w": 16, "h": 16 },
-    "duration": 100
-   },
-   {
-    "filename": "Nanobot 188.aseprite",
-    "frame": { "x": 3008, "y": 0, "w": 16, "h": 16 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 16 },
-    "sourceSize": { "w": 16, "h": 16 },
-    "duration": 100
-   },
-   {
-    "filename": "Nanobot 189.aseprite",
-    "frame": { "x": 3024, "y": 0, "w": 16, "h": 16 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 16 },
-    "sourceSize": { "w": 16, "h": 16 },
-    "duration": 100
-   },
-   {
-    "filename": "Nanobot 190.aseprite",
-    "frame": { "x": 3040, "y": 0, "w": 16, "h": 16 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 16 },
-    "sourceSize": { "w": 16, "h": 16 },
-    "duration": 100
-   },
-   {
-    "filename": "Nanobot 191.aseprite",
-    "frame": { "x": 3056, "y": 0, "w": 16, "h": 16 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 16 },
-    "sourceSize": { "w": 16, "h": 16 },
-    "duration": 100
-   },
-   {
-    "filename": "Nanobot 192.aseprite",
-    "frame": { "x": 3072, "y": 0, "w": 16, "h": 16 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 16 },
-    "sourceSize": { "w": 16, "h": 16 },
-    "duration": 100
-   },
-   {
-    "filename": "Nanobot 193.aseprite",
-    "frame": { "x": 3088, "y": 0, "w": 16, "h": 16 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 16 },
-    "sourceSize": { "w": 16, "h": 16 },
-    "duration": 100
-   },
-   {
-    "filename": "Nanobot 194.aseprite",
-    "frame": { "x": 3104, "y": 0, "w": 16, "h": 16 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 16 },
-    "sourceSize": { "w": 16, "h": 16 },
-    "duration": 100
-   },
-   {
-    "filename": "Nanobot 195.aseprite",
-    "frame": { "x": 3120, "y": 0, "w": 16, "h": 16 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 16 },
-    "sourceSize": { "w": 16, "h": 16 },
-    "duration": 100
-   },
-   {
-    "filename": "Nanobot 196.aseprite",
-    "frame": { "x": 3136, "y": 0, "w": 16, "h": 16 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 16 },
-    "sourceSize": { "w": 16, "h": 16 },
-    "duration": 100
-   },
-   {
-    "filename": "Nanobot 197.aseprite",
-    "frame": { "x": 3152, "y": 0, "w": 16, "h": 16 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 16 },
-    "sourceSize": { "w": 16, "h": 16 },
-    "duration": 100
-   },
-   {
-    "filename": "Nanobot 198.aseprite",
-    "frame": { "x": 3168, "y": 0, "w": 16, "h": 16 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 16 },
-    "sourceSize": { "w": 16, "h": 16 },
-    "duration": 100
-   },
-   {
-    "filename": "Nanobot 199.aseprite",
-    "frame": { "x": 3184, "y": 0, "w": 16, "h": 16 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 16 },
-    "sourceSize": { "w": 16, "h": 16 },
-    "duration": 100
-   },
-   {
-    "filename": "Nanobot 200.aseprite",
-    "frame": { "x": 3200, "y": 0, "w": 16, "h": 16 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 16 },
-    "sourceSize": { "w": 16, "h": 16 },
-    "duration": 100
-   },
-   {
-    "filename": "Nanobot 201.aseprite",
-    "frame": { "x": 3216, "y": 0, "w": 16, "h": 16 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 16 },
-    "sourceSize": { "w": 16, "h": 16 },
-    "duration": 100
-   },
-   {
-    "filename": "Nanobot 202.aseprite",
-    "frame": { "x": 3232, "y": 0, "w": 16, "h": 16 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 16 },
-    "sourceSize": { "w": 16, "h": 16 },
-    "duration": 100
-   },
-   {
-    "filename": "Nanobot 203.aseprite",
-    "frame": { "x": 3248, "y": 0, "w": 16, "h": 16 },
-    "rotated": false,
-    "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 16, "h": 16 },
-    "sourceSize": { "w": 16, "h": 16 },
-    "duration": 100
    }
  ],
  "meta": {
@@ -1841,40 +1571,37 @@
   "version": "1.3-rc4-dev",
   "image": "Nanobot.png",
   "format": "I8",
-  "size": { "w": 3264, "h": 16 },
+  "size": { "w": 2784, "h": 16 },
   "scale": "1",
   "frameTags": [
    { "name": "Idle", "from": 0, "to": 3, "direction": "forward", "color": "#000000ff" },
-   { "name": "Climb up", "from": 4, "to": 11, "direction": "forward", "color": "#000000ff" },
-   { "name": "Climb down", "from": 12, "to": 19, "direction": "forward", "color": "#000000ff" },
-   { "name": "Climb right", "from": 20, "to": 25, "direction": "forward", "color": "#000000ff" },
-   { "name": "Climb left", "from": 26, "to": 31, "direction": "forward", "color": "#000000ff" },
-   { "name": "Lean start", "from": 32, "to": 44, "direction": "forward", "color": "#000000ff" },
-   { "name": "Lean loop", "from": 45, "to": 48, "direction": "forward", "color": "#000000ff" },
-   { "name": "Lean end", "from": 49, "to": 52, "direction": "forward", "color": "#000000ff" },
-   { "name": "Push wall start", "from": 53, "to": 61, "direction": "forward", "color": "#000000ff" },
-   { "name": "Push wall loop", "from": 62, "to": 68, "direction": "forward", "color": "#000000ff" },
-   { "name": "Push wall end", "from": 69, "to": 77, "direction": "forward", "color": "#000000ff" },
-   { "name": "no grip loop", "from": 78, "to": 85, "direction": "forward", "color": "#000000ff" },
-   { "name": "Jump start", "from": 86, "to": 90, "direction": "forward", "color": "#000000ff" },
-   { "name": "Jump loop", "from": 91, "to": 94, "direction": "forward", "color": "#000000ff" },
-   { "name": "Jump end floor", "from": 95, "to": 98, "direction": "forward", "color": "#000000ff" },
-   { "name": "Jump end mantle", "from": 99, "to": 107, "direction": "forward", "color": "#000000ff" },
-   { "name": "Jump end wall", "from": 108, "to": 126, "direction": "forward", "color": "#000000ff" },
-   { "name": "Slip start", "from": 127, "to": 129, "direction": "forward", "color": "#000000ff" },
-   { "name": "Slip loop", "from": 130, "to": 133, "direction": "forward", "color": "#000000ff" },
-   { "name": "Slip end", "from": 134, "to": 139, "direction": "forward", "color": "#000000ff" },
-   { "name": "Fall start", "from": 140, "to": 141, "direction": "forward", "color": "#000000ff" },
-   { "name": "Fall loop", "from": 142, "to": 145, "direction": "forward", "color": "#000000ff" },
-   { "name": "Fall end floor", "from": 146, "to": 153, "direction": "forward", "color": "#000000ff" },
-   { "name": "Fall end wall", "from": 154, "to": 162, "direction": "forward", "color": "#000000ff" },
-   { "name": "Stand", "from": 163, "to": 166, "direction": "forward", "color": "#000000ff" },
-   { "name": "Walk right", "from": 167, "to": 172, "direction": "forward", "color": "#000000ff" },
-   { "name": "Walk left", "from": 173, "to": 178, "direction": "forward", "color": "#000000ff" },
-   { "name": "Switch to topview", "from": 179, "to": 189, "direction": "forward", "color": "#000000ff" },
-   { "name": "Grapple start", "from": 190, "to": 194, "direction": "forward", "color": "#000000ff" },
-   { "name": "Grapple loop", "from": 195, "to": 198, "direction": "forward", "color": "#000000ff" },
-   { "name": "Grapple End", "from": 199, "to": 203, "direction": "forward", "color": "#000000ff" }
+   { "name": "Climb", "from": 4, "to": 11, "direction": "forward", "color": "#000000ff" },
+   { "name": "Lean start", "from": 12, "to": 24, "direction": "forward", "color": "#000000ff" },
+   { "name": "Lean loop", "from": 25, "to": 28, "direction": "forward", "color": "#000000ff" },
+   { "name": "Lean end", "from": 29, "to": 32, "direction": "forward", "color": "#000000ff" },
+   { "name": "Push wall start", "from": 33, "to": 41, "direction": "forward", "color": "#000000ff" },
+   { "name": "Push wall loop", "from": 42, "to": 48, "direction": "forward", "color": "#000000ff" },
+   { "name": "Push wall end", "from": 49, "to": 57, "direction": "forward", "color": "#000000ff" },
+   { "name": "No grip", "from": 58, "to": 65, "direction": "forward", "color": "#000000ff" },
+   { "name": "Jump start", "from": 66, "to": 70, "direction": "forward", "color": "#000000ff" },
+   { "name": "Jump loop", "from": 71, "to": 74, "direction": "forward", "color": "#000000ff" },
+   { "name": "Jump end floor", "from": 75, "to": 78, "direction": "forward", "color": "#000000ff" },
+   { "name": "Jump end mantle", "from": 79, "to": 87, "direction": "forward", "color": "#000000ff" },
+   { "name": "Jump end wall", "from": 88, "to": 96, "direction": "forward", "color": "#000000ff" },
+   { "name": "Slip start", "from": 97, "to": 99, "direction": "forward", "color": "#000000ff" },
+   { "name": "Slip loop", "from": 100, "to": 103, "direction": "forward", "color": "#000000ff" },
+   { "name": "Slip end", "from": 104, "to": 109, "direction": "forward", "color": "#000000ff" },
+   { "name": "Fall start", "from": 110, "to": 111, "direction": "forward", "color": "#000000ff" },
+   { "name": "Fall loop", "from": 112, "to": 115, "direction": "forward", "color": "#000000ff" },
+   { "name": "Fall end floor", "from": 116, "to": 123, "direction": "forward", "color": "#000000ff" },
+   { "name": "Fall end wall", "from": 124, "to": 132, "direction": "forward", "color": "#000000ff" },
+   { "name": "Stand", "from": 133, "to": 136, "direction": "forward", "color": "#000000ff" },
+   { "name": "Walk right", "from": 137, "to": 142, "direction": "forward", "color": "#000000ff" },
+   { "name": "Walk left", "from": 143, "to": 148, "direction": "forward", "color": "#000000ff" },
+   { "name": "Switch to topview", "from": 149, "to": 159, "direction": "forward", "color": "#000000ff" },
+   { "name": "Grapple start", "from": 160, "to": 164, "direction": "forward", "color": "#000000ff" },
+   { "name": "Grapple loop", "from": 165, "to": 168, "direction": "forward", "color": "#000000ff" },
+   { "name": "Grapple End", "from": 169, "to": 173, "direction": "forward", "color": "#000000ff" }
   ],
   "layers": [
    { "name": "Background", "opacity": 255, "blendMode": "normal" }
