@@ -59,7 +59,7 @@ func NewGameScene(game *Game, loadingState *LoadingState) {
 	}
 	g.Background = bg
 	g.Foreground = fg
-	g.Fog = loadImage("assets/backdrop/Project-scale-parallax-backdrop_0001_Smog-1.png")
+	g.Fog = loadImage("assets/backdrop/Project-scale-parallax-backdrop_0001_Smog-1-cloud.png")
 
 	// Backdrop
 	g.Backdrops = NewBackdrops(float64(level.Height))
@@ -132,6 +132,7 @@ type GameScene struct {
 	Background   *ebiten.Image
 	Foreground   *ebiten.Image
 	Fog          *ebiten.Image
+	FogAngle     float64
 	Level        int
 	Camera       *camera.Camera
 	Debuggers    Debuggers
@@ -199,6 +200,8 @@ func (g *GameScene) Update() error {
 		g.Music.PlayNext()
 	}
 
+	g.FogAngle += 0.0001
+
 	return nil
 }
 
@@ -212,7 +215,11 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 	g.Player.Draw(g.Camera)
 	g.Camera.Surface.DrawImage(g.Foreground, cameraOrigin)
 	g.Water.Draw(g.Camera)
-	g.Camera.Surface.DrawImage(g.Fog, g.Camera.GetTranslation(&ebiten.DrawImageOptions{}, -float64(g.Fog.Bounds().Dx())/2, 0))
+	fogOp := &ebiten.DrawImageOptions{}
+	fogOp.GeoM.Translate(-float64(g.Fog.Bounds().Dx())/2, -float64(g.Fog.Bounds().Dy())/2)
+	fogOp.GeoM.Rotate(g.FogAngle)
+	fogOp.GeoM.Translate(+float64(g.Fog.Bounds().Dx())/2, +float64(g.Fog.Bounds().Dy())/2)
+	g.Camera.Surface.DrawImage(g.Fog, g.Camera.GetTranslation(fogOp, -float64(g.Fog.Bounds().Dx())/2, 0))
 	g.Camera.Blit(screen)
 
 	g.Debuggers.Debug(g, screen)
