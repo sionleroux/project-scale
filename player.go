@@ -67,9 +67,10 @@ func NewPlayer(position []int, camera *camera.Camera) *Player {
 		8, 8,
 	))
 
-	hints := make([]*ControlHint, 2)
-	hints[0] = &ControlHint{Sprite: NewSpriteAnimation("Controls"), FrameTag: 0, From: 2536, To: 2500, Dx: -4, Dy: -16}
-	hints[1] = &ControlHint{Sprite: NewSpriteAnimation("Controls"), FrameTag: 4, From: 2400, To: 2300, Dx: -4, Dy: 16}
+	hints := make([]*ControlHint, 1)
+	hints[0] = &ControlHint{Sprite: NewSpriteAnimation("Controls"), FrameTag: 0, From: 2536, To: 2500, Dx: -8, Dy: -8}
+	// Space hint can be added with proper From/To values
+	// hints[1] = &ControlHint{Sprite: NewSpriteAnimation("Controls"), FrameTag: 1, From: 2400, To: 2300, Dx: -8, Dy: 8}
 
 	return &Player{
 		Object:       object,
