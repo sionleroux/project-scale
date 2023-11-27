@@ -39,7 +39,7 @@ func main() {
 
 	sceneManager := stagehand.NewSceneManager[State](game.Scenes[gameLoading], game)
 
-	go NewGameScene(game, game.Scenes[gameLoading].(*LoadingScene).Counter)
+	go NewGameScene(game, &loadingScene.LoadingState)
 
 	if err := ebiten.RunGame(sceneManager); err != nil {
 		log.Fatal(err)
