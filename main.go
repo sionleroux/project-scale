@@ -4,52 +4,23 @@ import (
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/joelschutz/stagehand"
 )
 
+const gameWidth, gameHeight = 320, 240
 const screenScaleFactor = 4
 const gridSize = 16
 
 func main() {
-	const gameWidth, gameHeight = 320, 240
 
 	ebiten.SetWindowSize(gameWidth*screenScaleFactor, gameHeight*screenScaleFactor)
 	ebiten.SetWindowTitle("project-scale")
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 
-	game := &Game{
-		Width:        gameWidth,
-		Height:       gameHeight,
-		TextRenderer: NewTextRenderer("assets/fonts/PixelOperator8-Bold.ttf"),
-		Stat:         &Stat{},
-	}
+	stageManager := NewStageManager()
 
-	game.Stat.Load()
+	go loadGame(stageManager)
 
-	loadingScene := NewLoadingScene()
-
-	game.Scenes = []stagehand.Scene[State]{
-		loadingScene,
-		NewStartScene(),
-		&GameScene{},
-		&PauseScreen{},
-		&OverScene{},
-		&WonScene{},
-	}
-
-	sceneManager := stagehand.NewSceneManager[State](game.Scenes[gameLoading], game)
-
-	go NewGameScene(game, &loadingScene.LoadingState)
-
-	if err := ebiten.RunGame(sceneManager); err != nil {
+	if err := ebiten.RunGame(stageManager); err != nil {
 		log.Fatal(err)
 	}
-}
-
-type Game struct {
-	Width, Height int
-	Scenes        []stagehand.Scene[State]
-	ResetNeeded   bool
-	TextRenderer  *TextRenderer
-	Stat          *Stat
 }

@@ -4,8 +4,6 @@ import (
 	"github.com/joelschutz/stagehand"
 )
 
-type State *Game
-
 type BaseScene struct {
 	State        State
 	SceneManager *stagehand.SceneManager[State]
@@ -23,15 +21,3 @@ func (s *BaseScene) Load(st State, sm *stagehand.SceneManager[State]) {
 func (s *BaseScene) Unload() State {
 	return s.State
 }
-
-// SceneIndex is global state for the whole game
-type SceneIndex int
-
-const (
-	gameLoading SceneIndex = iota // Game is loading
-	gameStart                     // Game start screen is shown
-	gameRunning                   // The game is running the main game code
-	gamePaused                    // The game is paused temporarily
-	gameOver                      // The game has ended because you died
-	gameWon                       // The game has ended because you won
-)

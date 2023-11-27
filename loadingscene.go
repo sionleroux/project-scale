@@ -25,25 +25,35 @@ var loadingWhat = []string{
 // LoadingScene is shown while all the assets are loading.
 // When loading is ready it switches to Intro screen
 type LoadingScene struct {
-	BaseScene
+	Width        int
+	Height       int
 	LoadingState LoadingState // what is being loaded
 	Tick         int
+	TextRenderer *TextRenderer
 }
 
 func NewLoadingScene() *LoadingScene {
 	return &LoadingScene{
+		Width:        gameWidth,
+		Height:       gameHeight,
 		LoadingState: LoadingState{counter: 0, loaded: false, stateLock: &sync.RWMutex{}},
+		TextRenderer: NewTextRenderer("assets/fonts/PixelOperator8.ttf"),
 	}
+}
+
+func (s *LoadingScene) Layout(w, h int) (int, int) {
+	return s.Width, s.Height
 }
 
 // Update handles player input to update the start screen
 func (s *LoadingScene) Update() error {
 	s.Tick++
-	loaded := s.LoadingState.GetLoaded()
-	if loaded && s.Tick > loadingSceneMinTime {
-		s.SceneManager.SwitchTo(s.State.Scenes[gameStart])
-	}
 	return nil
+}
+
+func (s *LoadingScene) IsLoaded() bool {
+	loaded := s.LoadingState.GetLoaded()
+	return loaded && s.Tick > loadingSceneMinTime
 }
 
 // Draw renders the start screen to the screen
@@ -53,7 +63,7 @@ func (s *LoadingScene) Draw(screen *ebiten.Image) {
 	if counter < len(loadingWhat) {
 		whatTxt = loadingWhat[counter]
 	}
-	s.State.TextRenderer.Draw(screen, "Loading..."+whatTxt, 8, 50, 85)
+	s.TextRenderer.Draw(screen, "Loading..."+whatTxt, 8, 50, 85)
 
 }
 
