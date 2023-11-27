@@ -21,6 +21,14 @@ const MinJumpDist = 32 - 4 // I it's because 4 is the distance from the player s
 const MaxJumpDist = 48 - 4 // either way 4 is the value that seems to take you the right distance to the next tile in practice
 
 const (
+	speedClimb    = 1.2
+	speedJump     = 4.0
+	speedFall     = 6.0
+	speedSliploop = 2.0
+	speedSlip     = 0.2
+)
+
+const (
 	ActionMoveUp input.Action = iota
 	ActionMoveLeft
 	ActionMoveDown
@@ -54,6 +62,8 @@ type Player struct {
 	Camera       *camera.Camera
 	Light        *Light
 	Facing       Direction
+	SpeedX       float64
+	SpeedY       float64
 	ControlHints []*ControlHint
 }
 
@@ -83,89 +93,82 @@ func NewPlayer(position []int, camera *camera.Camera) *Player {
 
 func (p *Player) Update() {
 	p.Tick++
-	p.collisionChecks()
 	p.updateMovement()
+	p.collisionChecks()
 	p.Light.SetPos(p.X, p.Y)
 	p.Light.SetColor(p.State)
 	p.animate()
-	p.Object.Update()
 	for _, hint := range p.ControlHints {
 		hint.Update(p.Y)
 	}
 }
 
 func (p *Player) updateMovement() {
-	speed := 0.0
 
+	// State-based continued movement
+	switch p.State {
+
+	case playerJumploop:
+		if (p.Input.ActionIsPressed(ActionJump) || !p.jumpedMin()) && !p.jumpedMax() {
+			p.State = playerJumploop
+		} else {
+			p.State = playerJumpendfloor
+		}
+		if p.Facing == directionLeft {
+			p.SpeedX, p.SpeedY = -speedJump, 0
+		} else if p.Facing == directionRight {
+			p.SpeedX, p.SpeedY = +speedJump, 0
+		} else if p.Facing == directionUp {
+			p.SpeedX, p.SpeedY = 0, -speedJump
+		} else if p.Facing == directionDown {
+			p.SpeedX, p.SpeedY = 0, +speedJump
+		}
+
+	case playerFallloop:
+		p.SpeedX, p.SpeedY = 0, speedFall
+	case playerSliploop:
+		p.SpeedX, p.SpeedY = 0, speedSliploop
+	// case playerSlipend, playerSlipstart:
+	// 	p.SpeedX, p.SpeedY = 0, speedSlip
+	default:
+		p.SpeedX, p.SpeedY = 0, 0
+	}
+
+	// Jump input
 	if !p.Falling && !p.Jumping && p.Input.ActionIsJustPressed(ActionJump) {
 		p.Jumping = true
 		p.State = playerJumpstart
 		p.JumpFrom = vector.Vector{p.X, p.Y}
 	}
 
-	if p.Jumping {
-		switch p.State {
-		case playerJumploop:
-			if (p.Input.ActionIsPressed(ActionJump) || !p.jumpedMin()) && !p.jumpedMax() {
-				p.State = playerJumploop
-			} else {
-				p.State = playerJumpendfloor
-			}
-			speed = 4.0
-		}
-		if p.Facing == directionLeft {
-			p.move(-speed, +0)
-		} else if p.Facing == directionRight {
-			p.move(+speed, +0)
-		} else if p.Facing == directionUp {
-			p.move(+0, -speed)
-		} else if p.Facing == directionDown {
-			p.move(+0, +speed)
-		} else {
-			p.move(+0, -speed)
-		}
-
-	} else if p.Falling {
-		switch p.State {
-		case playerFallloop:
-			speed = 6.0
-		}
-		p.move(+0, speed)
-
-	} else if p.Slipping {
-		if p.State == playerSliploop {
-			speed = 2.0
-		} else {
-			speed = 0.5
-		}
-		p.move(+0, speed)
-
-	} else {
-		p.State = playerIdle
-		speed = 1.2
+	// Climbing input
+	if !p.Jumping && !p.Falling && !p.Slipping {
 		if p.Input.ActionIsPressed(ActionMoveLeft) {
-			p.move(-speed, +0)
+			p.SpeedX, p.SpeedY = -speedClimb, 0
 			p.State = playerClimbup
 			p.Facing = directionLeft
 		} else if p.Input.ActionIsPressed(ActionMoveRight) {
-			p.move(+speed, +0)
+			p.SpeedX, p.SpeedY = +speedClimb, 0
 			p.State = playerClimbup
 			p.Facing = directionRight
 		} else if p.Input.ActionIsPressed(ActionMoveUp) {
-			p.move(+0, -speed)
+			p.SpeedX, p.SpeedY = 0, -speedClimb
 			p.State = playerClimbup
 			p.Facing = directionUp
 		} else if p.Input.ActionIsPressed(ActionMoveDown) {
-			p.move(+0, +speed)
+			p.SpeedX, p.SpeedY = 0, +speedClimb
 			p.State = playerClimbup
 			p.Facing = directionDown
+		} else {
+			p.State = playerIdle
+			p.SpeedX, p.SpeedY = 0, 0
 		}
 	}
 
 }
 
 func (p *Player) collisionChecks() {
-	if collision := p.Check(0, 0); collision != nil {
+	if collision := p.Check(p.SpeedX, p.SpeedY); collision != nil {
 		for _, o := range collision.Objects {
 			if p.Shape.Intersection(0, 0, o.Shape) != nil {
 				p.WhatTile = o.Tags()[0]
@@ -173,29 +176,7 @@ func (p *Player) collisionChecks() {
 		}
 	}
 
-	// Start falling if you're stepping on a chasm
-	if p.State != playerJumploop && !p.Falling && !p.Slipping {
-		if collision := p.Check(0, 0, TagChasm, TagSlippery); collision != nil {
-			for _, o := range collision.Objects {
-				if p.Shape.Intersection(0, 0, o.Shape) != nil || p.insideOf(o) {
-					p.Jumping = false // XXX: this is not the right place for this
-					switch o.Tags()[0] {
-					case TagChasm:
-						p.State = playerFallstart
-						p.Falling = true
-						p.Facing = directionUp
-					case TagSlippery:
-						p.State = playerSlipstart
-						p.Slipping = true
-						p.Facing = directionUp
-					}
-				}
-			}
-		}
-	}
-}
-
-func (p *Player) move(dx, dy float64) {
+	dx := p.SpeedX
 	if collision := p.Check(dx, 0, TagWall); collision != nil {
 		for _, o := range collision.Objects {
 			if intersection := p.Shape.Intersection(dx, 0, o.Shape); intersection != nil {
@@ -208,6 +189,7 @@ func (p *Player) move(dx, dy float64) {
 	}
 	p.X += dx
 
+	dy := p.SpeedY
 	if collision := p.Check(0, dy, TagWall, TagClimbable, TagChasm); collision != nil {
 		for _, o := range collision.Objects {
 			if intersection := p.Shape.Intersection(0, dy, o.Shape); intersection != nil {
@@ -235,7 +217,9 @@ func (p *Player) move(dx, dy float64) {
 				case TagClimbable:
 					// only recover onto tiles below you, that means the MTV to
 					// get out of them will be negative, i.e. upwards
+					log.Println("MTV WOOP:", intersection.MTV.Y())
 					if intersection.MTV.Y() < 0 {
+						log.Println("AAAAAAAAAAAA")
 						if p.State == playerFallloop {
 							p.State = playerFallendfloor
 						}
@@ -249,6 +233,28 @@ func (p *Player) move(dx, dy float64) {
 	}
 	p.Y += dy
 
+	// Start falling if you're stepping on a chasm
+	if p.State != playerJumploop && !p.Falling && !p.Slipping {
+		if collision := p.Check(dx, dy, TagChasm, TagSlippery); collision != nil {
+			for _, o := range collision.Objects {
+				if p.Shape.Intersection(dx, dy, o.Shape) != nil || p.insideOf(o) {
+					p.Jumping = false
+					switch o.Tags()[0] {
+					case TagChasm:
+						p.State = playerFallstart
+						p.Falling = true
+						p.Facing = directionUp
+					case TagSlippery:
+						p.State = playerSlipstart
+						p.Slipping = true
+						p.Facing = directionUp
+					}
+				}
+			}
+		}
+	}
+
+	p.Object.Update()
 }
 
 func (p *Player) animate() {
