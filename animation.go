@@ -59,7 +59,7 @@ func (s *SpriteAnimation) Update(frameTag int) bool {
 	s.Tick++
 
 	// Instantly start animation if state changed
-	if s.Frame < from || s.Frame > to {
+	if s.Frame < from || s.Frame >= to {
 		s.Frame = from
 	}
 
