@@ -78,7 +78,7 @@ func NewGameScene(game *Game, loadingCount LoadingCounter) {
 	// SoundLoops
 	*loadingCount++
 	g.Music = &Sound{Volume: 0.5}
-	g.Music.AddSound("assets/music/Game-music", sampleRate, context, 2)
+	g.Music.AddSound("assets/music/game-music", sampleRate, context, 7)
 
 	// Sounds
 	*loadingCount++

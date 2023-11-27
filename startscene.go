@@ -59,9 +59,9 @@ func (s *StartScene) Draw(screen *ebiten.Image) {
 
 func NewStartScene() *StartScene {
 	voice := Sound{Volume: 0.5}
-	voice.AddSound("assets/voices/Start_button", sampleRate, context)
+	voice.AddSound("assets/voices/game-start", sampleRate, context)
 
-	bgMusic := NewMusicPlayer(loadSoundFile("assets/music/Start_menu_idle.ogg", sampleRate))
+	bgMusic := NewMusicPlayer(loadSoundFile("assets/sfx/heartbeat.ogg", sampleRate))
 	bgMusic.SetVolume(0.7)
 
 	return &StartScene{
