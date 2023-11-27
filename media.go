@@ -31,8 +31,11 @@ var assets embed.FS
 const sampleRate int = 44100 // assuming "normal" sample rate
 var context *audio.Context
 
+var imageCache map[string]*ebiten.Image
+
 func init() {
 	context = audio.NewContext(sampleRate)
+	imageCache = make(map[string]*ebiten.Image)
 }
 
 // Frame is a single frame of an animation, usually a sub-image of a larger
@@ -145,6 +148,11 @@ func loadEntityImage(name string) *ebiten.Image {
 
 // Load an image from embedded FS into an ebiten Image object
 func loadImage(name string) *ebiten.Image {
+	if imageCache[name] != nil {
+		log.Printf("loading %s\n from cache", name)
+		return imageCache[name]
+	}
+
 	log.Printf("loading %s\n", name)
 
 	file, err := assets.Open(name)
@@ -162,7 +170,8 @@ func loadImage(name string) *ebiten.Image {
 		log.Fatalf("error empty data for sprite file %s\n", name)
 	}
 
-	return ebiten.NewImageFromImage(raw)
+	imageCache[name] = ebiten.NewImageFromImage(raw)
+	return imageCache[name]
 }
 
 func loadImageWithOSOverride(name string) *ebiten.Image {
