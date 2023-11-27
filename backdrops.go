@@ -23,7 +23,6 @@ func NewBackdrops(bottomOfMap float64) Backdrops {
 			{loadImage("assets/backdrop/Project-scale-parallax-backdrop_0004_Smog-2.png"), false, 0.0},
 			{loadImage("assets/backdrop/Project-scale-parallax-backdrop_0003_Water-2.png"), true, 0.0},
 			{loadImage("assets/backdrop/Project-scale-parallax-backdrop_0002_City-1.png"), false, 0.05},
-			{loadImage("assets/backdrop/Project-scale-parallax-backdrop_0001_Smog-1.png"), false, 0.0},
 		},
 	}
 }

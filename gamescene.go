@@ -59,6 +59,7 @@ func NewGameScene(game *Game, loadingState *LoadingState) {
 	}
 	g.Background = bg
 	g.Foreground = fg
+	g.Fog = loadImage("assets/backdrop/Project-scale-parallax-backdrop_0001_Smog-1.png")
 
 	// Backdrop
 	g.Backdrops = NewBackdrops(float64(level.Height))
@@ -130,6 +131,7 @@ type GameScene struct {
 	LDTKProject  *ldtkgo.Project
 	Background   *ebiten.Image
 	Foreground   *ebiten.Image
+	Fog          *ebiten.Image
 	Level        int
 	Camera       *camera.Camera
 	Debuggers    Debuggers
@@ -210,6 +212,7 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 	g.Player.Draw(g.Camera)
 	g.Camera.Surface.DrawImage(g.Foreground, cameraOrigin)
 	g.Water.Draw(g.Camera)
+	g.Camera.Surface.DrawImage(g.Fog, g.Camera.GetTranslation(&ebiten.DrawImageOptions{}, -float64(g.Fog.Bounds().Dx())/2, 0))
 	g.Camera.Blit(screen)
 
 	g.Debuggers.Debug(g, screen)
