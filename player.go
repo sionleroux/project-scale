@@ -40,20 +40,21 @@ const (
 // Player is the player character in the game
 type Player struct {
 	*resolv.Object
-	Input    *input.Handler
-	State    playerAnimationTags
-	Sprite   *SpriteSheet
-	Frame    int
-	Tick     int
-	Jumping  bool
-	Falling  bool
-	Slipping bool
-	Standing bool
-	JumpFrom vector.Vector
-	WhatTile string
-	Camera   *camera.Camera
-	Light    *Light
-	Facing   Direction
+	Input        *input.Handler
+	State        playerAnimationTags
+	Sprite       *SpriteSheet
+	Frame        int
+	Tick         int
+	Jumping      bool
+	Falling      bool
+	Slipping     bool
+	Standing     bool
+	JumpFrom     vector.Vector
+	WhatTile     string
+	Camera       *camera.Camera
+	Light        *Light
+	Facing       Direction
+	ControlHints []*ControlHint
 }
 
 func NewPlayer(position []int, camera *camera.Camera) *Player {
@@ -66,11 +67,16 @@ func NewPlayer(position []int, camera *camera.Camera) *Player {
 		8, 8,
 	))
 
+	hints := make([]*ControlHint, 2)
+	hints[0] = &ControlHint{Sprite: NewSpriteAnimation("Controls"), FrameTag: 0, From: 2536, To: 2500, Dx: -4, Dy: -16}
+	hints[1] = &ControlHint{Sprite: NewSpriteAnimation("Controls"), FrameTag: 4, From: 2400, To: 2300, Dx: -4, Dy: 16}
+
 	return &Player{
-		Object: object,
-		Sprite: loadSpriteWithOSOverride("Nanobot"),
-		Camera: camera,
-		Light:  NewLight(),
+		Object:       object,
+		Sprite:       loadSpriteWithOSOverride("Nanobot"),
+		ControlHints: hints,
+		Camera:       camera,
+		Light:        NewLight(),
 	}
 }
 
@@ -82,6 +88,9 @@ func (p *Player) Update() {
 	p.Light.SetColor(p.State)
 	p.animate()
 	p.Object.Update()
+	for _, hint := range p.ControlHints {
+		hint.Update(p.Y)
+	}
 }
 
 func (p *Player) updateMovement() {
@@ -340,6 +349,10 @@ func (p *Player) Draw(camera *camera.Camera) {
 	)
 
 	camera.Surface.DrawImage(img, camera.GetTranslation(op, p.X, p.Y))
+
+	for _, hint := range p.ControlHints {
+		hint.Draw(p.X, p.Y, camera)
+	}
 }
 
 var (
