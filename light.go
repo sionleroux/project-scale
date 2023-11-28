@@ -4,6 +4,7 @@ import (
 	"image/color"
 	"path"
 
+	"github.com/aquilax/go-perlin"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/sinisterstuf/project-scale/camera"
 )
@@ -37,6 +38,7 @@ func NewLight() *Light {
 		Sprite: sprite,
 		Offset: -lightWidth/2 + playerCenter, // un-offset by the player centre
 		Color:  lightGood,
+		Noise:  perlin.NewPerlin(2., 2., 3, 1), // Would be cool to parametrize later
 	}
 }
 
@@ -46,6 +48,7 @@ type Light struct {
 	X, Y   float64
 	Offset float64
 	Color  color.Color
+	Noise  *perlin.Perlin
 }
 
 func (l *Light) SetPos(x, y float64) {
@@ -69,7 +72,7 @@ func (l *Light) SetColor(state playerAnimationTags) {
 	}
 }
 
-func (l *Light) Draw(cam *camera.Camera, dir Direction) {
+func (l *Light) Draw(cam *camera.Camera, dir Direction, tick int) {
 	op := &ebiten.DrawImageOptions{}
 	op = cam.GetTranslation(op, l.X, l.Y)
 	op.GeoM.Translate(l.Offset, l.Offset) // centring
@@ -78,6 +81,8 @@ func (l *Light) Draw(cam *camera.Camera, dir Direction) {
 		lightFacing[dir].Y*lightOffset,
 	)
 	op.ColorScale.ScaleWithColor(l.Color)
+	op.ColorScale.ScaleAlpha(float32(
+		l.Noise.Noise1D(float64(tick)/10) + 1))
 	op.Blend = ebiten.BlendLighter
 	cam.Surface.DrawImage(l.Sprite, op)
 }

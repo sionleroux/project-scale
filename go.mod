@@ -16,6 +16,7 @@ require (
 )
 
 require (
+	github.com/aquilax/go-perlin v1.1.0 // indirect
 	github.com/ebitengine/oto/v3 v3.1.0 // indirect
 	github.com/ebitengine/purego v0.5.0 // indirect
 	github.com/jezek/xgb v1.1.0 // indirect

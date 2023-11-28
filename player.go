@@ -337,7 +337,7 @@ func (p *Player) jumpDistance() vector.Vector {
 }
 
 func (p *Player) Draw(camera *camera.Camera) {
-	p.Light.Draw(camera, p.Facing)
+	p.Light.Draw(camera, p.Facing, p.Tick)
 
 	op := &ebiten.DrawImageOptions{}
 
