@@ -213,9 +213,7 @@ func (g *GameScene) Update() error {
 		}
 	} else if g.Player.Dying {
 		if !g.Heartbeat.IsPlaying() {
-			if g.Music.IsPlaying() {
-				g.Music.Pause()
-			}
+			g.Music.LowPass(true)
 			g.Heartbeat.Play()
 		}
 		alpha, _ := g.FadeTween.Update(1)
@@ -225,6 +223,8 @@ func (g *GameScene) Update() error {
 			g.Player.Dead = true
 		}
 	} else if g.Player.Dead {
+		g.Music.Pause()
+		g.Music.LowPass(false)
 		g.Heartbeat.Pause()
 		g.SceneManager.SwitchTo(g.State.Scenes[gameOver])
 		return nil

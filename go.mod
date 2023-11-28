@@ -22,10 +22,11 @@ require (
 	github.com/jfreymuth/oggvorbis v1.0.5 // indirect
 	github.com/jfreymuth/vorbis v1.0.2 // indirect
 	github.com/quasilyte/gmath v0.0.0-20221217210116-fba37a2e15c7 // indirect
+	github.com/solarlune/resound v0.0.0-20231009060755-622aa26e8707 // indirect
 	github.com/tidwall/gjson v1.6.4 // indirect
 	github.com/tidwall/match v1.0.1 // indirect
 	github.com/tidwall/pretty v1.0.2 // indirect
-	golang.org/x/exp v0.0.0-20190731235908-ec7cb31e5a56 // indirect
+	golang.org/x/exp v0.0.0-20230905200255-921286631fa9 // indirect
 	golang.org/x/image v0.12.0 // indirect
 	golang.org/x/mobile v0.0.0-20230922142353-e2f452493d57 // indirect
 	golang.org/x/sync v0.3.0 // indirect
