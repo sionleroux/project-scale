@@ -254,6 +254,7 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 	fogOp.GeoM.Translate(-float64(g.Fog.Bounds().Dx())/2, -float64(g.Fog.Bounds().Dy())/2)
 	fogOp.GeoM.Rotate(g.FogAngle)
 	fogOp.GeoM.Translate(+float64(g.Fog.Bounds().Dx())/2, +float64(g.Fog.Bounds().Dy())/2)
+	fogOp.Blend = ebiten.BlendLighter
 	g.Camera.Surface.DrawImage(g.Fog, g.Camera.GetTranslation(fogOp, -float64(g.Fog.Bounds().Dx())/2, 0))
 
 	g.Camera.Blit(screen)
