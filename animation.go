@@ -11,7 +11,7 @@ import (
 
 // AnimationSkipTicks sets how many ticks to skip before stepping to the next
 // frame in the animation
-const AnimationSkipTicks = 5
+const AnimationSkipTicks = 6
 
 // Animate determines the next animation frame for a sprite
 func Animate(frame, tick int, ft FrameTags) int {
