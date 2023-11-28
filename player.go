@@ -21,11 +21,12 @@ const MinJumpDist = 32 - 4 // I it's because 4 is the distance from the player s
 const MaxJumpDist = 48 - 4 // either way 4 is the value that seems to take you the right distance to the next tile in practice
 
 const (
-	speedClimb    = 1.2
-	speedJump     = 4.0
-	speedFall     = 6.0
-	speedSliploop = 2.0
-	speedSlip     = 0.2
+	speedClimb     = 1.2
+	speedJump      = 4.0
+	speedFall      = 6.0
+	speedSliploop  = 2.0
+	speedSlip      = 0.2
+	speedDeathFall = 0.5
 )
 
 const (
@@ -36,7 +37,7 @@ const (
 	ActionJump
 )
 
-type Direction int8
+type Direction float64
 
 const (
 	directionUp Direction = iota
@@ -65,6 +66,8 @@ type Player struct {
 	SpeedX       float64
 	SpeedY       float64
 	ControlHints []*ControlHint
+	Dying        bool
+	Dead         bool
 }
 
 func NewPlayer(position []int, camera *camera.Camera) *Player {
@@ -93,14 +96,24 @@ func NewPlayer(position []int, camera *camera.Camera) *Player {
 
 func (p *Player) Update() {
 	p.Tick++
-	p.updateMovement()
-	p.collisionChecks()
+	if !p.Dying {
+		p.updateMovement()
+		p.collisionChecks()
+	} else {
+		p.updateDeath()
+	}
 	p.Light.SetPos(p.X, p.Y)
 	p.Light.SetColor(p.State)
 	p.animate()
 	for _, hint := range p.ControlHints {
 		hint.Update(p.Y)
 	}
+}
+
+func (p *Player) updateDeath() {
+	p.Y += speedDeathFall
+	p.Facing += 0.02
+	p.Object.Update()
 }
 
 func (p *Player) updateMovement() {

@@ -5,24 +5,32 @@
 package main
 
 import (
+	"image/color"
 	"log"
 	"math"
 	"time"
 
 	"github.com/joelschutz/stagehand"
 	"github.com/sinisterstuf/project-scale/camera"
+	"github.com/tanema/gween"
+	"github.com/tanema/gween/ease"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/hajimehoshi/ebiten/v2/vector"
 	input "github.com/quasilyte/ebitengine-input"
 	"github.com/solarlune/ldtkgo"
 	"github.com/solarlune/resolv"
 )
 
+// Length of the fading animation
+const fadeOutTime = 240
+
 func NewGameScene(game *Game, loadingState *LoadingState) {
 
 	g := &GameScene{
 		Camera:    camera.NewCamera(game.Width, game.Height),
+		FadeTween: gween.New(0, 255, fadeOutTime, ease.Linear),
 		Debuggers: debuggers,
 	}
 
@@ -80,6 +88,7 @@ func NewGameScene(game *Game, loadingState *LoadingState) {
 	loadingState.IncreaseCounter(1)
 	g.Music = &Sound{Volume: 0.5}
 	g.Music.AddSound("assets/music/game-music", sampleRate, context, 7)
+	g.Heartbeat = NewMusicPlayer(loadSoundFile("assets/sfx/heartbeat.ogg", sampleRate))
 
 	// Sounds
 	loadingState.IncreaseCounter(1)
@@ -140,6 +149,9 @@ type GameScene struct {
 	StartPos     []int
 	Backdrops    Backdrops
 	Music        *Sound
+	Heartbeat    *MusicLoop
+	Alpha        uint8
+	FadeTween    *gween.Tween
 }
 
 // Update calculates game logic
@@ -186,18 +198,36 @@ func (g *GameScene) Update() error {
 
 	g.Water.Update()
 
-	if g.CheckDeath() {
-		g.State.Stat.LastHighestPoint = (g.StartPos[1] - int(g.Player.Y)) / gridSize
-		if g.State.Stat.LastHighestPoint > g.State.Stat.HighestPoint {
-			g.State.Stat.HighestPoint = g.State.Stat.LastHighestPoint
-			g.State.Stat.Save()
+	if !g.Player.Dying && !g.Player.Dead {
+		if !g.Music.IsPlaying() {
+			g.Music.PlayNext()
 		}
+
+		if g.CheckDeath() {
+			g.Player.Dying = true
+			g.State.Stat.LastHighestPoint = (g.StartPos[1] - int(g.Player.Y)) / gridSize
+			if g.State.Stat.LastHighestPoint > g.State.Stat.HighestPoint {
+				g.State.Stat.HighestPoint = g.State.Stat.LastHighestPoint
+				g.State.Stat.Save()
+			}
+		}
+	} else if g.Player.Dying {
+		if !g.Heartbeat.IsPlaying() {
+			if g.Music.IsPlaying() {
+				g.Music.Pause()
+			}
+			g.Heartbeat.Play()
+		}
+		alpha, _ := g.FadeTween.Update(1)
+		g.Alpha = uint8(alpha)
+		if g.Alpha == 255 {
+			g.Player.Dying = false
+			g.Player.Dead = true
+		}
+	} else if g.Player.Dead {
+		g.Heartbeat.Pause()
 		g.SceneManager.SwitchTo(g.State.Scenes[gameOver])
 		return nil
-	}
-
-	if !g.Music.IsPlaying() {
-		g.Music.PlayNext()
 	}
 
 	g.FogAngle += 0.0001
@@ -212,16 +242,25 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 
 	g.Backdrops.Draw(g.Camera, g.Water.Level)
 	g.Camera.Surface.DrawImage(g.Background, cameraOrigin)
-	g.Player.Draw(g.Camera)
-	g.Camera.Surface.DrawImage(g.Foreground, cameraOrigin)
+	if g.Player.Dying {
+		g.Camera.Surface.DrawImage(g.Foreground, cameraOrigin)
+		g.Player.Draw(g.Camera)
+	} else {
+		g.Player.Draw(g.Camera)
+		g.Camera.Surface.DrawImage(g.Foreground, cameraOrigin)
+	}
 	g.Water.Draw(g.Camera)
 	fogOp := &ebiten.DrawImageOptions{}
 	fogOp.GeoM.Translate(-float64(g.Fog.Bounds().Dx())/2, -float64(g.Fog.Bounds().Dy())/2)
 	fogOp.GeoM.Rotate(g.FogAngle)
 	fogOp.GeoM.Translate(+float64(g.Fog.Bounds().Dx())/2, +float64(g.Fog.Bounds().Dy())/2)
 	g.Camera.Surface.DrawImage(g.Fog, g.Camera.GetTranslation(fogOp, -float64(g.Fog.Bounds().Dx())/2, 0))
+
 	g.Camera.Blit(screen)
 
+	if g.Player.Dying {
+		vector.DrawFilledRect(screen, 0, 0, float32(g.State.Width), float32(g.State.Height), color.RGBA{0, 0, 0, g.Alpha}, false)
+	}
 	g.Debuggers.Debug(g, screen)
 }
 
@@ -267,13 +306,17 @@ func (g *GameScene) CheckDeath() bool {
 func (g *GameScene) Reset() {
 	level := g.LDTKProject.Levels[g.Level]
 	g.Player.X, g.Player.Y = float64(g.StartPos[0]), float64(g.StartPos[1])
+	g.Player.Facing = directionUp
 	g.Player.State = playerIdle
+	g.Player.Dead = false
+	g.Player.Dying = false
 	g.Player.Jumping = false
 	g.Player.Falling = false
 	g.Player.Standing = false
 	g.Player.Slipping = false // :-(
 	g.Player.Input = g.InputSystem.NewHandler(0, g.Keymap)
 	g.Water = NewWater(float64(level.Height) + 4*g.Player.H)
+	g.FadeTween.Reset()
 }
 
 type Entity interface {
