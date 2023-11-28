@@ -148,6 +148,7 @@ jobs:
           project-scale-lin.tar.gz
           project-scale-mac.tar.gz
           project-scale.exe
+          project-scale-testing.exe
           project-scale-debugcol.exe
 
   deploy-win:
