@@ -7,17 +7,14 @@ type playerAnimationTags uint8
 
 const (
 	playerIdle playerAnimationTags = iota
-	playerClimbup
-	playerClimbdown
-	playerClimbright
-	playerClimbleft
+	playerClimb
 	playerLeanstart
 	playerLeanloop
 	playerLeanend
 	playerPushwallstart
 	playerPushwallloop
 	playerPushwallend
-	playernogriploop
+	playerNogrip
 	playerJumpstart
 	playerJumploop
 	playerJumpendfloor
@@ -41,17 +38,14 @@ const (
 
 var playerAnimationNames = []string{
 	"Idle",
-	"Climb up",
-	"Climb down",
-	"Climb right",
-	"Climb left",
+	"Climb",
 	"Lean start",
 	"Lean loop",
 	"Lean end",
 	"Push wall start",
 	"Push wall loop",
 	"Push wall end",
-	"no grip loop",
+	"No grip",
 	"Jump start",
 	"Jump loop",
 	"Jump end floor",

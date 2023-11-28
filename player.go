@@ -158,19 +158,19 @@ func (p *Player) updateMovement() {
 	if !p.Jumping && !p.Falling && !p.Slipping {
 		if p.Input.ActionIsPressed(ActionMoveLeft) {
 			p.SpeedX, p.SpeedY = -speedClimb, 0
-			p.State = playerClimbup
+			p.State = playerClimb
 			p.Facing = directionLeft
 		} else if p.Input.ActionIsPressed(ActionMoveRight) {
 			p.SpeedX, p.SpeedY = +speedClimb, 0
-			p.State = playerClimbup
+			p.State = playerClimb
 			p.Facing = directionRight
 		} else if p.Input.ActionIsPressed(ActionMoveUp) {
 			p.SpeedX, p.SpeedY = 0, -speedClimb
-			p.State = playerClimbup
+			p.State = playerClimb
 			p.Facing = directionUp
 		} else if p.Input.ActionIsPressed(ActionMoveDown) {
 			p.SpeedX, p.SpeedY = 0, +speedClimb
-			p.State = playerClimbup
+			p.State = playerClimb
 			p.Facing = directionDown
 		} else {
 			p.State = playerIdle
