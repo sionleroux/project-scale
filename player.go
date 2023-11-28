@@ -57,7 +57,7 @@ type Player struct {
 	Slipping     bool
 	Standing     bool
 	JumpFrom     vector.Vector
-	WhatTile     string
+	WhatTiles    []string
 	Camera       *camera.Camera
 	Light        *Light
 	Facing       Direction
@@ -183,7 +183,7 @@ func (p *Player) collisionChecks() {
 	if collision := p.Check(p.SpeedX, p.SpeedY); collision != nil {
 		for _, o := range collision.Objects {
 			if p.Shape.Intersection(0, 0, o.Shape) != nil {
-				p.WhatTile = o.Tags()[0]
+				p.WhatTiles = o.Tags()
 			}
 		}
 	}

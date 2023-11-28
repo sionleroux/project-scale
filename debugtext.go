@@ -34,7 +34,7 @@ func DebugText(g *GameScene, screen *ebiten.Image) {
 		ebiten.ActualTPS(),
 		player.X/gridSize,
 		player.Y/gridSize,
-		player.WhatTile,
+		player.WhatTiles,
 		playerAnimationNames[player.State],
 	))
 }
