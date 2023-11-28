@@ -22,13 +22,15 @@ type StartTextRenderer struct {
 }
 
 func (s *StartScene) Update() error {
-	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
-		s.TransitionPhase = 1
-		s.Music.Pause()
-		s.Voice.Play()
-	}
 
 	if s.TransitionPhase == 0 {
+
+		if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
+			s.TransitionPhase = 1
+			s.Music.Pause()
+			s.Voice.Play()
+		}
+
 		s.ButtonSprite.Update(0)
 	} else if s.TransitionPhase == 1 {
 		if s.ButtonSprite.Update(1) {
