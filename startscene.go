@@ -28,12 +28,13 @@ func (s *StartScene) Update() error {
 		s.Voice.Play()
 	}
 
-	if s.TransitionPhase == 1 {
+	if s.TransitionPhase == 0 {
+		s.ButtonSprite.Update(0)
+	} else if s.TransitionPhase == 1 {
 		if s.ButtonSprite.Update(1) {
 			s.TransitionPhase = 2
 		}
-	}
-	if s.TransitionPhase == 2 {
+	} else if s.TransitionPhase == 2 {
 
 		if s.BackgroundSprite.Update(1) {
 			s.State.ResetNeeded = true
