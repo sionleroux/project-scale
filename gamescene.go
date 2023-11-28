@@ -314,6 +314,7 @@ func (g *GameScene) Reset() {
 	g.Player.Falling = false
 	g.Player.Standing = false
 	g.Player.Slipping = false // :-(
+	g.Player.Rotation = 0
 	g.Player.Input = g.InputSystem.NewHandler(0, g.Keymap)
 	g.Water = NewWater(float64(level.Height) + 4*g.Player.H)
 	g.FadeTween.Reset()

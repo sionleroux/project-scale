@@ -14,6 +14,21 @@ var (
 	lightBad  = color.NRGBA{255, 0, 0, 100}
 )
 
+type Vec struct {
+	X float64
+	Y float64
+}
+
+var lightFacing []Vec = []Vec{
+	{0, -1},
+	{1, 0},
+	{0, 1},
+	{-1, 0},
+}
+
+// distance to offset sprite from under player
+const lightOffset = 8
+
 func NewLight() *Light {
 	sprite := loadImage(path.Join("assets", "light.png"))
 	const lightWidth = 32       // the PNG is 32px wide, trust me
@@ -54,9 +69,14 @@ func (l *Light) SetColor(state playerAnimationTags) {
 	}
 }
 
-func (l *Light) Draw(cam *camera.Camera) {
-	op := cam.GetTranslation(&ebiten.DrawImageOptions{}, l.X, l.Y)
+func (l *Light) Draw(cam *camera.Camera, dir Direction) {
+	op := &ebiten.DrawImageOptions{}
+	op = cam.GetTranslation(op, l.X, l.Y)
 	op.GeoM.Translate(l.Offset, l.Offset) // centring
+	op.GeoM.Translate(
+		lightFacing[dir].X*lightOffset,
+		lightFacing[dir].Y*lightOffset,
+	)
 	op.ColorScale.ScaleWithColor(l.Color)
 	op.Blend = ebiten.BlendLighter
 	cam.Surface.DrawImage(l.Sprite, op)

@@ -35,7 +35,7 @@ const (
 	ActionJump
 )
 
-type Direction float64
+type Direction int
 
 const (
 	directionUp Direction = iota
@@ -61,6 +61,7 @@ type Player struct {
 	Camera       *camera.Camera
 	Light        *Light
 	Facing       Direction
+	Rotation     float64
 	SpeedX       float64
 	SpeedY       float64
 	ControlHints []*ControlHint
@@ -110,7 +111,7 @@ func (p *Player) Update() {
 
 func (p *Player) updateDeath() {
 	p.Y += speedDeathFall
-	p.Facing += 0.02
+	p.Rotation += 0.02
 	p.Object.Update()
 }
 
@@ -336,7 +337,7 @@ func (p *Player) jumpDistance() vector.Vector {
 }
 
 func (p *Player) Draw(camera *camera.Camera) {
-	p.Light.Draw(camera)
+	p.Light.Draw(camera, p.Facing)
 
 	op := &ebiten.DrawImageOptions{}
 
@@ -354,7 +355,11 @@ func (p *Player) Draw(camera *camera.Camera) {
 		float64(-frame.Position.W/2),
 		float64(-frame.Position.H/2),
 	)
-	op.GeoM.Rotate(math.Pi / 2 * float64(p.Facing))
+	if p.Dying {
+		op.GeoM.Rotate(math.Pi / 2 * float64(p.Rotation))
+	} else {
+		op.GeoM.Rotate(math.Pi / 2 * float64(p.Facing))
+	}
 	op.GeoM.Translate(
 		float64(+frame.Position.W/2),
 		float64(+frame.Position.H/2),
