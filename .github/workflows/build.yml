@@ -35,13 +35,13 @@ jobs:
       run: rsrc -ico artwork/icon.ico
     - name: Build Windows exe
       shell: bash
-      run: go build -tags release .
+      run: go build -v -tags release .
     - name: Build Windows testing exe
       shell: bash
-      run: go build -o project-scale-testing.exe .
+      run: go build -v -o project-scale-testing.exe .
     - name: Build Windows collision debug exe
       shell: bash
-      run: go build -tags debugcol -o project-scale-debugcol.exe .
+      run: go build -v -tags debugcol -o project-scale-debugcol.exe .
     - name: Upload Windows exe
       uses: actions/upload-artifact@v3
       with:
@@ -63,7 +63,7 @@ jobs:
         go-version: 1.19
     - name: Build Mac exe
       shell: bash
-      run: go build -tags release .
+      run: go build -v -tags release .
     - name: Tar it up
       shell: bash
       run: tar -zcvf project-scale-mac.tar.gz project-scale LICENSE
@@ -87,7 +87,7 @@ jobs:
       run: sudo apt-get update && sudo apt-get -y install libgl1-mesa-dev xorg-dev libasound2-dev
     - name: Build Linux exe
       shell: bash
-      run: go build -tags release .
+      run: go build -v -tags release .
     - name: Tar it up
       shell: bash
       run: tar -zcvf project-scale-lin.tar.gz project-scale LICENSE
