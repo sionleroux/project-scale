@@ -64,7 +64,8 @@ func (bs Backdrops) Draw(cam *camera.Camera, waterLevel float64) {
 				// Use the actual height of the backdrop after scaling it down
 				-float64(b.Image.Bounds().Dy())*(1-b.Speed)+bs.bottomOfMap+
 					// The position is changed based on the camera position and the speed of the backdrop
-					(float64(cam.Height/2)+cam.Y-bs.bottomOfMap)*b.Speed,
+					(float64(cam.Height/2)+cam.Y-bs.bottomOfMap)*b.Speed-
+					(1/cam.Scale-1)*float64(cam.Height/2),
 			)
 
 			cam.Surface.DrawImage(b.Image, backdropPos)

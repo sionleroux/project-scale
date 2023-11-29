@@ -187,8 +187,7 @@ func (g *GameScene) Update() error {
 	g.Player.Update()
 
 	if g.CheckFinish() {
-		g.SceneManager.SwitchTo(g.State.Scenes[gameWon])
-		return nil
+		g.Player.State = stateWinning
 	}
 
 	// Position camera and clamp in to the Map dimensions
@@ -198,9 +197,20 @@ func (g *GameScene) Update() error {
 		float64(maxHeight-g.Camera.Height/2),
 	))
 
-	g.Camera.Update()
+	if g.Player.State == stateWinning {
+		if g.Camera.Scale > 0.13 {
+			g.Camera.Zoom(0.99)
+		}
+	} else {
+		g.Camera.Update()
+	}
 
-	g.Water.Update()
+	g.Water.Update(g.Player.State != stateWinning && g.Player.State != stateWon)
+
+	if g.Player.State == stateWinning && g.Water.Level > 600 {
+		g.Player.State = stateWon
+	}
+
 	g.State.Fog.Update()
 
 	switch g.Player.State {
@@ -218,6 +228,14 @@ func (g *GameScene) Update() error {
 			return nil
 		}
 
+	case stateWon:
+		alpha, _ := g.FadeTween.Update(1)
+		g.Alpha = uint8(alpha)
+		if g.Alpha == 200 {
+			g.Sounds[backgroundMusic].Pause()
+			g.SceneManager.SwitchTo(g.State.Scenes[gameWon])
+			return nil
+		}
 	default:
 		if !g.Sounds[backgroundMusic].IsPlaying() {
 			g.Sounds[backgroundMusic].PlayNext()
@@ -251,11 +269,12 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 	cameraOrigin := g.Camera.GetTranslation(&ebiten.DrawImageOptions{}, 0, 0)
 
 	g.Backdrops.Draw(g.Camera, g.Water.Level)
-	g.Camera.Surface.DrawImage(g.Background, cameraOrigin)
 	if g.Player.State == stateDying {
+		g.Camera.Surface.DrawImage(g.Background, cameraOrigin)
 		g.Camera.Surface.DrawImage(g.Foreground, cameraOrigin)
 		g.Player.Draw(g.Camera)
-	} else {
+	} else if g.Player.State != stateWon && g.Player.State != stateWinning {
+		g.Camera.Surface.DrawImage(g.Background, cameraOrigin)
 		g.Player.Draw(g.Camera)
 		g.Camera.Surface.DrawImage(g.Foreground, cameraOrigin)
 	}
@@ -267,7 +286,7 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 
 	g.Camera.Blit(screen)
 
-	if g.Player.State == stateDying || g.Player.State == stateDead {
+	if g.Player.State == stateDying || g.Player.State == stateDead || g.Player.State == stateWinning || g.Player.State == stateWon {
 		vector.DrawFilledRect(screen, 0, 0, float32(g.State.Width), float32(g.State.Height), color.RGBA{0, 0, 0, g.Alpha}, false)
 	}
 	g.Debuggers.Debug(g, screen)
