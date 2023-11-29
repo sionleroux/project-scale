@@ -43,6 +43,8 @@ func (s *StartScene) Update() error {
 			s.SceneManager.SwitchTo(s.State.Scenes[gameRunning])
 		}
 	}
+	s.State.Fog.Update()
+
 	return nil
 }
 
@@ -58,6 +60,11 @@ func (s *StartScene) Draw(screen *ebiten.Image) {
 	if s.TransitionPhase == 0 {
 		s.State.TextRenderer.Draw(screen, "Press SPACE to start", 8, 50, 85)
 	}
+
+	fogOp := s.State.Fog.GetDrawImageOptions()
+	fogOp.GeoM.Translate(float64(-s.State.Fog.Image.Bounds().Dx()+s.State.StartPos[0])/2, -float64(s.State.Fog.Image.Bounds().Dy())+gameHeight)
+	screen.DrawImage(s.State.Fog.Image, fogOp)
+
 }
 
 func NewStartScene() *StartScene {

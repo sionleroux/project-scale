@@ -30,6 +30,8 @@ type Game struct {
 	ResetNeeded   bool
 	TextRenderer  *TextRenderer
 	Stat          *Stat
+	Fog           *Fog
+	StartPos      []int
 }
 
 func NewStageManager() *StageManager {
@@ -74,6 +76,7 @@ func loadGame(s *StageManager) {
 	}
 
 	game.Stat.Load()
+	game.Fog = NewFog()
 
 	game.Scenes = []stagehand.Scene[State]{
 		NewStartScene(),

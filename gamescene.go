@@ -116,7 +116,7 @@ func NewGameScene(game *Game, loadingState *LoadingState) {
 		startPos.Position[0] + (startPos.Width / 2),
 		startPos.Position[1] + (startPos.Height / 2),
 	}
-	g.StartPos = startCenter
+	game.StartPos = startCenter
 	g.Player = NewPlayer(startCenter, g.Camera)
 	g.Player.Input = g.InputSystem.NewHandler(0, g.Keymap)
 	g.Space.Add(g.Player.Object)
@@ -146,7 +146,6 @@ type GameScene struct {
 	Camera       *camera.Camera
 	Debuggers    Debuggers
 	Water        *Water
-	StartPos     []int
 	Backdrops    Backdrops
 	Music        *Sound
 	Heartbeat    *MusicLoop
@@ -197,6 +196,7 @@ func (g *GameScene) Update() error {
 	g.Camera.Update()
 
 	g.Water.Update()
+	g.State.Fog.Update()
 
 	switch g.Player.State {
 	case stateDying:
@@ -223,7 +223,7 @@ func (g *GameScene) Update() error {
 		}
 		if g.CheckDeath() {
 			g.Player.State = stateDying
-			g.State.Stat.LastHighestPoint = (g.StartPos[1] - int(g.Player.Y)) / gridSize
+			g.State.Stat.LastHighestPoint = (g.State.StartPos[1] - int(g.Player.Y)) / gridSize
 			if g.State.Stat.LastHighestPoint > g.State.Stat.HighestPoint {
 				g.State.Stat.HighestPoint = g.State.Stat.LastHighestPoint
 				g.State.Stat.Save()
@@ -252,12 +252,10 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 		g.Camera.Surface.DrawImage(g.Foreground, cameraOrigin)
 	}
 	g.Water.Draw(g.Camera)
-	fogOp := &ebiten.DrawImageOptions{}
-	fogOp.GeoM.Translate(-float64(g.Fog.Bounds().Dx())/2, -float64(g.Fog.Bounds().Dy())/2)
-	fogOp.GeoM.Rotate(g.FogAngle)
-	fogOp.GeoM.Translate(+float64(g.Fog.Bounds().Dx())/2, +float64(g.Fog.Bounds().Dy())/2)
-	fogOp.Blend = ebiten.BlendLighter
-	g.Camera.Surface.DrawImage(g.Fog, g.Camera.GetTranslation(fogOp, -float64(g.Fog.Bounds().Dx())/2, 0))
+
+	fogOp := g.State.Fog.GetDrawImageOptions()
+	fogOp = g.Camera.GetTranslation(fogOp, -float64(g.State.Fog.Image.Bounds().Dx())/2, 0)
+	g.Camera.Surface.DrawImage(g.State.Fog.Image, fogOp)
 
 	g.Camera.Blit(screen)
 
@@ -308,7 +306,7 @@ func (g *GameScene) CheckDeath() bool {
 
 func (g *GameScene) Reset() {
 	level := g.LDTKProject.Levels[g.Level]
-	g.Player.X, g.Player.Y = float64(g.StartPos[0]), float64(g.StartPos[1])
+	g.Player.X, g.Player.Y = float64(g.State.StartPos[0]), float64(g.State.StartPos[1])
 	g.Player.Facing = directionUp
 	g.Player.AnimState = playerIdle
 	g.Player.State = stateIdle
