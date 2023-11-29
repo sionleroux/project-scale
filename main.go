@@ -17,7 +17,7 @@ var CheatsAllowed bool
 func main() {
 
 	ebiten.SetWindowSize(gameWidth*screenScaleFactor, gameHeight*screenScaleFactor)
-	ebiten.SetWindowTitle("project-scale")
+	ebiten.SetWindowTitle("Project S.C.A.L.E.")
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 
 	stageManager := NewStageManager()

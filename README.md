@@ -1,6 +1,6 @@
-# project-scale
+# Project S.C.A.L.E.
 
-WIP: Entry for Github Game Off 2023
+Avoid the rapidly rising tide by scaling to the top of ruined skyscrapers as a robot assisted survivor in an apocalyptic world: Specialized Climbing Apparatus for Liquid Escape.  This is an entry for Github Game Off 2023.
 
 ## For game testers
 
