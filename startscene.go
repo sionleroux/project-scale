@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
-	"github.com/joelschutz/stagehand"
 	"github.com/tinne26/etxt"
 )
 
@@ -12,7 +11,7 @@ type StartScene struct {
 	BackgroundSprite *SpriteAnimation
 	ButtonSprite     *SpriteAnimation
 	TransitionPhase  int
-	Music            *MusicLoop
+	Heartbeat        Sound
 	Voice            Sound
 }
 
@@ -27,18 +26,20 @@ func (s *StartScene) Update() error {
 
 		if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
 			s.TransitionPhase = 1
-			s.Music.Pause()
+			s.Heartbeat.Pause()
 			s.Voice.Play()
 		}
 
-		s.ButtonSprite.Update(0)
+		if f, _ := s.ButtonSprite.Update(0); f {
+			s.Heartbeat.Play()
+		}
 	} else if s.TransitionPhase == 1 {
-		if s.ButtonSprite.Update(1) {
+		if _, l := s.ButtonSprite.Update(1); l {
 			s.TransitionPhase = 2
 		}
 	} else if s.TransitionPhase == 2 {
 
-		if s.BackgroundSprite.Update(1) {
+		if _, l := s.BackgroundSprite.Update(1); l {
 			s.State.ResetNeeded = true
 			s.SceneManager.SwitchTo(s.State.Scenes[gameRunning])
 		}
@@ -71,18 +72,13 @@ func NewStartScene() *StartScene {
 	voice := Sound{Volume: 0.5}
 	voice.AddSound("assets/voices/game-start", sampleRate, context)
 
-	bgMusic := NewMusicPlayer(loadSoundFile("assets/sfx/heartbeat.ogg", sampleRate))
-	bgMusic.SetVolume(0.7)
+	heartbeat := Sound{Volume: 0.7}
+	heartbeat.AddSound("assets/sfx/heartbeat", sampleRate, context)
 
 	return &StartScene{
 		BackgroundSprite: NewSpriteAnimation("Menu"),
 		ButtonSprite:     NewSpriteAnimation("Start button"),
-		Music:            bgMusic,
+		Heartbeat:        heartbeat,
 		Voice:            voice,
 	}
-}
-
-func (s *StartScene) Load(st State, sm *stagehand.SceneManager[State]) {
-	s.BaseScene.Load(st, sm)
-	s.Music.Play()
 }

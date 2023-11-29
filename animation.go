@@ -46,7 +46,7 @@ func NewSpriteAnimation(name string) *SpriteAnimation {
 }
 
 // Returns TRUE if the endframe of the frametag is reached
-func (s *SpriteAnimation) Update(frameTag int) bool {
+func (s *SpriteAnimation) Update(frameTag int) (isFirstFrame bool, isLastFrame bool) {
 	ft := s.Sprite.Meta.FrameTags[frameTag]
 	from, to := ft.From, ft.To
 
@@ -68,7 +68,10 @@ func (s *SpriteAnimation) Update(frameTag int) bool {
 		s.Frame++
 	}
 
-	return s.Frame == to
+	isFirstFrame = s.Frame == from
+	isLastFrame = s.Frame == to
+
+	return
 }
 
 func (s *SpriteAnimation) GetImage() *ebiten.Image {
