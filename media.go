@@ -317,12 +317,16 @@ func (s *Sound) PlayVariant(i int) {
 
 // Pause pauses the audio being played
 func (s *Sound) Pause() {
-	s.LastPlayed.Pause()
+	if s.LastPlayed != nil {
+		s.LastPlayed.Pause()
+	}
 }
 
 // Resume resumes the last played audio
 func (s *Sound) Resume() {
-	s.LastPlayed.Play()
+	if s.LastPlayed != nil {
+		s.LastPlayed.Play()
+	}
 }
 
 // Next plays the next audio from the list

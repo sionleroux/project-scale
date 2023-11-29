@@ -212,13 +212,11 @@ func (g *GameScene) Update() error {
 		g.Alpha = uint8(alpha)
 		if g.Alpha == 255 {
 			g.Player.State = stateDead
+			g.Sounds[backgroundMusic].Pause()
+			g.Sounds[backgroundMusic].LowPass(false)
+			g.SceneManager.SwitchTo(g.State.Scenes[gameOver])
+			return nil
 		}
-
-	case stateDead:
-		g.Sounds[backgroundMusic].Pause()
-		g.Sounds[backgroundMusic].LowPass(false)
-		g.SceneManager.SwitchTo(g.State.Scenes[gameOver])
-		return nil
 
 	default:
 		if !g.Sounds[backgroundMusic].IsPlaying() {
@@ -269,7 +267,7 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 
 	g.Camera.Blit(screen)
 
-	if g.Player.State == stateDying {
+	if g.Player.State == stateDying || g.Player.State == stateDead {
 		vector.DrawFilledRect(screen, 0, 0, float32(g.State.Width), float32(g.State.Height), color.RGBA{0, 0, 0, g.Alpha}, false)
 	}
 	g.Debuggers.Debug(g, screen)

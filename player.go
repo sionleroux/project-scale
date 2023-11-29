@@ -114,7 +114,7 @@ func (p *Player) Update() {
 	p.Tick++
 
 	// Early return on death
-	if p.State == stateDying {
+	if p.State == stateDying || p.State == stateDead {
 		p.updateDeath()
 		p.animate()
 		return
