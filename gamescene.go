@@ -171,7 +171,7 @@ func (g *GameScene) Update() error {
 		return nil
 	}
 
-	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
+	if CheatsAllowed && inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
 		x, y := ebiten.CursorPosition()
 		wx, wy := g.Camera.GetWorldCoords(float64(x), float64(y))
 		g.Player.X = wx

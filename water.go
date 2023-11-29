@@ -20,7 +20,7 @@ func NewWater(startLevel float64) *Water {
 }
 
 func (w *Water) Update() {
-	if !ebiten.IsKeyPressed(ebiten.KeyM) {
+	if !CheatsAllowed || !ebiten.IsKeyPressed(ebiten.KeyM) {
 		w.Level -= WaterSpeed
 	}
 }
