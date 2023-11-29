@@ -223,6 +223,7 @@ func (g *GameScene) Update() error {
 		}
 		if g.CheckDeath() {
 			g.Player.State = stateDying
+			g.Player.AnimState = playerFallloop
 			g.State.Stat.LastHighestPoint = (g.State.StartPos[1] - int(g.Player.Y)) / gridSize
 			if g.State.Stat.LastHighestPoint > g.State.Stat.HighestPoint {
 				g.State.Stat.HighestPoint = g.State.Stat.LastHighestPoint
