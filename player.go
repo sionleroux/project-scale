@@ -35,7 +35,7 @@ const (
 	ActionJump
 )
 
-type Direction int
+type Direction int8
 
 const (
 	directionUp Direction = iota
@@ -44,18 +44,37 @@ const (
 	directionLeft
 )
 
+type PlayerState int8
+
+const (
+	stateIdle = iota
+	stateJumping
+	stateFalling
+	stateSlipping
+	stateStanding
+	stateDying
+	stateDead
+)
+
+var playerStateNames = []string{
+	"Idle",
+	"Jumping",
+	"Falling",
+	"Slipping",
+	"Standing",
+	"Dying",
+	"Dead",
+}
+
 // Player is the player character in the game
 type Player struct {
 	*resolv.Object
 	Input        *input.Handler
-	State        playerAnimationTags
+	AnimState    playerAnimationTags
+	State        PlayerState
 	Sprite       *SpriteSheet
 	Frame        int
 	Tick         int
-	Jumping      bool
-	Falling      bool
-	Slipping     bool
-	Standing     bool
 	JumpFrom     vector.Vector
 	WhatTiles    []string
 	Camera       *camera.Camera
@@ -65,8 +84,6 @@ type Player struct {
 	SpeedX       float64
 	SpeedY       float64
 	ControlHints []*ControlHint
-	Dying        bool
-	Dead         bool
 }
 
 func NewPlayer(position []int, camera *camera.Camera) *Player {
@@ -95,14 +112,18 @@ func NewPlayer(position []int, camera *camera.Camera) *Player {
 
 func (p *Player) Update() {
 	p.Tick++
-	if !p.Dying {
-		p.updateMovement()
-		p.collisionChecks()
-	} else {
+
+	// Early return on death
+	if p.State == stateDying {
 		p.updateDeath()
+		p.animate()
+		return
 	}
+
+	p.updateMovement()
+	p.collisionChecks()
 	p.Light.SetPos(p.X, p.Y)
-	p.Light.SetColor(p.State)
+	p.Light.SetColor(p.AnimState)
 	p.animate()
 	for _, hint := range p.ControlHints {
 		hint.Update(p.Y)
@@ -118,13 +139,13 @@ func (p *Player) updateDeath() {
 func (p *Player) updateMovement() {
 
 	// State-based continued movement
-	switch p.State {
+	switch p.AnimState {
 
 	case playerJumploop:
 		if (p.Input.ActionIsPressed(ActionJump) || !p.jumpedMin()) && !p.jumpedMax() {
-			p.State = playerJumploop
+			p.AnimState = playerJumploop
 		} else {
-			p.State = playerJumpendfloor
+			p.AnimState = playerJumpendfloor
 		}
 		if p.Facing == directionLeft {
 			p.SpeedX, p.SpeedY = -speedJump, 0
@@ -147,32 +168,32 @@ func (p *Player) updateMovement() {
 	}
 
 	// Jump input
-	if !p.Falling && !p.Jumping && p.Input.ActionIsJustPressed(ActionJump) {
-		p.Jumping = true
-		p.State = playerJumpstart
+	if p.State != stateFalling && p.State != stateJumping && p.Input.ActionIsJustPressed(ActionJump) {
+		p.State = stateJumping
+		p.AnimState = playerJumpstart
 		p.JumpFrom = vector.Vector{p.X, p.Y}
 	}
 
 	// Climbing input
-	if !p.Jumping && !p.Falling && !p.Slipping {
+	if p.State != stateJumping && p.State != stateFalling && p.State != stateSlipping {
 		if p.Input.ActionIsPressed(ActionMoveLeft) {
 			p.SpeedX, p.SpeedY = -speedClimb, 0
-			p.State = playerClimb
+			p.AnimState = playerClimb
 			p.Facing = directionLeft
 		} else if p.Input.ActionIsPressed(ActionMoveRight) {
 			p.SpeedX, p.SpeedY = +speedClimb, 0
-			p.State = playerClimb
+			p.AnimState = playerClimb
 			p.Facing = directionRight
 		} else if p.Input.ActionIsPressed(ActionMoveUp) {
 			p.SpeedX, p.SpeedY = 0, -speedClimb
-			p.State = playerClimb
+			p.AnimState = playerClimb
 			p.Facing = directionUp
 		} else if p.Input.ActionIsPressed(ActionMoveDown) {
 			p.SpeedX, p.SpeedY = 0, +speedClimb
-			p.State = playerClimb
+			p.AnimState = playerClimb
 			p.Facing = directionDown
 		} else {
-			p.State = playerIdle
+			p.AnimState = playerIdle
 			p.SpeedX, p.SpeedY = 0, 0
 		}
 	}
@@ -208,14 +229,14 @@ func (p *Player) collisionChecks() {
 				switch o.Tags()[0] {
 				case TagWall:
 					dy = 0
-					if p.Falling {
-						p.State = playerFallendwall
+					if p.State == stateFalling {
+						p.AnimState = playerFallendwall
 					}
-					if p.Slipping {
-						p.State = playerSlipend
+					if p.State == stateSlipping {
+						p.AnimState = playerSlipend
 					}
-					if p.Jumping && p.State != playerJumpendwall {
-						p.State = playerJumpendwall
+					if p.State == stateJumping && p.AnimState != playerJumpendwall {
+						p.AnimState = playerJumpendwall
 						p.Camera.Shake(camera.NewShaker(10, 40, 10))
 						dy -= intersection.MTV.Y()
 						if intersection.MTV.Y() != 0 {
@@ -223,7 +244,7 @@ func (p *Player) collisionChecks() {
 						}
 					}
 				case TagChasm:
-					if dy < 0 && !p.Jumping { // Don't climb up into chasm
+					if dy < 0 && p.State != stateJumping { // Don't climb up into chasm
 						dy = 0
 					}
 				case TagClimbable:
@@ -232,11 +253,11 @@ func (p *Player) collisionChecks() {
 					log.Println("MTV WOOP:", intersection.MTV.Y())
 					if intersection.MTV.Y() < 0 {
 						log.Println("AAAAAAAAAAAA")
-						if p.State == playerFallloop {
-							p.State = playerFallendfloor
+						if p.AnimState == playerFallloop {
+							p.AnimState = playerFallendfloor
 						}
-						if p.State == playerSliploop {
-							p.State = playerSlipend
+						if p.AnimState == playerSliploop {
+							p.AnimState = playerSlipend
 						}
 					}
 				}
@@ -246,19 +267,18 @@ func (p *Player) collisionChecks() {
 	p.Y += dy
 
 	// Start falling if you're stepping on a chasm
-	if p.State != playerJumploop && !p.Falling && !p.Slipping {
+	if p.AnimState != playerJumploop && p.State != stateFalling && p.State != stateSlipping {
 		if collision := p.Check(dx, dy, TagChasm, TagSlippery); collision != nil {
 			for _, o := range collision.Objects {
 				if p.Shape.Intersection(dx, dy, o.Shape) != nil || p.insideOf(o) {
-					p.Jumping = false
 					switch o.Tags()[0] {
 					case TagChasm:
-						p.State = playerFallstart
-						p.Falling = true
+						p.AnimState = playerFallstart
+						p.State = stateFalling
 						p.Facing = directionUp
 					case TagSlippery:
-						p.State = playerSlipstart
-						p.Slipping = true
+						p.AnimState = playerSlipstart
+						p.State = stateSlipping
 						p.Facing = directionUp
 					}
 				}
@@ -270,42 +290,42 @@ func (p *Player) collisionChecks() {
 }
 
 func (p *Player) animate() {
-	if p.Frame == p.Sprite.Meta.FrameTags[p.State].To {
+	if p.Frame == p.Sprite.Meta.FrameTags[p.AnimState].To {
 		p.animationBasedStateChanges()
 	}
-	p.Frame = Animate(p.Frame, p.Tick, p.Sprite.Meta.FrameTags[p.State])
+	p.Frame = Animate(p.Frame, p.Tick, p.Sprite.Meta.FrameTags[p.AnimState])
 }
 
 // Animation-trigged state changes
 func (p *Player) animationBasedStateChanges() {
-	switch p.State {
+	switch p.AnimState {
 
 	case playerJumpstart:
-		p.State = playerJumploop
+		p.AnimState = playerJumploop
 
 	case playerJumploop:
-		p.State = playerJumploop
+		p.AnimState = playerJumploop
 
 	case playerJumpendwall, playerJumpendfloor, playerJumpendmantle:
-		p.Jumping = false
+		p.State = stateIdle
 
 	case playerFallstart:
-		p.State = playerFallloop
+		p.AnimState = playerFallloop
 
 	case playerFallendwall:
-		p.State = playerStand
-		p.Falling = false
+		p.AnimState = playerStand
+		p.State = stateIdle
 
 	case playerFallendfloor:
-		p.State = playerIdle
-		p.Falling = false
+		p.AnimState = playerIdle
+		p.State = stateIdle
 
 	case playerSlipstart:
-		p.State = playerSliploop
+		p.AnimState = playerSliploop
 
 	case playerSlipend:
-		p.State = playerIdle
-		p.Slipping = false
+		p.AnimState = playerIdle
+		p.State = stateIdle
 
 	}
 }
@@ -338,7 +358,7 @@ func (p *Player) jumpDistance() vector.Vector {
 
 func (p *Player) Draw(camera *camera.Camera) {
 
-	if !p.Dying {
+	if p.State != stateDying {
 		p.Light.Draw(camera, p.Facing, p.Tick)
 	}
 
@@ -358,7 +378,7 @@ func (p *Player) Draw(camera *camera.Camera) {
 		float64(-frame.Position.W/2),
 		float64(-frame.Position.H/2),
 	)
-	if p.Dying {
+	if p.State == stateDying {
 		op.GeoM.Rotate(math.Pi / 2 * float64(p.Rotation))
 	} else {
 		op.GeoM.Rotate(math.Pi / 2 * float64(p.Facing))

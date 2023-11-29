@@ -198,20 +198,8 @@ func (g *GameScene) Update() error {
 
 	g.Water.Update()
 
-	if !g.Player.Dying && !g.Player.Dead {
-		if !g.Music.IsPlaying() {
-			g.Music.PlayNext()
-		}
-
-		if g.CheckDeath() {
-			g.Player.Dying = true
-			g.State.Stat.LastHighestPoint = (g.StartPos[1] - int(g.Player.Y)) / gridSize
-			if g.State.Stat.LastHighestPoint > g.State.Stat.HighestPoint {
-				g.State.Stat.HighestPoint = g.State.Stat.LastHighestPoint
-				g.State.Stat.Save()
-			}
-		}
-	} else if g.Player.Dying {
+	switch g.Player.State {
+	case stateDying:
 		if !g.Heartbeat.IsPlaying() {
 			g.Music.LowPass(true)
 			g.Heartbeat.Play()
@@ -219,15 +207,29 @@ func (g *GameScene) Update() error {
 		alpha, _ := g.FadeTween.Update(1)
 		g.Alpha = uint8(alpha)
 		if g.Alpha == 255 {
-			g.Player.Dying = false
-			g.Player.Dead = true
+			g.Player.State = stateDead
 		}
-	} else if g.Player.Dead {
+
+	case stateDead:
 		g.Music.Pause()
 		g.Music.LowPass(false)
 		g.Heartbeat.Pause()
 		g.SceneManager.SwitchTo(g.State.Scenes[gameOver])
 		return nil
+
+	default:
+		if !g.Music.IsPlaying() {
+			g.Music.PlayNext()
+		}
+		if g.CheckDeath() {
+			g.Player.State = stateDying
+			g.State.Stat.LastHighestPoint = (g.StartPos[1] - int(g.Player.Y)) / gridSize
+			if g.State.Stat.LastHighestPoint > g.State.Stat.HighestPoint {
+				g.State.Stat.HighestPoint = g.State.Stat.LastHighestPoint
+				g.State.Stat.Save()
+			}
+		}
+
 	}
 
 	g.FogAngle += 0.0001
@@ -242,7 +244,7 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 
 	g.Backdrops.Draw(g.Camera, g.Water.Level)
 	g.Camera.Surface.DrawImage(g.Background, cameraOrigin)
-	if g.Player.Dying {
+	if g.Player.State == stateDying {
 		g.Camera.Surface.DrawImage(g.Foreground, cameraOrigin)
 		g.Player.Draw(g.Camera)
 	} else {
@@ -259,7 +261,7 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 
 	g.Camera.Blit(screen)
 
-	if g.Player.Dying {
+	if g.Player.State == stateDying {
 		vector.DrawFilledRect(screen, 0, 0, float32(g.State.Width), float32(g.State.Height), color.RGBA{0, 0, 0, g.Alpha}, false)
 	}
 	g.Debuggers.Debug(g, screen)
@@ -308,13 +310,8 @@ func (g *GameScene) Reset() {
 	level := g.LDTKProject.Levels[g.Level]
 	g.Player.X, g.Player.Y = float64(g.StartPos[0]), float64(g.StartPos[1])
 	g.Player.Facing = directionUp
-	g.Player.State = playerIdle
-	g.Player.Dead = false
-	g.Player.Dying = false
-	g.Player.Jumping = false
-	g.Player.Falling = false
-	g.Player.Standing = false
-	g.Player.Slipping = false // :-(
+	g.Player.AnimState = playerIdle
+	g.Player.State = stateIdle
 	g.Player.Rotation = 0
 	g.Player.Input = g.InputSystem.NewHandler(0, g.Keymap)
 	g.Water = NewWater(float64(level.Height) + 4*g.Player.H)
