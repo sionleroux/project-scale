@@ -1,6 +1,7 @@
 package main
 
 import (
+	"image"
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -19,6 +20,8 @@ func main() {
 	ebiten.SetWindowSize(gameWidth*screenScaleFactor, gameHeight*screenScaleFactor)
 	ebiten.SetWindowTitle("Project S.C.A.L.E.")
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
+	ebiten.SetCursorMode(ebiten.CursorModeHidden)
+	ebiten.SetWindowIcon([]image.Image{loadImage("assets/icon.png")})
 
 	stageManager := NewStageManager()
 
