@@ -86,12 +86,18 @@ func NewGameScene(game *Game, loadingState *LoadingState) {
 
 	// SoundLoops
 	loadingState.IncreaseCounter(1)
-	g.Music = &Sound{Volume: 0.5}
-	g.Music.AddSound("assets/music/game-music", sampleRate, context, 7)
-	g.Heartbeat = NewMusicPlayer(loadSoundFile("assets/sfx/heartbeat.ogg", sampleRate))
+	g.Sounds = make(Sounds, 4)
+	g.Sounds[backgroundMusic] = &Sound{Volume: 0.5}
+	g.Sounds[backgroundMusic].AddSound("assets/music/game-music", sampleRate, context, 7)
 
 	// Sounds
 	loadingState.IncreaseCounter(1)
+	g.Sounds[sfxSubmerge] = &Sound{Volume: 0.7}
+	g.Sounds[sfxSubmerge].AddSound("assets/sfx/submerge", sampleRate, context, 1)
+	g.Sounds[sfxSplash] = &Sound{Volume: 0.7}
+	g.Sounds[sfxSplash].AddSound("assets/sfx/splash", sampleRate, context, 1)
+	g.Sounds[sfxUnderwater] = &Sound{Volume: 1}
+	g.Sounds[sfxUnderwater].AddSound("assets/sfx/underwater", sampleRate, context, 1)
 
 	// Entities
 	loadingState.IncreaseCounter(1)
@@ -147,8 +153,7 @@ type GameScene struct {
 	Debuggers    Debuggers
 	Water        *Water
 	Backdrops    Backdrops
-	Music        *Sound
-	Heartbeat    *MusicLoop
+	Sounds       Sounds
 	Alpha        uint8
 	FadeTween    *gween.Tween
 }
@@ -200,9 +205,8 @@ func (g *GameScene) Update() error {
 
 	switch g.Player.State {
 	case stateDying:
-		if !g.Heartbeat.IsPlaying() {
-			g.Music.LowPass(true)
-			g.Heartbeat.Play()
+		if !g.Sounds[sfxSubmerge].IsPlaying() && !g.Sounds[sfxSplash].IsPlaying() && !g.Sounds[sfxUnderwater].IsPlaying() {
+			g.Sounds[sfxUnderwater].Play()
 		}
 		alpha, _ := g.FadeTween.Update(1)
 		g.Alpha = uint8(alpha)
@@ -211,17 +215,22 @@ func (g *GameScene) Update() error {
 		}
 
 	case stateDead:
-		g.Music.Pause()
-		g.Music.LowPass(false)
-		g.Heartbeat.Pause()
+		g.Sounds[backgroundMusic].Pause()
+		g.Sounds[backgroundMusic].LowPass(false)
 		g.SceneManager.SwitchTo(g.State.Scenes[gameOver])
 		return nil
 
 	default:
-		if !g.Music.IsPlaying() {
-			g.Music.PlayNext()
+		if !g.Sounds[backgroundMusic].IsPlaying() {
+			g.Sounds[backgroundMusic].PlayNext()
 		}
 		if g.CheckDeath() {
+			g.Sounds[backgroundMusic].LowPass(true)
+			if g.Player.State != stateFalling {
+				g.Sounds[sfxSubmerge].Play()
+			} else {
+				g.Sounds[sfxSplash].Play()
+			}
 			g.Player.State = stateDying
 			g.Player.AnimState = playerFallloop
 			g.State.Stat.LastHighestPoint = (g.State.StartPos[1] - int(g.Player.Y)) / gridSize
@@ -272,15 +281,16 @@ func (g *GameScene) Load(st State, sm *stagehand.SceneManager[State]) {
 		g.State.ResetNeeded = false
 		g.State.Stat.GameStart = time.Now()
 		g.Reset()
-		g.Music.PlayNext()
+		g.Sounds[backgroundMusic].PlayNext()
 	} else {
-		g.Music.Resume()
+		g.Sounds[backgroundMusic].Resume()
 	}
 
 }
 
 func (g *GameScene) Unload() State {
-	g.Music.Pause()
+	g.Sounds[backgroundMusic].Pause()
+	g.Sounds[sfxUnderwater].Pause()
 
 	return g.BaseScene.Unload()
 }

@@ -234,11 +234,10 @@ func loadMaps(name string) *ldtkgo.Project {
 type SoundType uint8
 
 const (
-	menuBackground SoundType = iota
-)
-
-const (
-	voiceStartGame SoundType = iota
+	backgroundMusic SoundType = iota
+	sfxSplash
+	sfxSubmerge
+	sfxUnderwater
 )
 
 // Sound stores and plays all the sound variants for one single soundType
@@ -337,14 +336,14 @@ func (s *Sound) PlayNext() {
 
 // IsPlaying returns if the sound is playing
 func (s *Sound) IsPlaying() bool {
-	return s.LastPlayed.IsPlaying()
+	return s.LastPlayed != nil && s.LastPlayed.IsPlaying()
 }
 
 // LowPass toggles the sound's low-pass filter
 func (s *Sound) LowPass(on bool) {
 	s.lowpass.SetActive(on)
 	if on {
-		s.SetVolume(0.95)
+		s.SetVolume(0.7)
 	} else {
 		s.SetVolume(0.5)
 	}
