@@ -167,6 +167,28 @@ func (p *Player) updateMovement() {
 		p.SpeedX, p.SpeedY = 0, 0
 	}
 
+	// Walking in 1D input
+	if p.State == stateStanding {
+		if p.AnimState == playerSwitchtotopview {
+			return // no walking while switching
+		}
+
+		if p.Input.ActionIsPressed(ActionMoveLeft) {
+			p.SpeedX, p.SpeedY = -speedClimb, 0
+			p.AnimState = playerWalkleft
+		} else if p.Input.ActionIsPressed(ActionMoveRight) {
+			p.SpeedX, p.SpeedY = +speedClimb, 0
+			p.AnimState = playerWalkright
+		} else if p.Input.ActionIsPressed(ActionMoveUp) {
+			p.SpeedX, p.SpeedY = 0, -speedClimb
+			p.AnimState = playerSwitchtotopview // intent to move up
+			p.Facing = directionUp
+		} else {
+			p.AnimState = playerStand
+		}
+		return
+	}
+
 	// Jump input
 	if p.State != stateFalling && p.State != stateJumping && p.Input.ActionIsJustPressed(ActionJump) {
 		p.State = stateJumping
@@ -210,12 +232,32 @@ func (p *Player) collisionChecks() {
 	}
 
 	dx := p.SpeedX
-	if collision := p.Check(dx, 0, TagWall); collision != nil {
-		for _, o := range collision.Objects {
-			if intersection := p.Shape.Intersection(dx, 0, o.Shape); intersection != nil {
-				dx = 0
-				if intersection.MTV.X() != 0 {
-					log.Println("MTV X:", intersection.MTV.X())
+	switch p.State {
+
+	case stateStanding:
+
+		// Don't walk into walls
+		if collision := p.Check(0, dx, TagWall); collision != nil {
+			for _, o := range collision.Objects {
+				if intersection := p.Shape.Intersection(dx, 0, o.Shape); intersection != nil {
+					dx = 0
+				}
+			}
+		}
+
+		// // Fall down if there is no more wall beneath you // TODO: fixme!!!
+		// // XXX: this messes up the whole standing state!!!
+		// if collision := p.Check(p.H, dx, TagWall); collision == nil {
+		// 	p.AnimState = playerFallstart
+		// 	p.State = stateFalling
+		// 	p.Facing = directionUp
+		// }
+
+	default:
+		if collision := p.Check(dx, 0, TagWall); collision != nil {
+			for _, o := range collision.Objects {
+				if intersection := p.Shape.Intersection(dx, 0, o.Shape); intersection != nil {
+					dx = intersection.MTV.X()
 				}
 			}
 		}
@@ -223,63 +265,89 @@ func (p *Player) collisionChecks() {
 	p.X += dx
 
 	dy := p.SpeedY
-	if collision := p.Check(0, dy, TagWall, TagClimbable, TagChasm); collision != nil {
-		for _, o := range collision.Objects {
-			if intersection := p.Shape.Intersection(0, dy, o.Shape); intersection != nil {
-				switch o.Tags()[0] {
-				case TagWall:
-					dy = 0
-					if p.State == stateFalling {
-						p.AnimState = playerFallendwall
+	switch p.State {
+
+	case stateStanding:
+
+		// Successfully climb up if there's a climbable tile behind you
+		if dy < 0 { // attempting to climb up
+			if collision := p.Check(0, dy, TagClimbable); collision != nil {
+				canClimbUp := false
+				for _, o := range collision.ObjectsByTags(TagClimbable) {
+					if p.Overlaps(o) { // XXX: maybe this isn't even needed?!
+						canClimbUp = true
 					}
-					if p.State == stateSlipping {
-						p.AnimState = playerSlipend
-					}
-					if p.State == stateJumping && p.AnimState != playerJumpendwall {
-						p.AnimState = playerJumpendwall
-						p.Camera.Shake(camera.NewShaker(10, 40, 10))
-						dy -= intersection.MTV.Y()
-						if intersection.MTV.Y() != 0 {
-							log.Println("MTV Y:", intersection.MTV.Y())
-						}
-					}
-				case TagChasm:
-					if dy < 0 && p.State != stateJumping { // Don't climb up into chasm
+				}
+				if !canClimbUp {
+					dy = 0 // no climbing for you today
+					p.AnimState = playerStand
+				}
+			}
+		}
+
+	default:
+		if collision := p.Check(0, dy, TagWall, TagClimbable, TagChasm); collision != nil {
+			for _, o := range collision.Objects {
+				if intersection := p.Shape.Intersection(0, dy, o.Shape); intersection != nil {
+
+					switch o.Tags()[0] {
+
+					case TagWall:
 						dy = 0
-					}
-				case TagClimbable:
-					// only recover onto tiles below you, that means the MTV to
-					// get out of them will be negative, i.e. upwards
-					log.Println("MTV WOOP:", intersection.MTV.Y())
-					if intersection.MTV.Y() < 0 {
-						log.Println("AAAAAAAAAAAA")
-						if p.AnimState == playerFallloop {
-							p.AnimState = playerFallendfloor
+						if p.State == stateFalling {
+							p.AnimState = playerFallendwall
+							log.Println("Avoid wall clipping after fall:", intersection.MTV.X(), intersection.MTV.Y())
+							dy -= intersection.MTV.Y()
 						}
-						if p.AnimState == playerSliploop {
+						if p.State == stateSlipping {
 							p.AnimState = playerSlipend
+						}
+						if p.State == stateJumping && p.AnimState != playerJumpendwall {
+							p.AnimState = playerJumpendwall
+							p.Camera.Shake(camera.NewShaker(10, 40, 10))
+							dy -= intersection.MTV.Y()
+							if intersection.MTV.Y() != 0 {
+								log.Println("MTV Y:", intersection.MTV.Y())
+							}
+						}
+					case TagChasm:
+						if dy < 0 && p.State != stateJumping { // Don't climb up into chasm
+							dy = 0
+						}
+					case TagClimbable:
+						// only recover onto tiles below you, that means the MTV to
+						// get out of them will be negative, i.e. upwards
+						log.Println("MTV WOOP:", intersection.MTV.Y())
+						if intersection.MTV.Y() < 0 {
+							log.Println("AAAAAAAAAAAA")
+							if p.AnimState == playerFallloop {
+								p.AnimState = playerFallendfloor
+							}
+							if p.AnimState == playerSliploop {
+								p.AnimState = playerSlipend
+							}
 						}
 					}
 				}
 			}
 		}
-	}
-	p.Y += dy
+		p.Y += dy
 
-	// Start falling if you're stepping on a chasm
-	if p.AnimState != playerJumploop && p.State != stateFalling && p.State != stateSlipping {
-		if collision := p.Check(dx, dy, TagChasm, TagSlippery); collision != nil {
-			for _, o := range collision.Objects {
-				if p.Shape.Intersection(dx, dy, o.Shape) != nil || p.insideOf(o) {
-					switch o.Tags()[0] {
-					case TagChasm:
-						p.AnimState = playerFallstart
-						p.State = stateFalling
-						p.Facing = directionUp
-					case TagSlippery:
-						p.AnimState = playerSlipstart
-						p.State = stateSlipping
-						p.Facing = directionUp
+		// Start falling if you're stepping on a chasm
+		if p.AnimState != playerJumploop && p.State != stateFalling && p.State != stateSlipping {
+			if collision := p.Check(dx, dy, TagChasm, TagSlippery); collision != nil {
+				for _, o := range collision.Objects {
+					if p.Shape.Intersection(dx, dy, o.Shape) != nil || p.insideOf(o) {
+						switch o.Tags()[0] {
+						case TagChasm:
+							p.AnimState = playerFallstart
+							p.State = stateFalling
+							p.Facing = directionUp
+						case TagSlippery:
+							p.AnimState = playerSlipstart
+							p.State = stateSlipping
+							p.Facing = directionUp
+						}
 					}
 				}
 			}
@@ -314,9 +382,13 @@ func (p *Player) animationBasedStateChanges() {
 
 	case playerFallendwall:
 		p.AnimState = playerStand
-		p.State = stateIdle
+		p.State = stateStanding
 
 	case playerFallendfloor:
+		p.AnimState = playerIdle
+		p.State = stateIdle
+
+	case playerSwitchtotopview:
 		p.AnimState = playerIdle
 		p.State = stateIdle
 
