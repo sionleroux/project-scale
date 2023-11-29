@@ -161,8 +161,8 @@ func (p *Player) updateMovement() {
 		p.SpeedX, p.SpeedY = 0, speedFall
 	case playerSliploop:
 		p.SpeedX, p.SpeedY = 0, speedSliploop
-	// case playerSlipend, playerSlipstart:
-	// 	p.SpeedX, p.SpeedY = 0, speedSlip
+	case playerSlipend, playerSlipstart:
+		p.SpeedX, p.SpeedY = 0, speedSlip // XXX: why don't you slip without this?!
 	default:
 		p.SpeedX, p.SpeedY = 0, 0
 	}
