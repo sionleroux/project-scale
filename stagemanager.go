@@ -25,13 +25,14 @@ type StageManager struct {
 }
 
 type Game struct {
-	Width, Height int
-	Scenes        []stagehand.Scene[State]
-	ResetNeeded   bool
-	TextRenderer  *TextRenderer
-	Stat          *Stat
-	Fog           *Fog
-	StartPos      []int
+	Width, Height    int
+	Scenes           []stagehand.Scene[State]
+	ResetNeeded      bool
+	TextRenderer     *TextRenderer
+	BoldTextRenderer *TextRenderer
+	Stat             *Stat
+	Fog              *Fog
+	StartPos         []int
 }
 
 func NewStageManager() *StageManager {
@@ -69,10 +70,11 @@ func (s *StageManager) Draw(screen *ebiten.Image) {
 func loadGame(s *StageManager) {
 
 	game := &Game{
-		Width:        gameWidth,
-		Height:       gameHeight,
-		TextRenderer: NewTextRenderer("assets/fonts/PixelOperator8.ttf"),
-		Stat:         &Stat{},
+		Width:            gameWidth,
+		Height:           gameHeight,
+		TextRenderer:     NewTextRenderer("assets/fonts/PixelOperator8.ttf"),
+		BoldTextRenderer: NewTextRenderer("assets/fonts/PixelOperator8-Bold.ttf"),
+		Stat:             &Stat{},
 	}
 
 	game.Stat.Load()

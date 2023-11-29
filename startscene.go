@@ -1,9 +1,10 @@
 package main
 
 import (
+	"image/color"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
-	"github.com/tinne26/etxt"
 )
 
 type StartScene struct {
@@ -13,11 +14,6 @@ type StartScene struct {
 	TransitionPhase  int
 	Heartbeat        Sound
 	Voice            Sound
-}
-
-type StartTextRenderer struct {
-	*etxt.Renderer
-	alpha uint8
 }
 
 func (s *StartScene) Update() error {
@@ -59,7 +55,7 @@ func (s *StartScene) Draw(screen *ebiten.Image) {
 	}
 
 	if s.TransitionPhase == 0 {
-		s.State.TextRenderer.Draw(screen, "Press SPACE to start", 8, 50, 85)
+		s.State.BoldTextRenderer.Draw(screen, "Press SPACE to start", color.Black, 8, 50, 85)
 	}
 
 	fogOp := s.State.Fog.GetDrawImageOptions()

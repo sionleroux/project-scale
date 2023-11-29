@@ -4,6 +4,7 @@
 package main
 
 import (
+	"image/color"
 	"sync"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -63,7 +64,7 @@ func (s *LoadingScene) Draw(screen *ebiten.Image) {
 	if counter < len(loadingWhat) {
 		whatTxt = loadingWhat[counter]
 	}
-	s.TextRenderer.Draw(screen, "Loading..."+whatTxt, 8, 50, 85)
+	s.TextRenderer.Draw(screen, "Loading..."+whatTxt, color.White, 8, 50, 85)
 
 }
 

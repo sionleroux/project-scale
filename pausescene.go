@@ -1,6 +1,7 @@
 package main
 
 import (
+	"image/color"
 	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -23,5 +24,5 @@ func (p *PauseScreen) Update() error {
 }
 
 func (p *PauseScreen) Draw(screen *ebiten.Image) {
-	p.State.TextRenderer.Draw(screen, "Game paused\nPress P to unpause\nPress Esc to quit", 8, 50, 50)
+	p.State.TextRenderer.Draw(screen, "Game paused\nPress P to unpause\nPress Esc to quit", color.White, 8, 50, 50)
 }
