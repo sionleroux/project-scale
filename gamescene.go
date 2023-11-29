@@ -29,7 +29,6 @@ const fadeOutTime = 240
 func NewGameScene(game *Game, loadingState *LoadingState) {
 
 	g := &GameScene{
-		Camera:    camera.NewCamera(game.Width, game.Height),
 		FadeTween: gween.New(0, 255, fadeOutTime, ease.Linear),
 		Debuggers: debuggers,
 	}
@@ -67,10 +66,9 @@ func NewGameScene(game *Game, loadingState *LoadingState) {
 	}
 	g.Background = bg
 	g.Foreground = fg
-	g.Fog = loadImage("assets/backdrop/Project-scale-parallax-backdrop_0001_Smog-1-cloud.png")
 
 	// Backdrop
-	g.Backdrops = NewBackdrops(float64(level.Height))
+	game.Backdrops = NewBackdrops(float64(level.Height))
 
 	// Create space for collision detection
 	g.Space = resolv.NewSpace(level.Width, level.Height, 16, 16)
@@ -123,7 +121,7 @@ func NewGameScene(game *Game, loadingState *LoadingState) {
 		startPos.Position[1] + (startPos.Height / 2),
 	}
 	game.StartPos = startCenter
-	g.Player = NewPlayer(startCenter, g.Camera)
+	g.Player = NewPlayer(startCenter, game.Camera)
 	g.Player.Input = g.InputSystem.NewHandler(0, g.Keymap)
 	g.Space.Add(g.Player.Object)
 
@@ -146,13 +144,9 @@ type GameScene struct {
 	LDTKProject  *ldtkgo.Project
 	Background   *ebiten.Image
 	Foreground   *ebiten.Image
-	Fog          *ebiten.Image
-	FogAngle     float64
 	Level        int
-	Camera       *camera.Camera
 	Debuggers    Debuggers
 	Water        *Water
-	Backdrops    Backdrops
 	Sounds       Sounds
 	Alpha        uint8
 	FadeTween    *gween.Tween
@@ -177,7 +171,7 @@ func (g *GameScene) Update() error {
 
 	if CheatsAllowed && inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
 		x, y := ebiten.CursorPosition()
-		wx, wy := g.Camera.GetWorldCoords(float64(x), float64(y))
+		wx, wy := g.State.Camera.GetWorldCoords(float64(x), float64(y))
 		g.Player.X = wx
 		g.Player.Y = wy
 	}
@@ -192,17 +186,17 @@ func (g *GameScene) Update() error {
 
 	// Position camera and clamp in to the Map dimensions
 	maxHeight := g.LDTKProject.Levels[g.Level].Height
-	g.Camera.SetPosition(g.Player.X, math.Min(
-		math.Max(g.Player.Y, float64(g.Camera.Height/2)),
-		float64(maxHeight-g.Camera.Height/2),
+	g.State.Camera.SetPosition(g.Player.X, math.Min(
+		math.Max(g.Player.Y, float64(g.State.Camera.Height/2)),
+		float64(maxHeight-g.State.Camera.Height/2),
 	))
 
 	if g.Player.State == stateWinning {
-		if g.Camera.Scale > 0.13 {
-			g.Camera.Zoom(0.99)
+		if g.State.Camera.Scale > 0.13 {
+			g.State.Camera.Zoom(0.99)
 		}
 	} else {
-		g.Camera.Update()
+		g.State.Camera.Update()
 	}
 
 	g.Water.Update(g.Player.State != stateWinning && g.Player.State != stateWon)
@@ -258,33 +252,31 @@ func (g *GameScene) Update() error {
 
 	}
 
-	g.FogAngle += 0.0001
-
 	return nil
 }
 
 // Draw draws the game screen by one frame
 func (g *GameScene) Draw(screen *ebiten.Image) {
-	g.Camera.Surface.Clear()
-	cameraOrigin := g.Camera.GetTranslation(&ebiten.DrawImageOptions{}, 0, 0)
+	g.State.Camera.Surface.Clear()
+	cameraOrigin := g.State.Camera.GetTranslation(&ebiten.DrawImageOptions{}, 0, 0)
 
-	g.Backdrops.Draw(g.Camera, g.Water.Level)
+	g.State.Backdrops.Draw(g.State.Camera, g.Water.Level)
 	if g.Player.State == stateDying {
-		g.Camera.Surface.DrawImage(g.Background, cameraOrigin)
-		g.Camera.Surface.DrawImage(g.Foreground, cameraOrigin)
-		g.Player.Draw(g.Camera)
+		g.State.Camera.Surface.DrawImage(g.Background, cameraOrigin)
+		g.State.Camera.Surface.DrawImage(g.Foreground, cameraOrigin)
+		g.Player.Draw(g.State.Camera)
 	} else if g.Player.State != stateWon && g.Player.State != stateWinning {
-		g.Camera.Surface.DrawImage(g.Background, cameraOrigin)
-		g.Player.Draw(g.Camera)
-		g.Camera.Surface.DrawImage(g.Foreground, cameraOrigin)
+		g.State.Camera.Surface.DrawImage(g.Background, cameraOrigin)
+		g.Player.Draw(g.State.Camera)
+		g.State.Camera.Surface.DrawImage(g.Foreground, cameraOrigin)
 	}
-	g.Water.Draw(g.Camera)
+	g.Water.Draw(g.State.Camera)
 
 	fogOp := g.State.Fog.GetDrawImageOptions()
-	fogOp = g.Camera.GetTranslation(fogOp, -float64(g.State.Fog.Image.Bounds().Dx())/2, 0)
-	g.Camera.Surface.DrawImage(g.State.Fog.Image, fogOp)
+	fogOp = g.State.Camera.GetTranslation(fogOp, -float64(g.State.Fog.Image.Bounds().Dx())/2, 0)
+	g.State.Camera.Surface.DrawImage(g.State.Fog.Image, fogOp)
 
-	g.Camera.Blit(screen)
+	g.State.Camera.Blit(screen)
 
 	if g.Player.State == stateDying || g.Player.State == stateDead || g.Player.State == stateWinning || g.Player.State == stateWon {
 		vector.DrawFilledRect(screen, 0, 0, float32(g.State.Width), float32(g.State.Height), color.RGBA{0, 0, 0, g.Alpha}, false)

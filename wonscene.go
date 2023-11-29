@@ -26,6 +26,9 @@ func (s *WonScene) Update() error {
 }
 
 func (s *WonScene) Draw(screen *ebiten.Image) {
+	s.State.Backdrops.Draw(s.State.Camera, 1000)
+
+	s.State.Camera.Blit(screen)
 	s.State.TextRenderer.Draw(screen, "You WON!", color.White, 8, 50, 10)
 	s.State.TextRenderer.Draw(screen, "Press space to restart\nPress Esc to quit", color.White, 8, 50, 80)
 	s.State.TextRenderer.Draw(screen, s.State.Stat.GetText(), color.White, 8, 50, 50)
