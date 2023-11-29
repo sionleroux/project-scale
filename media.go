@@ -20,7 +20,6 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/audio"
 	"github.com/hajimehoshi/ebiten/v2/audio/vorbis"
 	"github.com/solarlune/ldtkgo"
-	"github.com/solarlune/resound"
 	"github.com/tanema/gween"
 	"github.com/tanema/gween/ease"
 	"github.com/tinne26/etxt"
@@ -246,7 +245,6 @@ type Sound struct {
 	LastPlayed *audio.Player
 	LastIndex  int
 	Volume     float64
-	lowpass    *resound.LowpassFilter
 }
 
 // AddSound adds one new sound to the soundType
@@ -295,24 +293,11 @@ func (s *Sound) PlayVariant(i int) {
 	if i >= len(s.Audio) || i < 0 {
 		return
 	}
-
-	sound, err := vorbis.DecodeWithoutResampling(bytes.NewReader(s.Audio[i]))
-	if err != nil {
-		log.Printf("error decoding sound as Vorbis: %v\n", err)
-	}
-
-	lowpass := resound.NewLowpassFilter(sound).SetStrength(0.85).SetActive(false)
-
-	audioPlayer, err := audio.NewPlayer(context, lowpass)
-	if err != nil {
-		log.Printf("error making audio player: %v\n", err)
-	}
-
+	sound := NewSoundPlayer(s.Audio[i])
 	s.LastIndex = i
-	s.LastPlayed = audioPlayer
-	s.lowpass = lowpass
-	audioPlayer.SetVolume(s.Volume)
-	audioPlayer.Play()
+	s.LastPlayed = sound
+	sound.SetVolume(s.Volume)
+	sound.Play()
 }
 
 // Pause pauses the audio being played
@@ -341,16 +326,6 @@ func (s *Sound) PlayNext() {
 // IsPlaying returns if the sound is playing
 func (s *Sound) IsPlaying() bool {
 	return s.LastPlayed != nil && s.LastPlayed.IsPlaying()
-}
-
-// LowPass toggles the sound's low-pass filter
-func (s *Sound) LowPass(on bool) {
-	s.lowpass.SetActive(on)
-	if on {
-		s.SetVolume(0.7)
-	} else {
-		s.SetVolume(0.5)
-	}
 }
 
 // Sounds is a slice of sounds
@@ -406,6 +381,21 @@ func NewMusicPlayer(data SoundData) *MusicLoop {
 		log.Fatalf("error making music player: %v\n", err)
 	}
 	return &MusicLoop{musicPlayer, nil}
+}
+
+// NewSoundPlayer loads a sound into an audio player that can be used to play it
+// without any additional setup required
+func NewSoundPlayer(data SoundData) *audio.Player {
+	sound, err := vorbis.DecodeWithoutResampling(bytes.NewReader(data))
+	if err != nil {
+		log.Printf("error decoding sound as Vorbis: %v\n", err)
+	}
+
+	audioPlayer, err := audio.NewPlayer(context, sound)
+	if err != nil {
+		log.Printf("error making audio player: %v\n", err)
+	}
+	return audioPlayer
 }
 
 // SoundData is bytes returned from a sound file

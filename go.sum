@@ -59,8 +59,6 @@ github.com/solarlune/ldtkgo v0.9.3 h1:pPgbO68AlhRzb9hynGoWxuZpYkmxmG0bjuFYpTdH9r
 github.com/solarlune/ldtkgo v0.9.3/go.mod h1:rpW/4FW9wOJR9JVpA67mbCfllBsg6ZvCFZnVtfokdFc=
 github.com/solarlune/resolv v0.6.1 h1:pKlguR11akeOIZF10O/Mus0kptbFY4UR2UU1rJLY5x0=
 github.com/solarlune/resolv v0.6.1/go.mod h1:aNKIUtjuj5sUwUMms/GVU7BeQCdWdHUPsdEJZ/btdss=
-github.com/solarlune/resound v0.0.0-20231009060755-622aa26e8707 h1:szTFd9B2a0vDhR9keA4rfSZjyMYj4lB+nZMZ/oimZT8=
-github.com/solarlune/resound v0.0.0-20231009060755-622aa26e8707/go.mod h1:fcYTIu6q/GP1eEyH7UabnNahmsAAMy9MW9Gdx+huROE=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/testify v1.5.1/go.mod h1:5W2xD1RspED5o8YsWQXVCued0rvSQ+mT+I5cxcmMvtA=
 github.com/stretchr/testify v1.8.2 h1:+h33VjcLVPDHtOdpUCuF+7gSuG3yGIftsP1YvFihtJ8=
