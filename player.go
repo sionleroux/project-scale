@@ -358,7 +358,8 @@ func (p *Player) jumpDistance() vector.Vector {
 
 func (p *Player) Draw(camera *camera.Camera) {
 
-	if p.State != stateDying {
+	switch p.State {
+	case stateIdle, stateFalling, stateSlipping, stateJumping:
 		p.Light.Draw(camera, p.Facing, p.Tick)
 	}
 
