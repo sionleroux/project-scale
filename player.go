@@ -16,7 +16,7 @@ import (
 //go:generate ./tools/gen_sprite_tags.sh assets/sprites/Nanobot.json player_anim.go player
 
 const MinJumpDist = 32 - 4 // I it's because 4 is the distance from the player sprite origin to the collision object or maybe it's because 4 is the current jump movement distance and a fencepost error means it has already moved once by 4 before the check happens
-const MaxJumpDist = 48 - 4 // either way 4 is the value that seems to take you the right distance to the next tile in practice
+const MaxJumpDist = 64 - 4 // either way 4 is the value that seems to take you the right distance to the next tile in practice
 
 const (
 	speedClimb     = 1.2
