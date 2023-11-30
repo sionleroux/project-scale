@@ -213,6 +213,7 @@ func (g *GameScene) Update() error {
 		if g.Alpha == 255 {
 			g.Player.State = stateDead
 			g.Sounds[backgroundMusic].Pause()
+			g.Sounds[backgroundMusic].LowPass(false)
 			g.SceneManager.SwitchTo(g.State.Scenes[gameOver])
 			return nil
 		}
@@ -222,6 +223,7 @@ func (g *GameScene) Update() error {
 			g.Sounds[backgroundMusic].PlayNext()
 		}
 		if g.CheckDeath() {
+			g.Sounds[backgroundMusic].LowPass(true)
 			if g.Player.State != stateFalling {
 				g.Sounds[sfxSubmerge].Play()
 			} else {
@@ -235,6 +237,7 @@ func (g *GameScene) Update() error {
 				g.State.Stat.Save()
 			}
 		}
+
 	}
 
 	g.FogAngle += 0.0001

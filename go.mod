@@ -12,6 +12,7 @@ require (
 	github.com/quasilyte/gdata v0.8.1
 	github.com/solarlune/ldtkgo v0.9.3
 	github.com/solarlune/resolv v0.6.1
+	github.com/solarlune/resound v0.0.0-20231009060755-622aa26e8707
 	github.com/tanema/gween v0.0.0-20221212145351-621cc8a459d1
 	github.com/tinne26/etxt v0.0.8
 )
