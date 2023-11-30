@@ -253,6 +253,16 @@ func (p *Player) collisionChecks() {
 		// 	p.Facing = directionUp
 		// }
 
+	case stateIdle: // Don't climb into a chasm
+		if collision := p.Check(dx, 0, TagChasm); collision != nil {
+			for _, o := range collision.Objects {
+				if intersection := p.Shape.Intersection(dx, 0, o.Shape); intersection != nil {
+					dx = 0
+				}
+			}
+		}
+		fallthrough
+
 	default:
 		if collision := p.Check(dx, 0, TagWall); collision != nil {
 			for _, o := range collision.Objects {
@@ -311,15 +321,15 @@ func (p *Player) collisionChecks() {
 							}
 						}
 					case TagChasm:
-						if dy < 0 && p.State != stateJumping { // Don't climb up into chasm
+						if p.State == stateIdle { // Don't climb into chasm
 							dy = 0
 						}
 					case TagClimbable:
 						// only recover onto tiles below you, that means the MTV to
 						// get out of them will be negative, i.e. upwards
-						log.Println("MTV WOOP:", intersection.MTV.Y())
+						// log.Println("MTV WOOP:", intersection.MTV.Y())
 						if intersection.MTV.Y() < 0 {
-							log.Println("AAAAAAAAAAAA")
+							// log.Println("AAAAAAAAAAAA")
 							if p.AnimState == playerFallloop {
 								p.AnimState = playerFallendfloor
 							}
@@ -333,21 +343,22 @@ func (p *Player) collisionChecks() {
 		}
 		p.Y += dy
 
-		// Start falling if you're stepping on a chasm
-		if p.AnimState != playerJumploop && p.State != stateFalling && p.State != stateSlipping {
-			if collision := p.Check(dx, dy, TagChasm, TagSlippery); collision != nil {
-				for _, o := range collision.Objects {
-					if p.Shape.Intersection(dx, dy, o.Shape) != nil || p.insideOf(o) {
-						switch o.Tags()[0] {
-						case TagChasm:
-							p.AnimState = playerFallstart
-							p.State = stateFalling
-							p.Facing = directionUp
-						case TagSlippery:
-							p.AnimState = playerSlipstart
-							p.State = stateSlipping
-							p.Facing = directionUp
-						}
+	}
+
+	// Start falling if you're stepping on a chasm
+	if p.AnimState != playerJumploop && p.State != stateFalling && p.State != stateSlipping {
+		if collision := p.Check(dx, dy, TagChasm, TagSlippery); collision != nil {
+			for _, o := range collision.Objects {
+				if p.Shape.Intersection(dx, dy, o.Shape) != nil || p.insideOf(o) {
+					switch o.Tags()[0] {
+					case TagChasm:
+						p.AnimState = playerFallstart
+						p.State = stateFalling
+						p.Facing = directionUp
+					case TagSlippery:
+						p.AnimState = playerSlipstart
+						p.State = stateSlipping
+						p.Facing = directionUp
 					}
 				}
 			}
