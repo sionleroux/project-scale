@@ -20,7 +20,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/audio"
 	"github.com/hajimehoshi/ebiten/v2/audio/vorbis"
 	"github.com/solarlune/ldtkgo"
-	"github.com/solarlune/resound"
+	"github.com/solarlune/resound/effects"
 	"github.com/tanema/gween"
 	"github.com/tanema/gween/ease"
 	"github.com/tinne26/etxt"
@@ -246,7 +246,7 @@ type Sound struct {
 	LastPlayed *audio.Player
 	LastIndex  int
 	Volume     float64
-	lowpass    *resound.LowpassFilter
+	lowpass    *effects.LowpassFilter
 }
 
 // AddSound adds one new sound to the soundType
@@ -301,7 +301,7 @@ func (s *Sound) PlayVariant(i int) {
 		log.Printf("error decoding sound as Vorbis: %v\n", err)
 	}
 
-	lowpass := resound.NewLowpassFilter(sound).SetStrength(0.85).SetActive(false)
+	lowpass := effects.NewLowpassFilter(sound).SetStrength(0.85).SetActive(false)
 
 	audioPlayer, err := audio.NewPlayer(context, lowpass)
 	if err != nil {
