@@ -110,12 +110,11 @@ func loadSprite(name string) *SpriteSheet {
 }
 
 func loadSpriteWithOSOverride(name string) *SpriteSheet {
-	fname := name
-	log.Printf("loading %s\n from OS", fname)
+	log.Printf("attempting loading %s\n from OS", name)
 
-	file, err := os.Open(fname + ".json")
+	file, err := os.Open(name + ".json")
 	if err != nil {
-		log.Printf("error opening file from OS %s: %v\n", fname, err)
+		log.Printf("error opening file from OS %s: %v\n", name, err)
 		log.Println("delegating opening file to internal assets")
 		return loadSprite(name)
 	}
@@ -136,7 +135,7 @@ func loadSpriteWithOSOverride(name string) *SpriteSheet {
 		return loadSprite(name)
 	}
 
-	ss.Image = loadImageWithOSOverride(fname)
+	ss.Image = loadImageWithOSOverride(name)
 
 	return &ss
 }
