@@ -20,8 +20,10 @@ func main() {
 	ebiten.SetWindowSize(gameWidth*screenScaleFactor, gameHeight*screenScaleFactor)
 	ebiten.SetWindowTitle("Project S.C.A.L.E.")
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
-	ebiten.SetCursorMode(ebiten.CursorModeHidden)
 	ebiten.SetWindowIcon([]image.Image{loadImage("assets/icon.png")})
+	if !CheatsAllowed {
+		ebiten.SetCursorMode(ebiten.CursorModeHidden)
+	}
 
 	stageManager := NewStageManager()
 
