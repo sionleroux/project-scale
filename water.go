@@ -2,14 +2,16 @@ package main
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/sinisterstuf/project-scale/camera"
 )
 
 const WaterSpeed = 0.35
 
 type Water struct {
-	Level float64
-	Image *ebiten.Image
+	Level  float64
+	Image  *ebiten.Image
+	Paused bool
 }
 
 func NewWater(startLevel float64) *Water {
@@ -20,7 +22,11 @@ func NewWater(startLevel float64) *Water {
 }
 
 func (w *Water) Update() {
-	if !CheatsAllowed || !ebiten.IsKeyPressed(ebiten.KeyM) {
+	if inpututil.IsKeyJustPressed(ebiten.KeyM) {
+		w.Paused = !w.Paused
+	}
+
+	if !CheatsAllowed || !w.Paused {
 		w.Level -= WaterSpeed
 	}
 }
