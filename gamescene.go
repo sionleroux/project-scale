@@ -179,6 +179,12 @@ func (g *GameScene) Update() error {
 	}
 
 	if g.Player.State != stateWinning && g.CheckFinish() {
+		g.State.Stat.GameEnd = time.Now()
+		g.State.Stat.LastRound = int(g.State.Stat.GameEnd.Sub(g.State.Stat.GameStart).Seconds())
+		if g.State.Stat.FastestRound <= 0 || g.State.Stat.FastestRound > g.State.Stat.LastRound {
+			g.State.Stat.FastestRound = g.State.Stat.LastRound
+			g.State.Stat.Save()
+		}
 		g.Player.State = stateWinning
 		g.State.minScale = float64(g.State.Camera.Width) / float64(g.State.Backdrops.Backdrops[0].Image.Bounds().Dx()-int(math.Abs(g.Player.X))*2)
 		if g.State.minScale < minMinScale {
@@ -230,6 +236,7 @@ func (g *GameScene) Update() error {
 			g.Alpha = uint8(alpha)
 			if g.Alpha == 200 {
 				g.SaveLastRender(false)
+				g.State.Stat.LastHighestPoint = maxScore
 				g.State.Stat.HighestPoint = maxScore
 				g.State.Stat.Save()
 				g.Player.State = gameWon
@@ -303,7 +310,6 @@ func (g *GameScene) Load(st State, sm *stagehand.SceneManager[State]) {
 	g.BaseScene.Load(st, sm)
 	if g.State.ResetNeeded {
 		g.State.ResetNeeded = false
-		g.State.Stat.GameStart = time.Now()
 		g.Reset()
 		g.Sounds[backgroundMusic].PlayNext()
 	} else {
@@ -351,6 +357,8 @@ func (g *GameScene) Reset() {
 	g.Alpha = 0
 	g.FadeTween.Reset()
 	g.State.Camera.Zoom(1 / g.State.Camera.Scale)
+	g.State.Stat.GameStart = time.Now()
+	g.State.Stat.LastHighestPoint = 0
 }
 
 type Entity interface {

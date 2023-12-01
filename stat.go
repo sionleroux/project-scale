@@ -13,6 +13,8 @@ type Stat struct {
 	GameEnd          time.Time
 	LastHighestPoint int
 	HighestPoint     int
+	LastRound        int
+	FastestRound     int
 }
 
 func (s *Stat) Load() {
@@ -28,8 +30,13 @@ func (s *Stat) Load() {
 	if err != nil {
 		return
 	}
-
 	s.HighestPoint, _ = strconv.Atoi(string(result))
+
+	result, err = m.LoadItem("Stat.FastestRound")
+	if err != nil {
+		return
+	}
+	s.FastestRound, _ = strconv.Atoi(string(result))
 }
 
 func (s *Stat) Save() {
@@ -41,4 +48,5 @@ func (s *Stat) Save() {
 	}
 
 	m.SaveItem("Stat.HighestPoint", []byte(strconv.Itoa(s.HighestPoint)))
+	m.SaveItem("Stat.FastestRound", []byte(strconv.Itoa(s.FastestRound)))
 }

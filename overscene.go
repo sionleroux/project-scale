@@ -39,9 +39,17 @@ func (s *OverScene) Draw(screen *ebiten.Image) {
 			s.State.Stat.HighestPoint,
 		), color.RGBA{255, 255, 0, 255}, 8, 50, 40)
 	} else {
-		s.State.TextRenderer.Draw(screen, fmt.Sprintf(
-			"Your last climb: %d m\nYour best climb so far: %d m",
-			s.State.Stat.LastHighestPoint, s.State.Stat.HighestPoint,
-		), color.White, 8, 50, 40)
+		if s.State.Stat.FastestRound > 0 {
+			s.State.TextRenderer.Draw(screen, fmt.Sprintf(
+				"Your last climb: %d m\nYour best climb so far: %d m\nYour fastest victory: %d min %d sec",
+				s.State.Stat.LastHighestPoint, s.State.Stat.HighestPoint, int(s.State.Stat.FastestRound/60), int(s.State.Stat.FastestRound)%60,
+			), color.White, 8, 50, 40)
+
+		} else {
+			s.State.TextRenderer.Draw(screen, fmt.Sprintf(
+				"Your last climb: %d m\nYour best climb so far: %d m",
+				s.State.Stat.LastHighestPoint, s.State.Stat.HighestPoint,
+			), color.White, 8, 50, 40)
+		}
 	}
 }
