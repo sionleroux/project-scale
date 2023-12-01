@@ -125,7 +125,7 @@ func NewGameScene(game *Game, loadingState *LoadingState) {
 	g.Player.Input = g.InputSystem.NewHandler(0, g.Keymap)
 	g.Space.Add(g.Player.Object)
 
-	g.Water = NewWater(float64(level.Height) + 4*g.Player.H)
+	game.Water = NewWater(float64(level.Height) + 4*g.Player.H)
 
 	// Done
 	loadingState.IncreaseCounter(1)
@@ -146,7 +146,6 @@ type GameScene struct {
 	Foreground   *ebiten.Image
 	Level        int
 	Debuggers    Debuggers
-	Water        *Water
 	Sounds       Sounds
 	Alpha        uint8
 	FadeTween    *gween.Tween
@@ -204,7 +203,7 @@ func (g *GameScene) Update() error {
 		g.State.Camera.Update()
 	}
 
-	g.Water.Update(g.Player.State != stateWinning && g.Player.State != stateWon)
+	g.State.Water.Update(g.Player.State != stateWinning && g.Player.State != stateWon)
 
 	if g.Player.State == stateWinning && g.State.Camera.Scale == g.State.minScale {
 		g.Player.State = stateWon
@@ -265,7 +264,7 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 	g.State.Camera.Surface.Clear()
 	cameraOrigin := g.State.Camera.GetTranslation(&ebiten.DrawImageOptions{}, 0, 0)
 
-	g.State.Backdrops.Draw(g.State.Camera, g.Water.Level)
+	g.State.Backdrops.Draw(g.State.Camera, g.State.Water.Level)
 	if g.Player.State == stateDying {
 		g.State.Camera.Surface.DrawImage(g.Background, cameraOrigin)
 		g.State.Camera.Surface.DrawImage(g.Foreground, cameraOrigin)
@@ -275,7 +274,7 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 		g.Player.Draw(g.State.Camera)
 		g.State.Camera.Surface.DrawImage(g.Foreground, cameraOrigin)
 	}
-	g.Water.Draw(g.State.Camera)
+	g.State.Water.Draw(g.State.Camera)
 
 	fogOp := g.State.Fog.GetDrawImageOptions()
 	fogOp = g.State.Camera.GetTranslation(fogOp, -float64(g.State.Fog.Image.Bounds().Dx())/2, 0)
@@ -322,7 +321,7 @@ func (g *GameScene) CheckFinish() bool {
 
 func (g *GameScene) CheckDeath() bool {
 	// Death by water (water covers the top of you)
-	if g.Water.Level < g.Player.Y-g.Player.H/4 {
+	if g.State.Water.Level < g.Player.Y-g.Player.H/4 {
 		return true
 	}
 
@@ -337,7 +336,7 @@ func (g *GameScene) Reset() {
 	g.Player.State = stateIdle
 	g.Player.Rotation = 0
 	g.Player.Input = g.InputSystem.NewHandler(0, g.Keymap)
-	g.Water = NewWater(float64(level.Height) + 4*g.Player.H)
+	g.State.Water = NewWater(float64(level.Height) + 4*g.Player.H)
 	g.FadeTween.Reset()
 }
 

@@ -35,6 +35,7 @@ type Game struct {
 	StartPos         []int
 	Fog              *Fog
 	Backdrops        Backdrops
+	Water            *Water
 	Camera           *camera.Camera
 	minScale         float64
 }
