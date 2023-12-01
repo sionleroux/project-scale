@@ -67,11 +67,10 @@ func NewGameScene(game *Game, loadingState *LoadingState) {
 	}
 	g.Background = bg
 	g.Foreground = fg
-	g.Fog = loadImage("assets/backdrop/Project-scale-parallax-backdrop_0001_Smog-1-cloud.png")
+	game.Fog = NewFog(float64(level.Height))
 
 	// Backdrop
 	g.Backdrops = NewBackdrops(float64(level.Height))
-
 	// Create space for collision detection
 	g.Space = resolv.NewSpace(level.Width, level.Height, 16, 16)
 

@@ -78,7 +78,6 @@ func loadGame(s *StageManager) {
 	}
 
 	game.Stat.Load()
-	game.Fog = NewFog()
 
 	game.Scenes = []stagehand.Scene[State]{
 		NewStartScene(),

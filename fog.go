@@ -12,8 +12,8 @@ type Fog struct {
 	Tick   float64
 }
 
-func NewFog() *Fog {
-	return &Fog{Image: loadImage("assets/backdrop/Project-scale-parallax-backdrop_0001_Smog-1-cloud.png"), Tick: 0}
+func NewFog(height float64) *Fog {
+	return &Fog{Image: resizeBackdrop(loadImage("assets/backdrop/Project-scale-parallax-backdrop_0001_Smog-1-cloud.png"), height), Tick: 0}
 }
 
 func (f *Fog) Update() {

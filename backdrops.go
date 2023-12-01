@@ -5,24 +5,33 @@ import (
 	"github.com/sinisterstuf/project-scale/camera"
 )
 
+func resizeBackdrop(image *ebiten.Image, height float64) *ebiten.Image {
+	op := &ebiten.DrawImageOptions{}
+	scale := height / float64(image.Bounds().Dy())
+	op.GeoM.Scale(scale, scale)
+	result := ebiten.NewImage(int(float64(image.Bounds().Dx())*scale), int(height))
+	result.DrawImage(image, op)
+	return result
+}
+
 func NewBackdrops(bottomOfMap float64) Backdrops {
 	return Backdrops{
 		bottomOfMap,
 		[]Backdrop{
-			{loadImage("assets/backdrop/Project-scale-parallax-backdrop_0015_Background.png"), false, 0.0},
-			{loadImage("assets/backdrop/Project-scale-parallax-backdrop_0014_Sky.png"), false, 0.0},
-			{loadImage("assets/backdrop/Project-scale-parallax-backdrop_0013_Smog-5.png"), false, 0.0},
-			{loadImage("assets/backdrop/Project-scale-parallax-backdrop_0012_Water-5.png"), true, 0.0},
-			{loadImage("assets/backdrop/Project-scale-parallax-backdrop_0011_City-4.png"), false, 0.5},
-			{loadImage("assets/backdrop/Project-scale-parallax-backdrop_0010_Smog-4.png"), false, 0.0},
-			{loadImage("assets/backdrop/Project-scale-parallax-backdrop_0009_Water-4.png"), true, 0.0},
-			{loadImage("assets/backdrop/Project-scale-parallax-backdrop_0008_City-3.png"), false, 0.35},
-			{loadImage("assets/backdrop/Project-scale-parallax-backdrop_0007_Smog-3.png"), false, 0.0},
-			{loadImage("assets/backdrop/Project-scale-parallax-backdrop_0006_Water-3.png"), true, 0.0},
-			{loadImage("assets/backdrop/Project-scale-parallax-backdrop_0005_City-2.png"), false, 0.2},
-			{loadImage("assets/backdrop/Project-scale-parallax-backdrop_0004_Smog-2.png"), false, 0.0},
-			{loadImage("assets/backdrop/Project-scale-parallax-backdrop_0003_Water-2.png"), true, 0.0},
-			{loadImage("assets/backdrop/Project-scale-parallax-backdrop_0002_City-1.png"), false, 0.05},
+			{resizeBackdrop(loadImage("assets/backdrop/Project-scale-parallax-backdrop_0015_Background.png"), bottomOfMap), false, 0.0},
+			{resizeBackdrop(loadImage("assets/backdrop/Project-scale-parallax-backdrop_0014_Sky.png"), bottomOfMap), false, 0.0},
+			{resizeBackdrop(loadImage("assets/backdrop/Project-scale-parallax-backdrop_0013_Smog-5.png"), bottomOfMap), false, 0.0},
+			{resizeBackdrop(loadImage("assets/backdrop/Project-scale-parallax-backdrop_0012_Water-5.png"), bottomOfMap), true, 0.0},
+			{resizeBackdrop(loadImage("assets/backdrop/Project-scale-parallax-backdrop_0011_City-4.png"), bottomOfMap), false, 0.5},
+			{resizeBackdrop(loadImage("assets/backdrop/Project-scale-parallax-backdrop_0010_Smog-4.png"), bottomOfMap), false, 0.0},
+			{resizeBackdrop(loadImage("assets/backdrop/Project-scale-parallax-backdrop_0009_Water-4.png"), bottomOfMap), true, 0.0},
+			{resizeBackdrop(loadImage("assets/backdrop/Project-scale-parallax-backdrop_0008_City-3.png"), bottomOfMap), false, 0.35},
+			{resizeBackdrop(loadImage("assets/backdrop/Project-scale-parallax-backdrop_0007_Smog-3.png"), bottomOfMap), false, 0.0},
+			{resizeBackdrop(loadImage("assets/backdrop/Project-scale-parallax-backdrop_0006_Water-3.png"), bottomOfMap), true, 0.0},
+			{resizeBackdrop(loadImage("assets/backdrop/Project-scale-parallax-backdrop_0005_City-2.png"), bottomOfMap), false, 0.2},
+			{resizeBackdrop(loadImage("assets/backdrop/Project-scale-parallax-backdrop_0004_Smog-2.png"), bottomOfMap), false, 0.0},
+			{resizeBackdrop(loadImage("assets/backdrop/Project-scale-parallax-backdrop_0003_Water-2.png"), bottomOfMap), true, 0.0},
+			{resizeBackdrop(loadImage("assets/backdrop/Project-scale-parallax-backdrop_0002_City-1.png"), bottomOfMap), false, 0.05},
 		},
 	}
 }
