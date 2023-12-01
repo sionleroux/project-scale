@@ -182,26 +182,31 @@ func (g *GameScene) Update() error {
 
 	if g.CheckFinish() {
 		g.Player.State = stateWinning
+		g.State.minScale = float64(g.State.Camera.Width) / float64(g.State.Backdrops.Backdrops[0].Image.Bounds().Dx()-int(math.Abs(g.Player.X))*2)
 	}
 
-	// Position camera and clamp in to the Map dimensions
-	maxHeight := g.LDTKProject.Levels[g.Level].Height
-	g.State.Camera.SetPosition(g.Player.X, math.Min(
-		math.Max(g.Player.Y, float64(g.State.Camera.Height/2)),
-		float64(maxHeight-g.State.Camera.Height/2),
-	))
-
 	if g.Player.State == stateWinning {
-		if g.State.Camera.Scale > 0.13 {
+		if g.State.Camera.Scale > g.State.minScale {
 			g.State.Camera.Zoom(0.99)
+			if g.State.Camera.Scale < g.State.minScale {
+				g.State.Camera.Scale = g.State.minScale
+			}
 		}
+		g.State.Camera.SetPosition(g.Player.X, float64(g.State.Camera.Height/2)/g.State.Camera.Scale)
 	} else {
+		// Position camera and clamp in to the Map dimensions
+		maxHeight := g.LDTKProject.Levels[g.Level].Height
+		g.State.Camera.SetPosition(g.Player.X, math.Min(
+			math.Max(g.Player.Y, float64(g.State.Camera.Height/2)),
+			float64(maxHeight-g.State.Camera.Height/2),
+		))
+
 		g.State.Camera.Update()
 	}
 
 	g.Water.Update(g.Player.State != stateWinning && g.Player.State != stateWon)
 
-	if g.Player.State == stateWinning && g.Water.Level > 600 {
+	if g.Player.State == stateWinning && g.State.Camera.Scale == g.State.minScale {
 		g.Player.State = stateWon
 	}
 

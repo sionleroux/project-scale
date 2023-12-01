@@ -6,6 +6,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
 // WonScreen is shown when the game is won
@@ -27,6 +28,8 @@ func (s *WonScene) Update() error {
 
 func (s *WonScene) Draw(screen *ebiten.Image) {
 	s.State.Backdrops.Draw(s.State.Camera, 1000)
+
+	vector.DrawFilledRect(screen, 0, 0, float32(s.State.Width), float32(s.State.Height), color.RGBA{0, 0, 0, 200}, false)
 
 	s.State.Camera.Blit(screen)
 	s.State.TextRenderer.Draw(screen, "You WON!", color.White, 8, 50, 10)

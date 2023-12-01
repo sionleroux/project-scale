@@ -36,6 +36,7 @@ type Game struct {
 	Fog              *Fog
 	Backdrops        Backdrops
 	Camera           *camera.Camera
+	minScale         float64
 }
 
 func NewStageManager() *StageManager {

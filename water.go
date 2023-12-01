@@ -23,7 +23,7 @@ func (w *Water) Update(increaseWaterLevel bool) {
 	if !CheatsAllowed || !ebiten.IsKeyPressed(ebiten.KeyM) {
 		increase := 1.0
 		if !increaseWaterLevel {
-			increase = -3.0
+			increase = -10.0
 		}
 		w.Level -= increase * WaterSpeed
 	}
