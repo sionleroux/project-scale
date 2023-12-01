@@ -85,7 +85,7 @@ type Player struct {
 func NewPlayer(position []int, camera *camera.Camera) *Player {
 	object := resolv.NewObject(
 		float64(position[0]), float64(position[1]),
-		16, 16,
+		8, 8,
 	)
 	object.SetShape(resolv.NewRectangle(
 		0, 0, // origin
