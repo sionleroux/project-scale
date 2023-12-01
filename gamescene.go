@@ -84,7 +84,7 @@ func NewGameScene(game *Game, loadingState *LoadingState) {
 
 	// SoundLoops
 	loadingState.IncreaseCounter(1)
-	g.Sounds = make(Sounds, 4)
+	g.Sounds = make(Sounds, 5)
 	g.Sounds[backgroundMusic] = &Sound{Volume: 0.5}
 	g.Sounds[backgroundMusic].AddSound("assets/music/game-music", sampleRate, context, 7)
 
@@ -96,6 +96,8 @@ func NewGameScene(game *Game, loadingState *LoadingState) {
 	g.Sounds[sfxSplash].AddSound("assets/sfx/splash", sampleRate, context, 1)
 	g.Sounds[sfxUnderwater] = &Sound{Volume: 1}
 	g.Sounds[sfxUnderwater].AddSound("assets/sfx/underwater", sampleRate, context, 1)
+	g.Sounds[voiceGameWon] = &Sound{Volume: 0.5}
+	g.Sounds[voiceGameWon].AddSound("assets/voices/game-won", sampleRate, context, 1)
 
 	// Entities
 	loadingState.IncreaseCounter(1)
@@ -179,17 +181,16 @@ func (g *GameScene) Update() error {
 	g.InputSystem.Update()
 	g.Player.Update()
 
-	if g.CheckFinish() {
+	if g.Player.State != stateWinning && g.CheckFinish() {
 		g.Player.State = stateWinning
 		g.State.minScale = float64(g.State.Camera.Width) / float64(g.State.Backdrops.Backdrops[0].Image.Bounds().Dx()-int(math.Abs(g.Player.X))*2)
+		g.Sounds[backgroundMusic].FadeOut()
+		g.Sounds[voiceGameWon].Play()
 	}
 
 	if g.Player.State == stateWinning {
 		if g.State.Camera.Scale > g.State.minScale {
 			g.State.Camera.Zoom(0.99)
-			if g.State.Camera.Scale < g.State.minScale {
-				g.State.Camera.Scale = g.State.minScale
-			}
 		}
 		g.State.Camera.SetPosition(g.Player.X, float64(g.State.Camera.Height/2)/g.State.Camera.Scale)
 	} else {
@@ -199,15 +200,14 @@ func (g *GameScene) Update() error {
 			math.Max(g.Player.Y, float64(g.State.Camera.Height/2)),
 			float64(maxHeight-g.State.Camera.Height/2),
 		))
+	}
+	g.State.Camera.Update()
 
-		g.State.Camera.Update()
+	if g.Player.State == stateWinning {
+		g.Sounds[backgroundMusic].Update()
 	}
 
-	g.State.Water.Update(g.Player.State != stateWinning && g.Player.State != stateWon)
-
-	if g.Player.State == stateWinning && g.State.Camera.Scale == g.State.minScale {
-		g.Player.State = stateWon
-	}
+	g.State.Water.Update(g.Player.State != stateWinning)
 
 	g.State.Fog.Update()
 
@@ -226,13 +226,15 @@ func (g *GameScene) Update() error {
 			return nil
 		}
 
-	case stateWon:
-		alpha, _ := g.FadeTween.Update(1)
-		g.Alpha = uint8(alpha)
-		if g.Alpha == 200 {
-			g.Sounds[backgroundMusic].Pause()
-			g.SceneManager.SwitchTo(g.State.Scenes[gameWon])
-			return nil
+	case stateWinning:
+		if g.State.Camera.Scale <= g.State.minScale {
+			alpha, _ := g.FadeTween.Update(1)
+			g.Alpha = uint8(alpha)
+			if g.Alpha == 200 {
+				g.Player.State = gameWon
+				g.SceneManager.SwitchTo(g.State.Scenes[gameWon])
+				return nil
+			}
 		}
 	default:
 		if !g.Sounds[backgroundMusic].IsPlaying() {
@@ -337,7 +339,10 @@ func (g *GameScene) Reset() {
 	g.Player.Rotation = 0
 	g.Player.Input = g.InputSystem.NewHandler(0, g.Keymap)
 	g.State.Water = NewWater(float64(level.Height) + 4*g.Player.H)
+	g.Sounds[backgroundMusic].SetVolume(0.5)
+	g.Alpha = 0
 	g.FadeTween.Reset()
+	g.State.Camera.Zoom(1 / g.State.Camera.Scale)
 }
 
 type Entity interface {

@@ -8,14 +8,16 @@ import (
 const WaterSpeed = 0.35
 
 type Water struct {
-	Level float64
-	Image *ebiten.Image
+	Level      float64
+	StartLevel float64
+	Image      *ebiten.Image
 }
 
 func NewWater(startLevel float64) *Water {
 	return &Water{
-		Level: startLevel,
-		Image: loadImage("assets/backdrop/Project-scale-parallax-backdrop_0000_Water-1.png"),
+		Level:      startLevel,
+		StartLevel: startLevel,
+		Image:      loadImage("assets/backdrop/Project-scale-parallax-backdrop_0000_Water-1.png"),
 	}
 }
 
@@ -23,9 +25,13 @@ func (w *Water) Update(increaseWaterLevel bool) {
 	if !CheatsAllowed || !ebiten.IsKeyPressed(ebiten.KeyM) {
 		increase := 1.0
 		if !increaseWaterLevel {
-			increase = -10.0
+			increase = -8.0
 		}
 		w.Level -= increase * WaterSpeed
+
+		if w.Level > w.StartLevel {
+			w.Level = w.StartLevel
+		}
 	}
 }
 
