@@ -36,6 +36,7 @@ const (
 	ActionMoveDown
 	ActionMoveRight
 	ActionPrimary
+	ActionMenu
 )
 
 func NewGameScene(game *Game, loadingState *LoadingState) {
@@ -55,6 +56,7 @@ func NewGameScene(game *Game, loadingState *LoadingState) {
 		ActionMoveDown:  {input.KeyDown, input.KeyS, input.KeyGamepadDown, input.KeyGamepadLStickDown},
 		ActionMoveRight: {input.KeyRight, input.KeyD, input.KeyGamepadRight, input.KeyGamepadLStickRight},
 		ActionPrimary:   {input.KeySpace, input.KeyGamepadA},
+		ActionMenu:      {input.KeyEscape, input.KeyGamepadStart},
 	}
 
 	loadingState.IncreaseCounter(1)
