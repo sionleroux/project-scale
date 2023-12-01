@@ -5,6 +5,7 @@
 package main
 
 import (
+	"fmt"
 	"image/color"
 	"log"
 	"math"
@@ -14,6 +15,7 @@ import (
 	"github.com/sinisterstuf/project-scale/camera"
 	"github.com/tanema/gween"
 	"github.com/tanema/gween/ease"
+	"github.com/tinne26/etxt"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
@@ -25,6 +27,8 @@ import (
 
 // Length of the fading animation
 const fadeOutTime = 480
+
+const maxScore = 1000
 
 func NewGameScene(game *Game, loadingState *LoadingState) {
 
@@ -183,7 +187,7 @@ func (g *GameScene) Update() error {
 	g.InputSystem.Update()
 	g.Player.Update()
 
-	pos := (g.State.StartPos[1] - int(g.Player.Y)) / gridSize
+	pos := GetScoreFromY(int(g.Player.Y), g.State.StartPos[1])
 	if pos > g.State.Stat.LastHighestPoint {
 		g.State.Stat.LastHighestPoint = pos
 	}
@@ -237,6 +241,8 @@ func (g *GameScene) Update() error {
 			g.Alpha = uint8(alpha)
 			if g.Alpha == 200 {
 				g.SaveLastRender(false)
+				g.State.Stat.HighestPoint = maxScore
+				g.State.Stat.Save()
 				g.Player.State = gameWon
 				g.SceneManager.SwitchTo(g.State.Scenes[gameWon])
 				return nil
@@ -293,6 +299,10 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 
 	if g.Player.State == stateDying || g.Player.State == stateDead || g.Player.State == stateWinning || g.Player.State == stateWon {
 		vector.DrawFilledRect(screen, 0, 0, float32(g.State.Width), float32(g.State.Height), color.RGBA{0, 0, 0, g.Alpha}, false)
+	}
+
+	if g.Player.State != stateWinning && g.Player.State != stateWon {
+		g.DrawMinimap(screen)
 	}
 	g.Debuggers.Debug(g, screen)
 }
@@ -378,4 +388,51 @@ func (g *GameScene) SaveLastRender(blur bool) {
 	if blur {
 		g.State.lastRender = blurImage(g.State.lastRender)
 	}
+}
+
+func (g *GameScene) DrawMinimap(screen *ebiten.Image) {
+	// v1
+	// scale := float64(g.State.Height) / float64(g.Background.Bounds().Dy())
+	// vector.DrawFilledRect(screen, 0, 0, 20, float32(g.State.Height), color.RGBA{0, 0, 0, 128}, false)
+
+	// op := &ebiten.DrawImageOptions{}
+	// op.GeoM.Scale(scale, scale)
+	// screen.DrawImage(g.Background, op)
+
+	// v2
+	// Draw building
+	scale := float64(g.State.Height) / float64(g.Background.Bounds().Dy())
+	minimapWidth := float64(g.Background.Bounds().Dx()) * scale
+	vector.DrawFilledRect(screen, 0, 0, float32(minimapWidth), float32(g.State.Height), color.RGBA{40, 40, 40, 128}, false)
+
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Scale(scale, scale)
+	op.ColorScale.Scale(0, 0, 0, 255)
+	screen.DrawImage(g.Background, op)
+
+	// Draw high score
+	hsColor := color.RGBA{255, 0, 0, 255}
+	hsYPosition := GetYFromScore(g.State.Stat.HighestPoint, g.State.StartPos[1]) * scale
+	vector.StrokeLine(screen, 0, float32(hsYPosition), 30, float32(hsYPosition), 1, hsColor, false)
+	g.State.TextRenderer.DrawXY(screen, fmt.Sprintf("%d", g.State.Stat.HighestPoint), hsColor, 8, int(minimapWidth+1), int(hsYPosition-8), etxt.Left)
+
+	// Draw player
+	playerColor := color.RGBA{255, 255, 0, 255}
+	playerXPosition := g.Player.X * scale
+	playerYPosition := g.Player.Y * scale
+	playerHeightValue := GetScoreFromY(int(g.Player.Y), g.State.StartPos[1])
+	vector.StrokeLine(screen, float32(playerXPosition+3), float32(playerYPosition), 30, float32(playerYPosition), 1, playerColor, false)
+	vector.StrokeLine(screen, float32(playerXPosition-1), float32(playerYPosition), float32(playerXPosition+1), float32(playerYPosition), 1, playerColor, false)
+	g.State.TextRenderer.DrawXY(screen, fmt.Sprintf("%d", playerHeightValue), playerColor, 8, int(minimapWidth+1), int(playerYPosition-8), etxt.Left)
+
+	// Draw water
+	vector.DrawFilledRect(screen, 0, float32(g.State.Water.Level*scale), float32(minimapWidth), float32(float64(g.State.Height)-g.State.Water.Level*scale), color.RGBA{58, 79, 118, 204}, false)
+}
+
+func GetScoreFromY(position, levelHeight int) int {
+	return int(float64(levelHeight-position) / float64(levelHeight) * float64(maxScore))
+}
+
+func GetYFromScore(score, levelHeight int) float64 {
+	return float64(levelHeight) - float64(score)/float64(maxScore)*float64(levelHeight)
 }

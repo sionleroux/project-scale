@@ -27,7 +27,16 @@ func NewTextRenderer(fontName string) *TextRenderer {
 // yRatio is where to align vertiocally: 0 = top, 100 = bottom
 func (r *TextRenderer) Draw(screen *ebiten.Image, text string, color color.Color, size int, xRatio int, yRatio int) {
 	r.SetTarget(screen)
+	r.SetAlign(etxt.YCenter, etxt.XCenter)
 	r.SetColor(color)
 	r.SetSizePx(size)
 	r.Renderer.Draw(text, screen.Bounds().Dx()*xRatio/100, screen.Bounds().Dy()*yRatio/100)
+}
+
+func (r *TextRenderer) DrawXY(screen *ebiten.Image, text string, color color.Color, size int, x int, y int, align etxt.HorzAlign) {
+	r.SetTarget(screen)
+	r.SetAlign(etxt.Top, align)
+	r.SetColor(color)
+	r.SetSizePx(size)
+	r.Renderer.Draw(text, x, y)
 }

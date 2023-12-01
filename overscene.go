@@ -33,7 +33,7 @@ func (s *OverScene) Draw(screen *ebiten.Image) {
 
 	if s.State.Stat.HighestPoint == s.State.Stat.LastHighestPoint {
 		s.State.BoldTextRenderer.Draw(screen, fmt.Sprintf(
-			"NEW HIGH SCORE!\n\nYour reached %d m",
+			"NEW HIGH SCORE!\n\nYou reached %d m",
 			s.State.Stat.HighestPoint,
 		), color.RGBA{255, 255, 0, 255}, 8, 50, 40)
 	} else {
