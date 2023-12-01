@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"image/color"
 	"os"
 
@@ -11,7 +12,6 @@ import (
 // OverScene is shown when the player dies and the game is over
 type OverScene struct {
 	BaseScene
-	// TODO: some high score count here
 }
 
 func (s *OverScene) Update() error {
@@ -30,5 +30,16 @@ func (s *OverScene) Draw(screen *ebiten.Image) {
 
 	s.State.TextRenderer.Draw(screen, "You died!", color.White, 8, 50, 10)
 	s.State.TextRenderer.Draw(screen, "Press space to restart\nPress Esc to quit", color.White, 8, 50, 80)
-	s.State.TextRenderer.Draw(screen, s.State.Stat.GetText(), color.White, 8, 50, 50)
+
+	if s.State.Stat.HighestPoint == s.State.Stat.LastHighestPoint {
+		s.State.BoldTextRenderer.Draw(screen, fmt.Sprintf(
+			"NEW HIGH SCORE!\n\nYour reached %d m",
+			s.State.Stat.HighestPoint,
+		), color.RGBA{255, 255, 0, 255}, 8, 50, 40)
+	} else {
+		s.State.TextRenderer.Draw(screen, fmt.Sprintf(
+			"Your last climb: %d m\nYour best climb so far: %d m",
+			s.State.Stat.LastHighestPoint, s.State.Stat.HighestPoint,
+		), color.White, 8, 50, 40)
+	}
 }

@@ -183,6 +183,11 @@ func (g *GameScene) Update() error {
 	g.InputSystem.Update()
 	g.Player.Update()
 
+	pos := (g.State.StartPos[1] - int(g.Player.Y)) / gridSize
+	if pos > g.State.Stat.LastHighestPoint {
+		g.State.Stat.LastHighestPoint = pos
+	}
+
 	if g.Player.State != stateWinning && g.CheckFinish() {
 		g.Player.State = stateWinning
 		g.State.minScale = float64(g.State.Camera.Width) / float64(g.State.Backdrops.Backdrops[0].Image.Bounds().Dx()-int(math.Abs(g.Player.X))*2)
@@ -252,7 +257,6 @@ func (g *GameScene) Update() error {
 			g.Sounds[sfxUnderwater].Play()
 			g.Player.State = stateDying
 			g.Player.AnimState = playerFallloop
-			g.State.Stat.LastHighestPoint = (g.State.StartPos[1] - int(g.Player.Y)) / gridSize
 			if g.State.Stat.LastHighestPoint > g.State.Stat.HighestPoint {
 				g.State.Stat.HighestPoint = g.State.Stat.LastHighestPoint
 				g.State.Stat.Save()
