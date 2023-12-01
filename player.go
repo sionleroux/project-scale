@@ -243,7 +243,7 @@ func (p *Player) collisionChecks() {
 	case stateStanding:
 
 		// Don't walk into walls
-		if collision := p.Check(0, dx, TagWall); collision != nil {
+		if collision := p.Check(dx, 0, TagWall); collision != nil {
 			for _, o := range collision.Objects {
 				if intersection := p.Shape.Intersection(dx, 0, o.Shape); intersection != nil {
 					dx = 0
