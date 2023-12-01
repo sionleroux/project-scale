@@ -170,16 +170,6 @@ type GameScene struct {
 
 // Update calculates game logic
 func (g *GameScene) Update() error {
-
-	// Pressing F toggles full-screen
-	if inpututil.IsKeyJustPressed(ebiten.KeyF) {
-		if ebiten.IsFullscreen() {
-			ebiten.SetFullscreen(false)
-		} else {
-			ebiten.SetFullscreen(true)
-		}
-	}
-
 	if inpututil.IsKeyJustPressed(ebiten.KeyP) {
 		g.SaveLastRender(true)
 		g.SceneManager.SwitchTo(g.State.Scenes[gamePaused])

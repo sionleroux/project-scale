@@ -1,6 +1,8 @@
 package main
 
 import (
+	"image/color"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/joelschutz/stagehand"
 	"github.com/sinisterstuf/project-scale/camera"
@@ -88,11 +90,38 @@ func loadGame(s *StageManager) {
 	game.Stat.Load()
 
 	game.Scenes = []stagehand.Scene[State]{
-		NewStartScene(),
+		NewStartScene(game),
 		&GameScene{},
-		&PauseScreen{},
-		&OverScene{},
-		&WonScene{},
+		&PauseScreen{
+			Menu: &Menu{
+				Items:         []string{"Continue", "Back to main menu"},
+				X:             gameWidth / 2,
+				Y:             190,
+				color:         color.RGBA{255, 255, 255, 255},
+				selectedColor: color.RGBA{255, 255, 0, 255},
+				textRenderer:  game.TextRenderer,
+			},
+		},
+		&OverScene{
+			Menu: &Menu{
+				Items:         []string{"Restart", "Back to main menu"},
+				X:             gameWidth / 2,
+				Y:             190,
+				color:         color.RGBA{0, 0, 0, 255},
+				selectedColor: color.RGBA{255, 255, 0, 255},
+				textRenderer:  game.TextRenderer,
+			},
+		},
+		&WonScene{
+			Menu: &Menu{
+				Items:         []string{"Restart", "Back to main menu"},
+				X:             gameWidth / 2,
+				Y:             190,
+				color:         color.RGBA{0, 0, 0, 255},
+				selectedColor: color.RGBA{255, 255, 0, 255},
+				textRenderer:  game.TextRenderer,
+			},
+		},
 	}
 
 	s.sceneManager = stagehand.NewSceneManager[State](game.Scenes[gameStart], game)

@@ -11,14 +11,17 @@ import (
 // PauseScreen is shown when the game is paused
 type PauseScreen struct {
 	BaseScene
+	Menu *Menu
 }
 
 func (p *PauseScreen) Update() error {
-	if inpututil.IsKeyJustPressed(ebiten.KeyP) {
-		p.SceneManager.SwitchTo(p.State.Scenes[gameRunning])
-	}
-	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
-		p.SceneManager.SwitchTo(p.State.Scenes[gameStart])
+	p.Menu.Update()
+	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
+		if p.Menu.Active == 0 {
+			p.SceneManager.SwitchTo(p.State.Scenes[gameRunning])
+		} else if p.Menu.Active == 1 {
+			p.SceneManager.SwitchTo(p.State.Scenes[gameStart])
+		}
 	}
 	return nil
 }
@@ -27,5 +30,5 @@ func (p *PauseScreen) Draw(screen *ebiten.Image) {
 	screen.DrawImage(p.State.lastRender, &ebiten.DrawImageOptions{})
 	vector.DrawFilledRect(screen, 0, 0, float32(p.State.Width), float32(p.State.Height), color.RGBA{0, 0, 0, 128}, false)
 
-	p.State.TextRenderer.Draw(screen, "Game paused\nPress P to unpause\nPress Esc to quit", color.White, 8, 50, 50)
+	p.Menu.Draw(screen)
 }

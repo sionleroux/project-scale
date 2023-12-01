@@ -16,6 +16,7 @@ type StartScene struct {
 	TransitionPhase  int
 	Heartbeat        Sound
 	Voice            Sound
+	Menu             *Menu
 }
 
 func (s *StartScene) Update() error {
@@ -23,16 +24,25 @@ func (s *StartScene) Update() error {
 	if s.TransitionPhase == 0 {
 
 		if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
-			// s.State.ResetNeeded = true
-			// s.SceneManager.SwitchTo(s.State.Scenes[gameRunning])
+			if s.Menu.Active == 0 {
+				s.TransitionPhase = 1
+				s.Heartbeat.Pause()
+				s.Voice.Play()
+			} else if s.Menu.Active == 1 {
+				if ebiten.IsFullscreen() {
+					ebiten.SetFullscreen(false)
+					s.Menu.Items[1] = "Fullscreen: OFF"
+				} else {
+					ebiten.SetFullscreen(true)
+					s.Menu.Items[1] = "Fullscreen: ON"
+				}
+			} else if s.Menu.Active == 2 {
+				os.Exit(0)
+			}
 
-			s.TransitionPhase = 1
-			s.Heartbeat.Pause()
-			s.Voice.Play()
 		}
-		if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
-			os.Exit(0)
-		}
+
+		s.Menu.Update()
 
 		if f, _ := s.ButtonSprite.Update(0); f {
 			s.Heartbeat.Play()
@@ -63,7 +73,8 @@ func (s *StartScene) Draw(screen *ebiten.Image) {
 	}
 
 	if s.TransitionPhase == 0 {
-		s.State.BoldTextRenderer.Draw(screen, "Press SPACE to start\nPress ESC to quit", color.Black, 8, 50, 85)
+		// s.State.BoldTextRenderer.Draw(screen, "Press SPACE to start\nPress ESC to quit", color.Black, 8, 50, 85)
+		s.Menu.Draw(screen)
 	}
 
 	fogOp := s.State.Fog.GetDrawImageOptions()
@@ -78,7 +89,7 @@ func (s *StartScene) Load(st State, sm *stagehand.SceneManager[State]) {
 	s.BackgroundSprite.Update(0)
 }
 
-func NewStartScene() *StartScene {
+func NewStartScene(game *Game) *StartScene {
 	voice := Sound{Volume: 0.5}
 	voice.AddSound("assets/voices/game-start", sampleRate, context)
 
@@ -90,5 +101,13 @@ func NewStartScene() *StartScene {
 		ButtonSprite:     NewSpriteAnimation("Start button"),
 		Heartbeat:        heartbeat,
 		Voice:            voice,
+		Menu: &Menu{
+			Items:         []string{"Start game", "Fullscreen: OFF", "Quit"},
+			X:             gameWidth / 2,
+			Y:             190,
+			color:         color.RGBA{0, 0, 0, 255},
+			selectedColor: color.RGBA{255, 255, 0, 255},
+			textRenderer:  game.TextRenderer,
+		},
 	}
 }
