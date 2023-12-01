@@ -54,8 +54,8 @@ func debugPosition(g *GameScene, screen *ebiten.Image, o *resolv.Object) {
 		if i < len(verts)-1 {
 			next = verts[i+1]
 		}
-		vX, vY := g.Camera.GetScreenCoords(vert.X(), vert.Y())
-		nX, nY := g.Camera.GetScreenCoords(next.X(), next.Y())
+		vX, vY := g.State.Camera.GetScreenCoords(vert.X(), vert.Y())
+		nX, nY := g.State.Camera.GetScreenCoords(next.X(), next.Y())
 		ebitenutil.DrawLine(screen, vX, vY, nX, nY, lineColor)
 	}
 }
