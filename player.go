@@ -485,8 +485,4 @@ func (p *Player) Draw(camera *camera.Camera) {
 	)
 
 	camera.Surface.DrawImage(img, camera.GetTranslation(op, p.X, p.Y))
-
-	for _, hint := range p.ControlHints {
-		hint.Draw(p.X, p.Y, camera)
-	}
 }

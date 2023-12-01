@@ -288,6 +288,9 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 		g.State.Camera.Surface.DrawImage(g.Background, cameraOrigin)
 		g.Player.Draw(g.State.Camera)
 		g.State.Camera.Surface.DrawImage(g.Foreground, cameraOrigin)
+		for _, hint := range g.Player.ControlHints {
+			hint.Draw(g.Player.X, g.Player.Y, g.State.Camera)
+		}
 	}
 	g.State.Water.Draw(g.State.Camera)
 
