@@ -188,7 +188,7 @@ func (p *Player) updateMovement() {
 	}
 
 	// Jump input
-	if p.State != stateFalling && p.State != stateJumping && p.Input.ActionIsJustPressed(ActionPrimary) {
+	if p.State != stateFalling && (p.State != stateJumping || p.AnimState == playerJumpendfloor) && p.Input.ActionIsJustPressed(ActionPrimary) {
 		p.State = stateJumping
 		p.AnimState = playerJumpstart
 		p.JumpFrom = vector.Vector{p.X, p.Y}
