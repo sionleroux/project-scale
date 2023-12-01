@@ -304,7 +304,7 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 	if g.Player.State != stateWinning && g.Player.State != stateWon {
 		g.DrawMinimap(screen)
 	}
-	// g.Debuggers.Debug(g, screen)
+	g.Debuggers.Debug(g, screen)
 }
 
 func (g *GameScene) Load(st State, sm *stagehand.SceneManager[State]) {
