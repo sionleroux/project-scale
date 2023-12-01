@@ -2,7 +2,6 @@ package main
 
 import (
 	"image/color"
-	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
@@ -19,7 +18,7 @@ func (p *PauseScreen) Update() error {
 		p.SceneManager.SwitchTo(p.State.Scenes[gameRunning])
 	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
-		os.Exit(0)
+		p.SceneManager.SwitchTo(p.State.Scenes[gameStart])
 	}
 	return nil
 }

@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"image/color"
-	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
@@ -20,7 +19,7 @@ func (s *OverScene) Update() error {
 		s.SceneManager.SwitchTo(s.State.Scenes[gameRunning])
 	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
-		os.Exit(0)
+		s.SceneManager.SwitchTo(s.State.Scenes[gameStart])
 	}
 	return nil
 }

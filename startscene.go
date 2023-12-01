@@ -2,9 +2,11 @@ package main
 
 import (
 	"image/color"
+	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/joelschutz/stagehand"
 )
 
 type StartScene struct {
@@ -21,9 +23,15 @@ func (s *StartScene) Update() error {
 	if s.TransitionPhase == 0 {
 
 		if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
+			// s.State.ResetNeeded = true
+			// s.SceneManager.SwitchTo(s.State.Scenes[gameRunning])
+
 			s.TransitionPhase = 1
 			s.Heartbeat.Pause()
 			s.Voice.Play()
+		}
+		if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
+			os.Exit(0)
 		}
 
 		if f, _ := s.ButtonSprite.Update(0); f {
@@ -55,13 +63,19 @@ func (s *StartScene) Draw(screen *ebiten.Image) {
 	}
 
 	if s.TransitionPhase == 0 {
-		s.State.BoldTextRenderer.Draw(screen, "Press SPACE to start", color.Black, 8, 50, 85)
+		s.State.BoldTextRenderer.Draw(screen, "Press SPACE to start\nPress ESC to quit", color.Black, 8, 50, 85)
 	}
 
 	fogOp := s.State.Fog.GetDrawImageOptions()
 	fogOp.GeoM.Translate(float64(-s.State.Fog.Image.Bounds().Dx()+s.State.StartPos[0])/2, -float64(s.State.Fog.Image.Bounds().Dy())+gameHeight)
 	screen.DrawImage(s.State.Fog.Image, fogOp)
 
+}
+
+func (s *StartScene) Load(st State, sm *stagehand.SceneManager[State]) {
+	s.BaseScene.Load(st, sm)
+	s.TransitionPhase = 0
+	s.BackgroundSprite.Update(0)
 }
 
 func NewStartScene() *StartScene {

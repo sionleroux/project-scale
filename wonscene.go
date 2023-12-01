@@ -2,7 +2,6 @@ package main
 
 import (
 	"image/color"
-	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
@@ -18,10 +17,9 @@ func (s *WonScene) Update() error {
 	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
 		s.State.ResetNeeded = true
 		s.SceneManager.SwitchTo(s.State.Scenes[gameRunning])
-		return nil
 	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
-		os.Exit(0)
+		s.SceneManager.SwitchTo(s.State.Scenes[gameStart])
 	}
 
 	s.State.Water.Update(false)
