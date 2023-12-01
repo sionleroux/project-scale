@@ -12,7 +12,7 @@ import (
 
 // How long at least to show the loading screen even if everything loads very
 // fast so that it isn't just a black flash
-var loadingSceneMinTime = 2 * 60
+var loadingSceneMinTime = 3 * 60
 
 var loadingWhat = []string{
 	"",
@@ -59,6 +59,12 @@ func (s *LoadingScene) IsLoaded() bool {
 
 // Draw renders the start screen to the screen
 func (s *LoadingScene) Draw(screen *ebiten.Image) {
+	s.TextRenderer.Draw(
+		screen,
+		"An action adventure story by:\nRowan Lindeque\nTristan Le Roux\nSiôn Le Roux\nPéter Kertész",
+		color.White, 8, 50, 50,
+	)
+
 	var whatTxt string
 	counter := s.LoadingState.GetCounterValue()
 	if counter < len(loadingWhat) {
