@@ -24,7 +24,7 @@ import (
 )
 
 // Length of the fading animation
-const fadeOutTime = 240
+const fadeOutTime = 480
 
 func NewGameScene(game *Game, loadingState *LoadingState) {
 
@@ -186,7 +186,7 @@ func (g *GameScene) Update() error {
 	if g.Player.State != stateWinning && g.CheckFinish() {
 		g.Player.State = stateWinning
 		g.State.minScale = float64(g.State.Camera.Width) / float64(g.State.Backdrops.Backdrops[0].Image.Bounds().Dx()-int(math.Abs(g.Player.X))*2)
-		g.Sounds[backgroundMusic].FadeOut()
+		g.Sounds[backgroundMusic].FadeOut(1)
 		g.Sounds[voiceGameWon].Play()
 	}
 
@@ -205,7 +205,7 @@ func (g *GameScene) Update() error {
 	}
 	g.State.Camera.Update()
 
-	if g.Player.State == stateWinning {
+	if g.Player.State == stateWinning || g.Player.State == stateDying {
 		g.Sounds[backgroundMusic].Update()
 	}
 
@@ -215,9 +215,6 @@ func (g *GameScene) Update() error {
 
 	switch g.Player.State {
 	case stateDying:
-		if !g.Sounds[sfxSubmerge].IsPlaying() && !g.Sounds[sfxSplash].IsPlaying() && !g.Sounds[sfxUnderwater].IsPlaying() {
-			g.Sounds[sfxUnderwater].Play()
-		}
 		alpha, _ := g.FadeTween.Update(1)
 		g.Alpha = uint8(alpha)
 		if g.Alpha == 128 {
@@ -246,11 +243,13 @@ func (g *GameScene) Update() error {
 		}
 		if g.CheckDeath() {
 			g.Sounds[backgroundMusic].LowPass(true)
+			g.Sounds[backgroundMusic].FadeOut(2)
 			if g.Player.State != stateFalling {
 				g.Sounds[sfxSubmerge].Play()
 			} else {
 				g.Sounds[sfxSplash].Play()
 			}
+			g.Sounds[sfxUnderwater].Play()
 			g.Player.State = stateDying
 			g.Player.AnimState = playerFallloop
 			g.State.Stat.LastHighestPoint = (g.State.StartPos[1] - int(g.Player.Y)) / gridSize

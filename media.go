@@ -359,8 +359,8 @@ func (s *Sound) LowPass(on bool) {
 }
 
 // FadeOut fades out the sound smoothly to 0% volume
-func (s *Sound) FadeOut() {
-	s.tween = gween.New(float32(s.Volume), 0, 1*60, ease.InExpo)
+func (s *Sound) FadeOut(duration float32) {
+	s.tween = gween.New(float32(s.Volume), 0, duration*60, ease.InExpo)
 }
 
 // Update the music volume for fade effects
