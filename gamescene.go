@@ -35,7 +35,7 @@ const (
 	ActionMoveLeft
 	ActionMoveDown
 	ActionMoveRight
-	ActionJump
+	ActionPrimary
 )
 
 func NewGameScene(game *Game, loadingState *LoadingState) {
@@ -54,7 +54,7 @@ func NewGameScene(game *Game, loadingState *LoadingState) {
 		ActionMoveLeft:  {input.KeyLeft, input.KeyA, input.KeyGamepadLeft, input.KeyGamepadLStickLeft},
 		ActionMoveDown:  {input.KeyDown, input.KeyS, input.KeyGamepadDown, input.KeyGamepadLStickDown},
 		ActionMoveRight: {input.KeyRight, input.KeyD, input.KeyGamepadRight, input.KeyGamepadLStickRight},
-		ActionJump:      {input.KeySpace, input.KeyGamepadA},
+		ActionPrimary:   {input.KeySpace, input.KeyGamepadA},
 	}
 
 	loadingState.IncreaseCounter(1)

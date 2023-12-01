@@ -140,7 +140,7 @@ func (p *Player) updateMovement() {
 	switch p.AnimState {
 
 	case playerJumploop:
-		if (p.Input.ActionIsPressed(ActionJump) || !p.jumpedMin()) && !p.jumpedMax() {
+		if (p.Input.ActionIsPressed(ActionPrimary) || !p.jumpedMin()) && !p.jumpedMax() {
 			p.AnimState = playerJumploop
 		} else {
 			p.AnimState = playerJumpendfloor
@@ -188,7 +188,7 @@ func (p *Player) updateMovement() {
 	}
 
 	// Jump input
-	if p.State != stateFalling && p.State != stateJumping && p.Input.ActionIsJustPressed(ActionJump) {
+	if p.State != stateFalling && p.State != stateJumping && p.Input.ActionIsJustPressed(ActionPrimary) {
 		p.State = stateJumping
 		p.AnimState = playerJumpstart
 		p.JumpFrom = vector.Vector{p.X, p.Y}
