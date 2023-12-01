@@ -33,14 +33,18 @@ func (c *ControlHint) Update(y float64) error {
 		}
 	} else if c.State == hintVisible {
 		c.Sprite.Update(c.FrameTag)
-		if y < c.To {
+		if y < c.To || y >= c.From {
 			c.State = hintFading
 		}
 	} else if c.State == hintFading {
 		c.Sprite.Update(c.FrameTag)
 		c.Alpha -= 0.1
 		if c.Alpha <= 0 {
-			c.State = hintFaded
+			if y >= c.From {
+				c.State = hintHidden
+			} else {
+				c.State = hintFaded
+			}
 		}
 	}
 
