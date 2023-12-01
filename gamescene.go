@@ -167,6 +167,7 @@ func (g *GameScene) Update() error {
 	}
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyP) {
+		g.SaveLastRender(true)
 		g.SceneManager.SwitchTo(g.State.Scenes[gamePaused])
 		return nil
 	}
@@ -219,10 +220,11 @@ func (g *GameScene) Update() error {
 		}
 		alpha, _ := g.FadeTween.Update(1)
 		g.Alpha = uint8(alpha)
-		if g.Alpha == 255 {
+		if g.Alpha == 128 {
 			g.Player.State = stateDead
 			g.Sounds[backgroundMusic].Pause()
 			g.Sounds[backgroundMusic].LowPass(false)
+			g.SaveLastRender(true)
 			g.SceneManager.SwitchTo(g.State.Scenes[gameOver])
 			return nil
 		}
@@ -232,6 +234,7 @@ func (g *GameScene) Update() error {
 			alpha, _ := g.FadeTween.Update(1)
 			g.Alpha = uint8(alpha)
 			if g.Alpha == 200 {
+				g.SaveLastRender(false)
 				g.Player.State = gameWon
 				g.SceneManager.SwitchTo(g.State.Scenes[gameWon])
 				return nil
@@ -272,7 +275,7 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 		g.State.Camera.Surface.DrawImage(g.Background, cameraOrigin)
 		g.State.Camera.Surface.DrawImage(g.Foreground, cameraOrigin)
 		g.Player.Draw(g.State.Camera)
-	} else if g.Player.State != stateWon && g.Player.State != stateWinning {
+	} else {
 		g.State.Camera.Surface.DrawImage(g.Background, cameraOrigin)
 		g.Player.Draw(g.State.Camera)
 		g.State.Camera.Surface.DrawImage(g.Foreground, cameraOrigin)
@@ -349,4 +352,27 @@ func (g *GameScene) Reset() {
 type Entity interface {
 	Update()
 	Draw(cam *camera.Camera)
+}
+
+func blurImage(image *ebiten.Image) *ebiten.Image {
+	result := ebiten.NewImage(image.Bounds().Dx(), image.Bounds().Dy())
+
+	layers := 0
+	for j := -3; j <= 3; j++ {
+		for i := -3; i <= 3; i++ {
+			op := &ebiten.DrawImageOptions{}
+			op.GeoM.Translate(float64(i), float64(j))
+			layers++
+			op.ColorScale.ScaleAlpha(1 / float32(layers))
+			result.DrawImage(image, op)
+		}
+	}
+	return result
+}
+
+func (g *GameScene) SaveLastRender(blur bool) {
+	g.Draw(g.State.lastRender)
+	if blur {
+		g.State.lastRender = blurImage(g.State.lastRender)
+	}
 }

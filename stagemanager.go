@@ -38,6 +38,7 @@ type Game struct {
 	Water            *Water
 	Camera           *camera.Camera
 	minScale         float64
+	lastRender       *ebiten.Image
 }
 
 func NewStageManager() *StageManager {
@@ -81,6 +82,7 @@ func loadGame(s *StageManager) {
 		BoldTextRenderer: NewTextRenderer("assets/fonts/PixelOperator8-Bold.ttf"),
 		Stat:             &Stat{},
 		Camera:           camera.NewCamera(gameWidth, gameHeight),
+		lastRender:       ebiten.NewImage(gameWidth, gameHeight),
 	}
 
 	game.Stat.Load()
