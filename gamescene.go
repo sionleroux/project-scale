@@ -197,8 +197,9 @@ func (g *GameScene) Update() error {
 	if g.Player.State == stateWinning {
 		if g.State.Camera.Scale > g.State.minScale {
 			g.State.Camera.Zoom(0.99)
+			g.State.Camera.SetPosition(g.Player.X, float64(g.State.Camera.Height/2)/g.State.Camera.Scale)
+			g.State.Camera.Update()
 		}
-		g.State.Camera.SetPosition(g.Player.X, float64(g.State.Camera.Height/2)/g.State.Camera.Scale)
 	} else {
 		// Position camera and clamp in to the Map dimensions
 		maxHeight := g.LDTKProject.Levels[g.Level].Height
@@ -206,8 +207,8 @@ func (g *GameScene) Update() error {
 			math.Max(g.Player.Y, float64(g.State.Camera.Height/2)),
 			float64(maxHeight-g.State.Camera.Height/2),
 		))
+		g.State.Camera.Update()
 	}
-	g.State.Camera.Update()
 
 	if g.Player.State == stateWinning || g.Player.State == stateDying {
 		g.Sounds[backgroundMusic].Update()
@@ -303,7 +304,7 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 	if g.Player.State != stateWinning && g.Player.State != stateWon {
 		g.DrawMinimap(screen)
 	}
-	g.Debuggers.Debug(g, screen)
+	// g.Debuggers.Debug(g, screen)
 }
 
 func (g *GameScene) Load(st State, sm *stagehand.SceneManager[State]) {
