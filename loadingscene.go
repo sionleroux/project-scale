@@ -61,7 +61,7 @@ func (s *LoadingScene) IsLoaded() bool {
 func (s *LoadingScene) Draw(screen *ebiten.Image) {
 	s.TextRenderer.Draw(
 		screen,
-		"An action adventure story by:\nRowan Lindeque\nTristan Le Roux\nSiôn Le Roux\nPéter Kertész",
+		"A game by:\nRowan Lindeque\nTristan Le Roux\nSiôn Le Roux\nPéter Kertész",
 		color.White, 8, 50, 50,
 	)
 
