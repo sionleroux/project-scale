@@ -29,7 +29,6 @@ const fadeOutTime = 240
 func NewGameScene(game *Game, loadingState *LoadingState) {
 
 	g := &GameScene{
-		Camera:    camera.NewCamera(game.Width, game.Height),
 		FadeTween: gween.New(0, 255, fadeOutTime, ease.Linear),
 		Debuggers: debuggers,
 	}
@@ -70,7 +69,8 @@ func NewGameScene(game *Game, loadingState *LoadingState) {
 	game.Fog = NewFog(float64(level.Height))
 
 	// Backdrop
-	g.Backdrops = NewBackdrops(float64(level.Height))
+	game.Backdrops = NewBackdrops(float64(level.Height))
+
 	// Create space for collision detection
 	g.Space = resolv.NewSpace(level.Width, level.Height, 16, 16)
 
@@ -85,7 +85,7 @@ func NewGameScene(game *Game, loadingState *LoadingState) {
 
 	// SoundLoops
 	loadingState.IncreaseCounter(1)
-	g.Sounds = make(Sounds, 4)
+	g.Sounds = make(Sounds, 5)
 	g.Sounds[backgroundMusic] = &Sound{Volume: 0.5}
 	g.Sounds[backgroundMusic].AddSound("assets/music/game-music", sampleRate, context, 7)
 
@@ -97,6 +97,8 @@ func NewGameScene(game *Game, loadingState *LoadingState) {
 	g.Sounds[sfxSplash].AddSound("assets/sfx/splash", sampleRate, context, 1)
 	g.Sounds[sfxUnderwater] = &Sound{Volume: 1}
 	g.Sounds[sfxUnderwater].AddSound("assets/sfx/underwater", sampleRate, context, 1)
+	g.Sounds[voiceGameWon] = &Sound{Volume: 0.5}
+	g.Sounds[voiceGameWon].AddSound("assets/voices/game-won", sampleRate, context, 1)
 
 	// Entities
 	loadingState.IncreaseCounter(1)
@@ -122,11 +124,11 @@ func NewGameScene(game *Game, loadingState *LoadingState) {
 		startPos.Position[1] + (startPos.Height / 2),
 	}
 	game.StartPos = startCenter
-	g.Player = NewPlayer(startCenter, g.Camera)
+	g.Player = NewPlayer(startCenter, game.Camera)
 	g.Player.Input = g.InputSystem.NewHandler(0, g.Keymap)
 	g.Space.Add(g.Player.Object)
 
-	g.Water = NewWater(float64(level.Height) + 4*g.Player.H)
+	game.Water = NewWater(float64(level.Height) + 4*g.Player.H)
 
 	// Done
 	loadingState.IncreaseCounter(1)
@@ -145,13 +147,8 @@ type GameScene struct {
 	LDTKProject  *ldtkgo.Project
 	Background   *ebiten.Image
 	Foreground   *ebiten.Image
-	Fog          *ebiten.Image
-	FogAngle     float64
 	Level        int
-	Camera       *camera.Camera
 	Debuggers    Debuggers
-	Water        *Water
-	Backdrops    Backdrops
 	Sounds       Sounds
 	Alpha        uint8
 	FadeTween    *gween.Tween
@@ -176,7 +173,7 @@ func (g *GameScene) Update() error {
 
 	if CheatsAllowed && inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
 		x, y := ebiten.CursorPosition()
-		wx, wy := g.Camera.GetWorldCoords(float64(x), float64(y))
+		wx, wy := g.State.Camera.GetWorldCoords(float64(x), float64(y))
 		g.Player.X = wx
 		g.Player.Y = wy
 	}
@@ -185,21 +182,34 @@ func (g *GameScene) Update() error {
 	g.InputSystem.Update()
 	g.Player.Update()
 
-	if g.CheckFinish() {
-		g.SceneManager.SwitchTo(g.State.Scenes[gameWon])
-		return nil
+	if g.Player.State != stateWinning && g.CheckFinish() {
+		g.Player.State = stateWinning
+		g.State.minScale = float64(g.State.Camera.Width) / float64(g.State.Backdrops.Backdrops[0].Image.Bounds().Dx()-int(math.Abs(g.Player.X))*2)
+		g.Sounds[backgroundMusic].FadeOut()
+		g.Sounds[voiceGameWon].Play()
 	}
 
-	// Position camera and clamp in to the Map dimensions
-	maxHeight := g.LDTKProject.Levels[g.Level].Height
-	g.Camera.SetPosition(g.Player.X, math.Min(
-		math.Max(g.Player.Y, float64(g.Camera.Height/2)),
-		float64(maxHeight-g.Camera.Height/2),
-	))
+	if g.Player.State == stateWinning {
+		if g.State.Camera.Scale > g.State.minScale {
+			g.State.Camera.Zoom(0.99)
+		}
+		g.State.Camera.SetPosition(g.Player.X, float64(g.State.Camera.Height/2)/g.State.Camera.Scale)
+	} else {
+		// Position camera and clamp in to the Map dimensions
+		maxHeight := g.LDTKProject.Levels[g.Level].Height
+		g.State.Camera.SetPosition(g.Player.X, math.Min(
+			math.Max(g.Player.Y, float64(g.State.Camera.Height/2)),
+			float64(maxHeight-g.State.Camera.Height/2),
+		))
+	}
+	g.State.Camera.Update()
 
-	g.Camera.Update()
+	if g.Player.State == stateWinning {
+		g.Sounds[backgroundMusic].Update()
+	}
 
-	g.Water.Update()
+	g.State.Water.Update(g.Player.State != stateWinning)
+
 	g.State.Fog.Update()
 
 	switch g.Player.State {
@@ -217,6 +227,16 @@ func (g *GameScene) Update() error {
 			return nil
 		}
 
+	case stateWinning:
+		if g.State.Camera.Scale <= g.State.minScale {
+			alpha, _ := g.FadeTween.Update(1)
+			g.Alpha = uint8(alpha)
+			if g.Alpha == 200 {
+				g.Player.State = gameWon
+				g.SceneManager.SwitchTo(g.State.Scenes[gameWon])
+				return nil
+			}
+		}
 	default:
 		if !g.Sounds[backgroundMusic].IsPlaying() {
 			g.Sounds[backgroundMusic].PlayNext()
@@ -239,34 +259,33 @@ func (g *GameScene) Update() error {
 
 	}
 
-	g.FogAngle += 0.0001
-
 	return nil
 }
 
 // Draw draws the game screen by one frame
 func (g *GameScene) Draw(screen *ebiten.Image) {
-	g.Camera.Surface.Clear()
-	cameraOrigin := g.Camera.GetTranslation(&ebiten.DrawImageOptions{}, 0, 0)
+	g.State.Camera.Surface.Clear()
+	cameraOrigin := g.State.Camera.GetTranslation(&ebiten.DrawImageOptions{}, 0, 0)
 
-	g.Backdrops.Draw(g.Camera, g.Water.Level)
-	g.Camera.Surface.DrawImage(g.Background, cameraOrigin)
+	g.State.Backdrops.Draw(g.State.Camera, g.State.Water.Level)
 	if g.Player.State == stateDying {
-		g.Camera.Surface.DrawImage(g.Foreground, cameraOrigin)
-		g.Player.Draw(g.Camera)
-	} else {
-		g.Player.Draw(g.Camera)
-		g.Camera.Surface.DrawImage(g.Foreground, cameraOrigin)
+		g.State.Camera.Surface.DrawImage(g.Background, cameraOrigin)
+		g.State.Camera.Surface.DrawImage(g.Foreground, cameraOrigin)
+		g.Player.Draw(g.State.Camera)
+	} else if g.Player.State != stateWon && g.Player.State != stateWinning {
+		g.State.Camera.Surface.DrawImage(g.Background, cameraOrigin)
+		g.Player.Draw(g.State.Camera)
+		g.State.Camera.Surface.DrawImage(g.Foreground, cameraOrigin)
 	}
-	g.Water.Draw(g.Camera)
+	g.State.Water.Draw(g.State.Camera)
 
 	fogOp := g.State.Fog.GetDrawImageOptions()
-	fogOp = g.Camera.GetTranslation(fogOp, -float64(g.State.Fog.Image.Bounds().Dx())/2, 0)
-	g.Camera.Surface.DrawImage(g.State.Fog.Image, fogOp)
+	fogOp = g.State.Camera.GetTranslation(fogOp, -float64(g.State.Fog.Image.Bounds().Dx())/2, 0)
+	g.State.Camera.Surface.DrawImage(g.State.Fog.Image, fogOp)
 
-	g.Camera.Blit(screen)
+	g.State.Camera.Blit(screen)
 
-	if g.Player.State == stateDying || g.Player.State == stateDead {
+	if g.Player.State == stateDying || g.Player.State == stateDead || g.Player.State == stateWinning || g.Player.State == stateWon {
 		vector.DrawFilledRect(screen, 0, 0, float32(g.State.Width), float32(g.State.Height), color.RGBA{0, 0, 0, g.Alpha}, false)
 	}
 	g.Debuggers.Debug(g, screen)
@@ -305,7 +324,7 @@ func (g *GameScene) CheckFinish() bool {
 
 func (g *GameScene) CheckDeath() bool {
 	// Death by water (water covers the top of you)
-	if g.Water.Level < g.Player.Y-g.Player.H/4 {
+	if g.State.Water.Level < g.Player.Y-g.Player.H/4 {
 		return true
 	}
 
@@ -320,8 +339,11 @@ func (g *GameScene) Reset() {
 	g.Player.State = stateIdle
 	g.Player.Rotation = 0
 	g.Player.Input = g.InputSystem.NewHandler(0, g.Keymap)
-	g.Water = NewWater(float64(level.Height) + 4*g.Player.H)
+	g.State.Water = NewWater(float64(level.Height) + 4*g.Player.H)
+	g.Sounds[backgroundMusic].SetVolume(0.5)
+	g.Alpha = 0
 	g.FadeTween.Reset()
+	g.State.Camera.Zoom(1 / g.State.Camera.Scale)
 }
 
 type Entity interface {

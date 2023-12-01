@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/joelschutz/stagehand"
+	"github.com/sinisterstuf/project-scale/camera"
 )
 
 type State *Game
@@ -31,8 +32,12 @@ type Game struct {
 	TextRenderer     *TextRenderer
 	BoldTextRenderer *TextRenderer
 	Stat             *Stat
-	Fog              *Fog
 	StartPos         []int
+	Fog              *Fog
+	Backdrops        Backdrops
+	Water            *Water
+	Camera           *camera.Camera
+	minScale         float64
 }
 
 func NewStageManager() *StageManager {
@@ -75,6 +80,7 @@ func loadGame(s *StageManager) {
 		TextRenderer:     NewTextRenderer("assets/fonts/PixelOperator8.ttf"),
 		BoldTextRenderer: NewTextRenderer("assets/fonts/PixelOperator8-Bold.ttf"),
 		Stat:             &Stat{},
+		Camera:           camera.NewCamera(gameWidth, gameHeight),
 	}
 
 	game.Stat.Load()

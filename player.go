@@ -54,6 +54,8 @@ const (
 	stateStanding
 	stateDying
 	stateDead
+	stateWinning
+	stateWon
 )
 
 var playerStateNames = []string{
@@ -64,6 +66,8 @@ var playerStateNames = []string{
 	"Standing",
 	"Dying",
 	"Dead",
+	"Winning",
+	"Won",
 }
 
 // Player is the player character in the game
@@ -117,6 +121,9 @@ func (p *Player) Update() {
 	if p.State == stateDying || p.State == stateDead {
 		p.updateDeath()
 		p.animate()
+		return
+	}
+	if p.State == stateWinning || p.State == stateWon {
 		return
 	}
 

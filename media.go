@@ -238,6 +238,7 @@ const (
 	sfxSplash
 	sfxSubmerge
 	sfxUnderwater
+	voiceGameWon
 )
 
 // Sound stores and plays all the sound variants for one single soundType
@@ -247,6 +248,7 @@ type Sound struct {
 	LastIndex  int
 	Volume     float64
 	lowpass    *effects.LowpassFilter
+	tween      *gween.Tween
 }
 
 // AddSound adds one new sound to the soundType
@@ -273,6 +275,9 @@ func (s *Sound) AddSound(f string, sampleRate int, context *audio.Context, v ...
 func (s *Sound) SetVolume(v float64) {
 	if v >= 0 && v <= 1 {
 		s.Volume = v
+		if s.LastPlayed != nil {
+			s.LastPlayed.SetVolume(v)
+		}
 	}
 }
 
@@ -350,6 +355,25 @@ func (s *Sound) LowPass(on bool) {
 		s.SetVolume(0.7)
 	} else {
 		s.SetVolume(0.5)
+	}
+}
+
+// FadeOut fades out the sound smoothly to 0% volume
+func (s *Sound) FadeOut() {
+	s.tween = gween.New(float32(s.Volume), 0, 1*60, ease.InExpo)
+}
+
+// Update the music volume for fade effects
+func (s *Sound) Update() {
+	if s.tween != nil {
+		volume, done := s.tween.Update(1)
+		s.SetVolume(float64(volume))
+		if done {
+			s.tween = nil
+			if s.IsPlaying() {
+				s.Pause()
+			}
+		}
 	}
 }
 
