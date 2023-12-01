@@ -26,9 +26,9 @@ import (
 )
 
 // Length of the fading animation
-const fadeOutTime = 480
-
+const fadeOutTime = 360
 const maxScore = 1000
+const minMinScale = 0.18
 
 const (
 	ActionMoveUp input.Action = iota
@@ -181,6 +181,9 @@ func (g *GameScene) Update() error {
 	if g.Player.State != stateWinning && g.CheckFinish() {
 		g.Player.State = stateWinning
 		g.State.minScale = float64(g.State.Camera.Width) / float64(g.State.Backdrops.Backdrops[0].Image.Bounds().Dx()-int(math.Abs(g.Player.X))*2)
+		if g.State.minScale < minMinScale {
+			g.State.minScale = minMinScale
+		}
 		g.Sounds[backgroundMusic].FadeOut(1)
 		g.Sounds[voiceGameWon].Play()
 	}
