@@ -30,6 +30,14 @@ const fadeOutTime = 480
 
 const maxScore = 1000
 
+const (
+	ActionMoveUp input.Action = iota
+	ActionMoveLeft
+	ActionMoveDown
+	ActionMoveRight
+	ActionJump
+)
+
 func NewGameScene(game *Game, loadingState *LoadingState) {
 
 	g := &GameScene{

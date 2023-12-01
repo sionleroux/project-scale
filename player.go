@@ -27,14 +27,6 @@ const (
 	speedDeathFall = 0.5
 )
 
-const (
-	ActionMoveUp input.Action = iota
-	ActionMoveLeft
-	ActionMoveDown
-	ActionMoveRight
-	ActionJump
-)
-
 type Direction int8
 
 const (
