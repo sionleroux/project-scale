@@ -5,7 +5,6 @@ import (
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 // OverScene is shown when the player dies and the game is over
@@ -16,7 +15,7 @@ type OverScene struct {
 
 func (s *OverScene) Update() error {
 	s.Menu.Update()
-	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
+	if s.State.Input.ActionIsJustPressed(ActionPrimary) {
 		if s.Menu.Active == 0 {
 			s.State.ResetNeeded = true
 			s.SceneManager.SwitchTo(s.State.Scenes[gameRunning])

@@ -46,19 +46,6 @@ func NewGameScene(game *Game, loadingState *LoadingState) {
 		Debuggers: debuggers,
 	}
 
-	// Input setup
-	g.InputSystem.Init(input.SystemConfig{
-		DevicesEnabled: input.AnyDevice,
-	})
-	g.Keymap = input.Keymap{
-		ActionMoveUp:    {input.KeyUp, input.KeyW, input.KeyGamepadUp, input.KeyGamepadLStickUp},
-		ActionMoveLeft:  {input.KeyLeft, input.KeyA, input.KeyGamepadLeft, input.KeyGamepadLStickLeft},
-		ActionMoveDown:  {input.KeyDown, input.KeyS, input.KeyGamepadDown, input.KeyGamepadLStickDown},
-		ActionMoveRight: {input.KeyRight, input.KeyD, input.KeyGamepadRight, input.KeyGamepadLStickRight},
-		ActionPrimary:   {input.KeySpace, input.KeyGamepadA},
-		ActionMenu:      {input.KeyEscape, input.KeyGamepadStart},
-	}
-
 	loadingState.IncreaseCounter(1)
 	// Pre-render map
 	g.LDTKProject = loadMaps("assets/maps/Project scale.ldtk")
@@ -139,7 +126,7 @@ func NewGameScene(game *Game, loadingState *LoadingState) {
 	}
 	game.StartPos = startCenter
 	g.Player = NewPlayer(startCenter, game.Camera)
-	g.Player.Input = g.InputSystem.NewHandler(0, g.Keymap)
+	g.Player.Input = game.Input
 	g.Space.Add(g.Player.Object)
 
 	game.Water = NewWater(float64(level.Height) + 4*g.Player.H)
@@ -154,8 +141,6 @@ func NewGameScene(game *Game, loadingState *LoadingState) {
 type GameScene struct {
 	BaseScene
 	Player       *Player
-	InputSystem  input.System
-	Keymap       input.Keymap
 	Space        *resolv.Space
 	TileRenderer *TileRenderer
 	LDTKProject  *ldtkgo.Project
@@ -170,7 +155,9 @@ type GameScene struct {
 
 // Update calculates game logic
 func (g *GameScene) Update() error {
-	if inpututil.IsKeyJustPressed(ebiten.KeyP) {
+	g.State.InputSystem.Update()
+
+	if g.State.Input.ActionIsJustPressed(ActionMenu) {
 		g.SaveLastRender(true)
 		g.SceneManager.SwitchTo(g.State.Scenes[gamePaused])
 		return nil
@@ -184,7 +171,6 @@ func (g *GameScene) Update() error {
 	}
 
 	// Movement controls
-	g.InputSystem.Update()
 	g.Player.Update()
 
 	pos := GetScoreFromY(int(g.Player.Y), g.State.StartPos[1])
@@ -357,7 +343,6 @@ func (g *GameScene) Reset() {
 	g.Player.AnimState = playerIdle
 	g.Player.State = stateIdle
 	g.Player.Rotation = 0
-	g.Player.Input = g.InputSystem.NewHandler(0, g.Keymap)
 	g.State.Water = NewWater(float64(level.Height) + 4*g.Player.H)
 	g.Sounds[backgroundMusic].SetVolume(0.5)
 	g.Alpha = 0

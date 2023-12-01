@@ -4,7 +4,6 @@ import (
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 // WonScreen is shown when the game is won
@@ -15,7 +14,7 @@ type WonScene struct {
 
 func (s *WonScene) Update() error {
 	s.Menu.Update()
-	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
+	if s.State.Input.ActionIsJustPressed(ActionPrimary) {
 		if s.Menu.Active == 0 {
 			s.State.ResetNeeded = true
 			s.SceneManager.SwitchTo(s.State.Scenes[gameRunning])

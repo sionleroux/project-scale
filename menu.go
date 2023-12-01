@@ -5,7 +5,7 @@ import (
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	input "github.com/quasilyte/ebitengine-input"
 	"github.com/tinne26/etxt"
 )
 
@@ -17,16 +17,17 @@ type Menu struct {
 	color         color.Color
 	selectedColor color.Color
 	textRenderer  *TextRenderer
+	Input         *input.Handler
 }
 
 func (m *Menu) Update() {
-	if inpututil.IsKeyJustPressed(ebiten.KeyUp) {
+	if m.Input.ActionIsJustPressed(ActionMoveUp) {
 		m.Active -= 1
 		if m.Active == -1 {
 			m.Active = len(m.Items) - 1
 		}
 	}
-	if inpututil.IsKeyJustPressed(ebiten.KeyDown) {
+	if m.Input.ActionIsJustPressed(ActionMoveDown) {
 		m.Active += 1
 		if m.Active == len(m.Items) {
 			m.Active = 0

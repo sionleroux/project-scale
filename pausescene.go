@@ -4,7 +4,6 @@ import (
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
@@ -16,12 +15,15 @@ type PauseScreen struct {
 
 func (p *PauseScreen) Update() error {
 	p.Menu.Update()
-	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
+	if p.State.Input.ActionIsJustPressed(ActionPrimary) {
 		if p.Menu.Active == 0 {
 			p.SceneManager.SwitchTo(p.State.Scenes[gameRunning])
 		} else if p.Menu.Active == 1 {
 			p.SceneManager.SwitchTo(p.State.Scenes[gameStart])
 		}
+	}
+	if p.State.Input.ActionIsJustPressed(ActionMenu) {
+		p.SceneManager.SwitchTo(p.State.Scenes[gameRunning])
 	}
 	return nil
 }

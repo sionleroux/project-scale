@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/joelschutz/stagehand"
 )
 
@@ -20,10 +19,11 @@ type StartScene struct {
 }
 
 func (s *StartScene) Update() error {
+	s.State.InputSystem.Update()
 
 	if s.TransitionPhase == 0 {
 
-		if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
+		if s.State.Input.ActionIsJustPressed(ActionPrimary) {
 			if s.Menu.Active == 0 {
 				s.TransitionPhase = 1
 				s.Heartbeat.Pause()
@@ -108,6 +108,7 @@ func NewStartScene(game *Game) *StartScene {
 			color:         color.RGBA{0, 0, 0, 255},
 			selectedColor: color.RGBA{255, 255, 0, 255},
 			textRenderer:  game.TextRenderer,
+			Input:         game.Input,
 		},
 	}
 }

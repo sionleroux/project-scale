@@ -5,6 +5,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/joelschutz/stagehand"
+	input "github.com/quasilyte/ebitengine-input"
 	"github.com/sinisterstuf/project-scale/camera"
 )
 
@@ -41,6 +42,9 @@ type Game struct {
 	Camera           *camera.Camera
 	minScale         float64
 	lastRender       *ebiten.Image
+	InputSystem      input.System
+	Keymap           input.Keymap
+	Input            *input.Handler
 }
 
 func NewStageManager() *StageManager {
@@ -87,6 +91,21 @@ func loadGame(s *StageManager) {
 		lastRender:       ebiten.NewImage(gameWidth, gameHeight),
 	}
 
+	// Input setup
+	game.InputSystem.Init(input.SystemConfig{
+		DevicesEnabled: input.AnyDevice,
+	})
+	game.Keymap = input.Keymap{
+		ActionMoveUp:    {input.KeyUp, input.KeyW, input.KeyGamepadUp, input.KeyGamepadLStickUp},
+		ActionMoveLeft:  {input.KeyLeft, input.KeyA, input.KeyGamepadLeft, input.KeyGamepadLStickLeft},
+		ActionMoveDown:  {input.KeyDown, input.KeyS, input.KeyGamepadDown, input.KeyGamepadLStickDown},
+		ActionMoveRight: {input.KeyRight, input.KeyD, input.KeyGamepadRight, input.KeyGamepadLStickRight},
+		ActionPrimary:   {input.KeySpace, input.KeyGamepadA},
+		ActionMenu:      {input.KeyEscape, input.KeyGamepadStart},
+	}
+
+	game.Input = game.InputSystem.NewHandler(0, game.Keymap)
+
 	game.Stat.Load()
 
 	game.Scenes = []stagehand.Scene[State]{
@@ -100,6 +119,7 @@ func loadGame(s *StageManager) {
 				color:         color.RGBA{255, 255, 255, 255},
 				selectedColor: color.RGBA{255, 255, 0, 255},
 				textRenderer:  game.TextRenderer,
+				Input:         game.Input,
 			},
 		},
 		&OverScene{
@@ -110,6 +130,7 @@ func loadGame(s *StageManager) {
 				color:         color.RGBA{0, 0, 0, 255},
 				selectedColor: color.RGBA{255, 255, 0, 255},
 				textRenderer:  game.TextRenderer,
+				Input:         game.Input,
 			},
 		},
 		&WonScene{
@@ -120,6 +141,7 @@ func loadGame(s *StageManager) {
 				color:         color.RGBA{0, 0, 0, 255},
 				selectedColor: color.RGBA{255, 255, 0, 255},
 				textRenderer:  game.TextRenderer,
+				Input:         game.Input,
 			},
 		},
 	}
