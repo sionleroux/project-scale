@@ -120,16 +120,16 @@ func (p *Player) Update() {
 
 	p.updateMovement()
 	p.collisionChecks()
-	p.Light.SetPos(p.X, p.Y)
+	p.Light.SetPos(p.Position.X, p.Position.Y)
 	p.Light.SetColor(p.AnimState)
 	p.animate()
 	for _, hint := range p.ControlHints {
-		hint.Update(p.Y)
+		hint.Update(p.Position.Y)
 	}
 }
 
 func (p *Player) updateDeath() {
-	p.Y += speedDeathFall
+	p.Position.Y += speedDeathFall
 	p.Rotation += 0.02
 	p.Object.Update()
 }
@@ -191,7 +191,7 @@ func (p *Player) updateMovement() {
 	if p.State != stateFalling && (p.State != stateJumping || p.AnimState == playerJumpendfloor) && p.Input.ActionIsJustPressed(ActionPrimary) {
 		p.State = stateJumping
 		p.AnimState = playerJumpstart
-		p.JumpFrom = vector.Vector{p.X, p.Y}
+		p.JumpFrom = vector.Vector{p.Position.X, p.Position.Y}
 	}
 
 	// Climbing input
@@ -265,12 +265,12 @@ func (p *Player) collisionChecks() {
 		if collision := p.Check(dx, 0, TagWall); collision != nil {
 			for _, o := range collision.Objects {
 				if intersection := p.Shape.Intersection(dx, 0, o.Shape); intersection != nil {
-					dx = intersection.MTV.X()
+					dx = intersection.MTV.X
 				}
 			}
 		}
 	}
-	p.X += dx
+	p.Position.X += dx
 
 	dy := p.SpeedY
 	switch p.State {
@@ -304,8 +304,8 @@ func (p *Player) collisionChecks() {
 						dy = 0
 						if p.State == stateFalling {
 							p.AnimState = playerFallendwall
-							log.Println("Avoid wall clipping after fall:", intersection.MTV.X(), intersection.MTV.Y())
-							dy -= intersection.MTV.Y()
+							log.Println("Avoid wall clipping after fall:", intersection.MTV.X, intersection.MTV.Y)
+							dy -= intersection.MTV.Y
 						}
 						if p.State == stateSlipping {
 							p.AnimState = playerSlipend
@@ -313,9 +313,9 @@ func (p *Player) collisionChecks() {
 						if p.State == stateJumping && p.AnimState != playerJumpendwall {
 							p.AnimState = playerJumpendwall
 							p.Camera.Shake(camera.NewShaker(10, 40, 10))
-							dy -= intersection.MTV.Y()
-							if intersection.MTV.Y() != 0 {
-								log.Println("MTV Y:", intersection.MTV.Y())
+							dy -= intersection.MTV.Y
+							if intersection.MTV.Y != 0 {
+								log.Println("MTV Y:", intersection.MTV.Y)
 							}
 						}
 					case TagChasm:
@@ -325,8 +325,8 @@ func (p *Player) collisionChecks() {
 					case TagClimbable:
 						// only recover onto tiles below you, that means the MTV to
 						// get out of them will be negative, i.e. upwards
-						// log.Println("MTV WOOP:", intersection.MTV.Y())
-						if intersection.MTV.Y() < 0 {
+						// log.Println("MTV WOOP:", intersection.MTV.Y)
+						if intersection.MTV.Y < 0 {
 							// log.Println("AAAAAAAAAAAA")
 							if p.AnimState == playerFallloop {
 								p.AnimState = playerFallendfloor
@@ -339,7 +339,7 @@ func (p *Player) collisionChecks() {
 				}
 			}
 		}
-		p.Y += dy
+		p.Position.Y += dy
 
 	}
 
@@ -434,7 +434,7 @@ func (p *Player) jumpedMin() bool {
 }
 
 func (p *Player) jumpDistance() vector.Vector {
-	return vector.Vector{p.X, p.Y}.Sub(p.JumpFrom)
+	return vector.Vector{p.Position.X, p.Position.Y}.Sub(p.JumpFrom)
 }
 
 func (p *Player) Draw(camera *camera.Camera) {
@@ -476,5 +476,5 @@ func (p *Player) Draw(camera *camera.Camera) {
 		float64(-frame.Position.H/4),
 	)
 
-	camera.Surface.DrawImage(img, camera.GetTranslation(op, p.X, p.Y))
+	camera.Surface.DrawImage(img, camera.GetTranslation(op, p.Position.X, p.Position.Y))
 }

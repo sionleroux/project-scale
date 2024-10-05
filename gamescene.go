@@ -129,7 +129,7 @@ func NewGameScene(game *Game, loadingState *LoadingState) {
 	g.Player.Input = game.Input
 	g.Space.Add(g.Player.Object)
 
-	game.Water = NewWater(float64(level.Height) + 4*g.Player.H)
+	game.Water = NewWater(float64(level.Height) + 4*g.Player.Size.Y)
 
 	// Done
 	loadingState.IncreaseCounter(1)
@@ -166,14 +166,14 @@ func (g *GameScene) Update() error {
 	if CheatsAllowed && inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
 		x, y := ebiten.CursorPosition()
 		wx, wy := g.State.Camera.GetWorldCoords(float64(x), float64(y))
-		g.Player.X = wx
-		g.Player.Y = wy
+		g.Player.Position.X = wx
+		g.Player.Position.Y = wy
 	}
 
 	// Movement controls
 	g.Player.Update()
 
-	pos := GetScoreFromY(int(g.Player.Y), g.State.StartPos[1])
+	pos := GetScoreFromY(int(g.Player.Position.Y), g.State.StartPos[1])
 	if pos > g.State.Stat.LastHighestPoint {
 		g.State.Stat.LastHighestPoint = pos
 	}
@@ -186,7 +186,7 @@ func (g *GameScene) Update() error {
 			g.State.Stat.Save()
 		}
 		g.Player.State = stateWinning
-		g.State.minScale = float64(g.State.Camera.Width) / float64(g.State.Backdrops.Backdrops[0].Image.Bounds().Dx()-int(math.Abs(g.Player.X))*2)
+		g.State.minScale = float64(g.State.Camera.Width) / float64(g.State.Backdrops.Backdrops[0].Image.Bounds().Dx()-int(math.Abs(g.Player.Position.X))*2)
 		if g.State.minScale < minMinScale {
 			g.State.minScale = minMinScale
 		}
@@ -197,14 +197,14 @@ func (g *GameScene) Update() error {
 	if g.Player.State == stateWinning {
 		if g.State.Camera.Scale > g.State.minScale {
 			g.State.Camera.Zoom(0.99)
-			g.State.Camera.SetPosition(g.Player.X, float64(g.State.Camera.Height/2)/g.State.Camera.Scale)
+			g.State.Camera.SetPosition(g.Player.Position.X, float64(g.State.Camera.Height/2)/g.State.Camera.Scale)
 			g.State.Camera.Update()
 		}
 	} else {
 		// Position camera and clamp in to the Map dimensions
 		maxHeight := g.LDTKProject.Levels[g.Level].Height
-		g.State.Camera.SetPosition(g.Player.X, math.Min(
-			math.Max(g.Player.Y, float64(g.State.Camera.Height/2)),
+		g.State.Camera.SetPosition(g.Player.Position.X, math.Min(
+			math.Max(g.Player.Position.Y, float64(g.State.Camera.Height/2)),
 			float64(maxHeight-g.State.Camera.Height/2),
 		))
 		g.State.Camera.Update()
@@ -286,7 +286,7 @@ func (g *GameScene) Draw(screen *ebiten.Image) {
 		g.Player.Draw(g.State.Camera)
 		g.State.Camera.Surface.DrawImage(g.Foreground, cameraOrigin)
 		for _, hint := range g.Player.ControlHints {
-			hint.Draw(g.Player.X, g.Player.Y, g.State.Camera)
+			hint.Draw(g.Player.Position.X, g.Player.Position.Y, g.State.Camera)
 		}
 	}
 	g.State.Water.Draw(g.State.Camera)
@@ -339,7 +339,7 @@ func (g *GameScene) CheckFinish() bool {
 
 func (g *GameScene) CheckDeath() bool {
 	// Death by water (water covers the top of you)
-	if g.State.Water.Level < g.Player.Y-g.Player.H/4 {
+	if g.State.Water.Level < g.Player.Position.Y-g.Player.Size.Y/4 {
 		return true
 	}
 
@@ -348,12 +348,12 @@ func (g *GameScene) CheckDeath() bool {
 
 func (g *GameScene) Reset() {
 	level := g.LDTKProject.Levels[g.Level]
-	g.Player.X, g.Player.Y = float64(g.State.StartPos[0]), float64(g.State.StartPos[1])
+	g.Player.Position.X, g.Player.Position.Y = float64(g.State.StartPos[0]), float64(g.State.StartPos[1])
 	g.Player.Facing = directionUp
 	g.Player.AnimState = playerIdle
 	g.Player.State = stateIdle
 	g.Player.Rotation = 0
-	g.State.Water = NewWater(float64(level.Height) + 4*g.Player.H)
+	g.State.Water = NewWater(float64(level.Height) + 4*g.Player.Size.Y)
 	g.Sounds[backgroundMusic].SetVolume(0.5)
 	g.Alpha = 0
 	g.FadeTween.Reset()
@@ -418,9 +418,9 @@ func (g *GameScene) DrawMinimap(screen *ebiten.Image) {
 
 	// Draw player
 	playerColor := color.RGBA{255, 255, 0, 255}
-	playerXPosition := g.Player.X * scale
-	playerYPosition := g.Player.Y * scale
-	playerHeightValue := GetScoreFromY(int(g.Player.Y), g.State.StartPos[1])
+	playerXPosition := g.Player.Position.X * scale
+	playerYPosition := g.Player.Position.Y * scale
+	playerHeightValue := GetScoreFromY(int(g.Player.Position.Y), g.State.StartPos[1])
 	vector.StrokeLine(screen, float32(playerXPosition+3), float32(playerYPosition), 30, float32(playerYPosition), 1, playerColor, false)
 	vector.StrokeLine(screen, float32(playerXPosition-1), float32(playerYPosition), float32(playerXPosition+1), float32(playerYPosition), 1, playerColor, false)
 	g.State.TextRenderer.DrawXY(screen, fmt.Sprintf("%d", playerHeightValue), playerColor, 8, int(minimapWidth+1), int(playerYPosition-8), etxt.Left)
